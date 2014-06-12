@@ -1,0 +1,6 @@
+*.swp
+*.swo
+.bundle
+.gem
+*.war
+/coverage/
