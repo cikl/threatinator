@@ -16,11 +16,12 @@ module Threatinator
         @io
       end
 
-      def _handle_error
-        begin
-          yield
-        rescue Zlib::GzipFile::Error => e
-          raise Threatinator::Exceptions::IOWrapperError.new
+      def _handle_error(e)
+        case e
+        when Zlib::GzipFile::Error
+          return Threatinator::Exceptions::IOWrapperError.new
+        else 
+          e
         end
       end
 
