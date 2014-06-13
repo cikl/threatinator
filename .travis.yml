@@ -1,0 +1,17 @@
+language: ruby
+rvm:
+  - 1.9.3
+  - 2.0.0
+  - 2.1.0
+  - jruby-19mode
+# - jruby-20mode  # So slow
+
+services: rabbitmq
+
+env:
+    global:
+      - JRUBY_OPTS=--debug
+
+install: bundle install --without development
+
+script: bundle exec rake spec
