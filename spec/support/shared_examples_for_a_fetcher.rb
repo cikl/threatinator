@@ -9,7 +9,7 @@ shared_examples_for "a fetcher" do
   context "#fetch" do
     subject { fetcher.fetch }
 
-    it { should be_kind_of(Threatinator::IOWrapper) }
+    it { should be_kind_of(Threatinator::IOWrapperMixin) }
     it "should return the expected data when #read" do
       expect(subject.read()).to eq(expected_data)
     end

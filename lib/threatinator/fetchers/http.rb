@@ -1,6 +1,6 @@
 require 'threatinator/fetcher'
 require 'threatinator/exceptions'
-require 'threatinator/io_wrapper'
+require 'threatinator/io_wrappers/simple'
 require 'typhoeus'
 require 'tempfile'
 
@@ -32,7 +32,7 @@ module Threatinator
         request.run
         # Reset the IO to the beginning of the file
         tempfile.rewind
-        return Threatinator::IOWrapper.wrap(tempfile)
+        return Threatinator::IOWrappers::Simple.new(tempfile)
       end
     end
 
