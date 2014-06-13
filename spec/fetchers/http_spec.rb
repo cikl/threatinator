@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'fetchers_shared'
 require 'threatinator/fetchers/http'
 
 describe Threatinator::Fetchers::Http do

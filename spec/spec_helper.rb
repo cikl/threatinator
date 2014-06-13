@@ -21,3 +21,5 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+Dir["#{SPEC_ROOT.to_s}/support/**/*.rb"].sort.each { |f| require f}
