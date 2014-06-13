@@ -4,3 +4,4 @@
 .gem
 *.war
 /coverage/
+Gemfile.lock
