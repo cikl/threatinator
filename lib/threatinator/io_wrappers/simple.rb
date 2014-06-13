@@ -15,7 +15,7 @@ module Threatinator
 
       # @return the actual IO object that is wrapped (wherever that is).
       def to_io
-        @io.to_io
+        @io
       end
 
     end

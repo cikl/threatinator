@@ -9,7 +9,7 @@ module Threatinator
       include Threatinator::IOWrapperMixin
 
       def initialize(upstream_io, opts = {})
-        @io = Zlib::GzipReader.new(upstream_io.to_io)
+        @io = Zlib::GzipReader.new(upstream_io)
       end
 
       def to_io
