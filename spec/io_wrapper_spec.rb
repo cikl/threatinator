@@ -5,6 +5,11 @@ describe Threatinator::IOWrapper do
 
   describe :wrap do
     it "should return an IOWrapper for the IO object" do
+      r, w = IO.pipe()
+      io_wrapper = Threatinator::IOWrapper.wrap(r)
+      expect(io_wrapper).to be_kind_of(Threatinator::IOWrapper)
+      r.close
+      w.close
     end
   end
 
