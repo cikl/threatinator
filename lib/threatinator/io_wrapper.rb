@@ -1,8 +1,15 @@
 require 'threatinator/exceptions'
 
 module Threatinator
-  # Basic IOWrapper interface. Expects a #to_io method to be implemented.
-  module IOWrapperMixin
+  # Basic IOWrapper interface. 
+  class IOWrapper
+    attr_reader :io
+    # @param [IO] io An IO-like object to wrap. 
+    # @param [Hash] opts A hash of options.
+    def initialize(io, opts = {})
+      @io = io
+    end
+
     public
     # Reads from the IO. Wraps _native_read with _handle_error so that 
     # exceptions may be translated.
@@ -30,7 +37,7 @@ module Threatinator
 
     # @return [Boolean] true if closed, false if not closed
     def closed?
-      self.to_io.closed?
+      @io.closed?
     end
 
     protected
@@ -55,12 +62,12 @@ module Threatinator
 
     # Native/direct reading of io without exception translation.
     def _native_read(*args)
-      self.to_io.read(*args)
+      @io.read(*args)
     end
 
     # Native/direct closing of io without exception translation.
     def _native_close()
-      self.to_io.close
+      @io.close
     end
   end
 end

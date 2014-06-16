@@ -18,9 +18,9 @@ require 'spec_helper'
 
     describe "#close" do
       it "should close the real io object" do
-        expect(io_wrapper.to_io).not_to be_closed
+        expect(pipe).not_to be_closed
         io_wrapper.close
-        expect(io_wrapper.to_io).to be_closed
+        expect(pipe).to be_closed
       end
 
       it "should close the io wrapper object" do
@@ -44,9 +44,11 @@ require 'spec_helper'
       it "should read data from the wrapped io object" do
         expect(io_wrapper.read()).to eq(expected_data)
       end
-      it "should raise an IOWrapperError if the real io object is closed" do
-        io_wrapper.to_io.close
-        expect { io_wrapper.read() }.to raise_error(Threatinator::Exceptions::IOWrapperError)
+      it "should raise an IOWrapperError if it has to read from a closed IO" do
+        pipe.close
+        expect { 
+          io_wrapper.read() 
+        }.to raise_error(Threatinator::Exceptions::IOWrapperError)
       end
       it "should raise an IOWrapperError if #close was called before #read is called" do
         io_wrapper.close

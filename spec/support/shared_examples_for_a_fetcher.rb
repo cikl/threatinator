@@ -9,14 +9,9 @@ shared_examples_for "a fetcher" do
   context "#fetch" do
     subject { fetcher.fetch }
 
-    it { should be_kind_of(Threatinator::IOWrapperMixin) }
+    it { should be_kind_of(Threatinator::IOWrapper) }
     it "should return the expected data when #read" do
       expect(subject.read()).to eq(expected_data)
-    end
-    it "should close the underlying io object when #close is called" do
-      expect(subject.to_io()).not_to be_closed
-      subject.close()
-      expect(subject.to_io()).to be_closed
     end
   end
 end

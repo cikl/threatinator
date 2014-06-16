@@ -1,24 +1,20 @@
 require 'zlib'
-require 'threatinator/io_wrapper_mixin'
+require 'threatinator/io_wrapper'
 require 'threatinator/exceptions'
 
 module Threatinator
   module IOWrappers
     # Wraps 
-    class Gzip
-      include Threatinator::IOWrapperMixin
+    class Gzip < Threatinator::IOWrapper
 
       def initialize(upstream_io, opts = {})
-        @io = Zlib::GzipReader.new(upstream_io)
-      end
-
-      def to_io
-        @io
+        gzip_io = Zlib::GzipReader.new(upstream_io)
+        super(gzip_io, opts)
       end
 
       def _handle_error(e)
         case e
-        when Zlib::GzipFile::Error
+        when Zlib::GzipFile::Error, ::IOError
           return Threatinator::Exceptions::IOWrapperError.new
         else 
           e

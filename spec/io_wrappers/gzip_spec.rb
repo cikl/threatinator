@@ -14,7 +14,11 @@ describe Threatinator::IOWrappers::Gzip do
       sio.string
     }
 
-    let(:expected_data) { "here's some data!" }
+    let(:expected_data) { 
+      ret = ""
+      '!'.upto('~') { |a| '!'.upto('~') { |b| ret << "#{a}#{b}" }  }
+      ret
+    }
   end
 end
 

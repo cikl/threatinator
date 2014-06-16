@@ -1,4 +1,3 @@
-require 'threatinator/io_wrapper_mixin'
 require 'threatinator/io_wrappers/simple'
 
 module Threatinator
@@ -7,7 +6,7 @@ module Threatinator
     # being read.
     class Downcase < Threatinator::IOWrappers::Simple
       def _native_read(*args)
-        ret = to_io.read(*args)
+        ret = super(*args)
         ret.downcase!
       end
     end
