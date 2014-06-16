@@ -5,9 +5,10 @@ module Threatinator
     # This is just an example wrapper that will downcase any text as it is 
     # being read.
     class Downcase < Threatinator::IOWrappers::Simple
-      def _native_read(*args)
-        ret = super(*args)
-        ret.downcase!
+      def _native_read(read_length)
+        if ret = super(read_length)
+          ret.downcase!
+        end
         ret
       end
     end

@@ -11,20 +11,36 @@ module Threatinator
     end
 
     public
-    # Reads from the IO. Wraps _native_read with _handle_error so that 
+    # Reads from the IO. Wraps _native_read with _handle_read_error so that 
     # exceptions may be translated.
-    # @see ::IO
-    def read(*args)
+    #
+    # @param [Integer, nil] read_length (nil) The number of bytes, at most, to 
+    #  read from the IO. If nil, all remaining data will be read.
+    #
+    # @return [String, nil] 
+    #   If read_length is a positive integer, this returns a String contaiing 1 
+    #    to read_length bytes of data. 
+    #   
+    #   If read_length is nil, returns all remaining data.
+    #
+    #   At end of file, it returns nil or "" depend on length. io.read() and 
+    #    io.read(nil) returns "". io.read(positive-integer) returns nil.
+    #
+    # @raise [Threatinator::Exceptions::IOWrapperError] if any error is 
+    #  encountered.
+    #
+    # @see http://ruby-doc.org/core-1.9.3/IO.html#method-i-read
+    def read(read_length = nil)
       begin 
-        _native_read(*args)
+        _native_read(read_length)
       rescue => e
         e2 = _handle_read_error(e)
         raise e2 unless e2.nil?
       end
     end
 
-    # Closes the IO. Wraps _native_close with _handle_error so that exceptions 
-    # may be translated.
+    # Closes the IO. Wraps _native_close with _handle_close_error so that 
+    #   exceptions may be translated.
     # @see ::IO
     def close()
       begin 
@@ -62,12 +78,13 @@ module Threatinator
     end
 
     def _handle_close_error(e)
-      _handle_error(3)
+      _handle_error(e)
     end
 
     # Native/direct reading of io without exception translation.
-    def _native_read(*args)
-      @io.read(*args)
+    # @see IOWrapper#read
+    def _native_read(read_length)
+      @io.read(read_length)
     end
 
     # Native/direct closing of io without exception translation.
