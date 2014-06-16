@@ -3,13 +3,14 @@ require 'threatinator/exceptions'
 module Threatinator
   # Basic IOWrapper interface. 
   class IOWrapper
-    attr_reader :io
-    protected :io
-
-    # @param [IO] io An IO-like object to wrap. 
     # @param [Hash] opts A hash of options.
-    def initialize(io, opts = {})
-      @io = io
+    def initialize(opts = {})
+    end
+
+    def io
+      #:nocov:
+      raise NotImplementedError.new("#{self.class}#io not implemented!")
+      #:nocov:
     end
 
     public
@@ -55,12 +56,12 @@ module Threatinator
 
     # @return [Boolean] true if closed, false if not closed
     def closed?
-      @io.closed?
+      io.closed?
     end
 
     # @return [Boolean] true if we are at the end of the file, false otherwise.
     def eof?
-      @io.eof?
+      io.eof?
     end
 
     protected
@@ -86,12 +87,12 @@ module Threatinator
     # Native/direct reading of io without exception translation.
     # @see IOWrapper#read
     def _native_read(read_length)
-      @io.read(read_length)
+      io.read(read_length)
     end
 
     # Native/direct closing of io without exception translation.
     def _native_close()
-      @io.close
+      io.close
     end
   end
 end

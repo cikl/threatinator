@@ -1,10 +1,11 @@
 require 'spec_helper'
 require 'stringio'
+require 'threatinator/io_wrappers/simple'
 
 shared_examples_for "an iowrapper" do
 
   # The real IO object that is ultimately wrapped.
-  let(:source_io) { Threatinator::IOWrapper.new(StringIO.new(input_data)) }
+  let(:source_io) { Threatinator::IOWrappers::Simple.new(StringIO.new(input_data)) }
 
   let!(:io_wrapper) { described_class.new(source_io) }
 
