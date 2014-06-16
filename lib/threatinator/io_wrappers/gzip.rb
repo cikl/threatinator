@@ -5,11 +5,15 @@ require 'threatinator/exceptions'
 module Threatinator
   module IOWrappers
     # Wraps 
-    class Gzip < Threatinator::IOWrappers::Simple
+    class Gzip < Threatinator::IOWrapper
 
       def initialize(upstream_io, opts = {})
-        gzip_io = Zlib::GzipReader.new(upstream_io)
-        super(gzip_io, opts)
+        @upstream_io = upstream_io
+        super(opts)
+      end
+
+      def io
+        @io ||= Zlib::GzipReader.new(@upstream_io)
       end
 
       def _native_read(read_length)
