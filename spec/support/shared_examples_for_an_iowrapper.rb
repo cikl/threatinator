@@ -4,7 +4,7 @@ require 'stringio'
 shared_examples_for "an iowrapper" do
 
   # The real IO object that is ultimately wrapped.
-  let(:source_io) { StringIO.new(input_data) }
+  let(:source_io) { Threatinator::IOWrapper.new(StringIO.new(input_data)) }
 
   let!(:io_wrapper) { described_class.new(source_io) }
 

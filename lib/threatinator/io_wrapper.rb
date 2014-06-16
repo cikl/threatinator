@@ -4,6 +4,8 @@ module Threatinator
   # Basic IOWrapper interface. 
   class IOWrapper
     attr_reader :io
+    protected :io
+
     # @param [IO] io An IO-like object to wrap. 
     # @param [Hash] opts A hash of options.
     def initialize(io, opts = {})
