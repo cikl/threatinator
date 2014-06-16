@@ -40,6 +40,11 @@ module Threatinator
       @io.closed?
     end
 
+    # @return [Boolean] true if we are at the end of the file, false otherwise.
+    def eof?
+      @io.eof?
+    end
+
     protected
 
     # Translates from native exceptions to Threatinator exceptions.

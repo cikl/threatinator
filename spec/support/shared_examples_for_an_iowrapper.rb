@@ -36,6 +36,17 @@ shared_examples_for "an iowrapper" do
     end
   end
 
+  describe "#eof?" do
+    it "should be false if we haven't read anything" do
+      expect(io_wrapper.eof?).to eq(false)
+    end
+
+    it "should be true if we've read everything" do
+      io_wrapper.read()
+      expect(io_wrapper.eof?).to eq(true)
+    end
+  end
+
   describe "#read" do
     it "should read data from the wrapped io object" do
       expect(io_wrapper.read()).to eq(expected_data)
