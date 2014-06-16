@@ -16,6 +16,8 @@ module Threatinator
         end
       end
 
+      # @yield [line] Gives one line to the block
+      # @yieldparam line [String] a line from the IO stream.
       def each
         return enum_for(:each) unless block_given?
 
