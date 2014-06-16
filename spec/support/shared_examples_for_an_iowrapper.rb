@@ -5,19 +5,26 @@ require 'threatinator/io_wrappers/simple'
 shared_examples_for "an iowrapper" do
 
   # The real IO object that is ultimately wrapped.
-  let(:source_io) { Threatinator::IOWrappers::Simple.new(StringIO.new(input_data)) }
+  let(:source_io) { StringIO.new(input_data) }
+  let(:wrapped_source_io) { Threatinator::IOWrappers::Simple.new(source_io) }
 
-  let!(:io_wrapper) { described_class.new(source_io) }
+  let!(:io_wrapper) { described_class.new(wrapped_source_io) }
 
   after :each do
     io_wrapper.close rescue nil
   end
 
+  it "should not advance the position of the IO until #read is called" do
+    expect(source_io.pos).to eq(0)
+    io_wrapper.read()
+    expect(source_io.pos).not_to eq(0)
+  end
+
   describe "#close" do
     it "should close the real io object" do
-      expect(source_io).not_to be_closed
+      expect(wrapped_source_io).not_to be_closed
       io_wrapper.close
-      expect(source_io).to be_closed
+      expect(wrapped_source_io).to be_closed
     end
 
     it "should close the io wrapper object" do
@@ -84,7 +91,7 @@ shared_examples_for "an iowrapper" do
     end
 
     it "should raise an IOWrapperError if it has to read from a closed IO" do
-      source_io.close
+      wrapped_source_io.close
       expect { 
         io_wrapper.read() 
       }.to raise_error(Threatinator::Exceptions::IOWrapperError)
