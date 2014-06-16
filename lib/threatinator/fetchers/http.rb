@@ -12,7 +12,8 @@ module Threatinator
       #   (required)
       #
       def initialize(opts = {})
-        @url = opts[:url] or raise ArgumentError.new("Missing :url")
+        @url = opts.delete(:url) or raise ArgumentError.new("Missing :url")
+        super(opts)
       end
 
       # @return [IO] an IO-style object.
