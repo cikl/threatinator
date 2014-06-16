@@ -17,8 +17,8 @@ describe Threatinator::IOChain do
 
       it_should_behave_like "an io chain" 
 
-      describe "#count" do
-        subject { chain.count } 
+      describe "#num_io_wrappers" do
+        subject { chain.num_io_wrappers } 
         it { is_expected.to eq(1) }
       end
 
@@ -31,14 +31,14 @@ describe Threatinator::IOChain do
     context "with rot13 and downcase wrappers" do
       let(:expected_data) { "we ar3 3leet hax0rs!" }
       before :each do
-        chain.push(Threatinator::IOWrappers::Rot13)
-        chain.push(Threatinator::IOWrappers::Downcase)
+        chain.push_io_wrapper(Threatinator::IOWrappers::Rot13)
+        chain.push_io_wrapper(Threatinator::IOWrappers::Downcase)
       end
 
       it_should_behave_like "an io chain" 
 
-      describe "#count" do
-        subject { chain.count } 
+      describe "#num_io_wrappers" do
+        subject { chain.num_io_wrappers } 
         it { is_expected.to eq(3) }
       end
 
