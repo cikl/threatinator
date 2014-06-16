@@ -61,5 +61,10 @@ shared_examples_for "an iowrapper" do
       io_wrapper.close
       expect { io_wrapper.read() }.to raise_error(Threatinator::Exceptions::IOWrapperError)
     end
+
+    it "should return an empty string if there is no more data to read" do
+      expect(io_wrapper.read()).to eq(expected_data)
+      expect(io_wrapper.read()).to eq("")
+    end
   end
 end

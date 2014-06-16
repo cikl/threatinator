@@ -8,6 +8,7 @@ module Threatinator
       def _native_read(*args)
         ret = super(*args)
         ret.downcase!
+        ret
       end
     end
   end
