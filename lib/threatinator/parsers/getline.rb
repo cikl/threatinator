@@ -12,14 +12,13 @@ module Threatinator
       # @option opts [String] :separator ("\n") A character that will be used
       #  to detect the end of a line.
       def initialize(io, opts = {})
-        @io = io
         @separator = opts.delete(:separator) || "\n"
         @buffer = StringIO.new
 
         unless @separator.length == 1
           raise ArgumentError.new(":separator must be exactly one character long")
         end
-        super(opts)
+        super(io, opts)
       end
 
       protected
@@ -29,11 +28,11 @@ module Threatinator
         if @buffer.pos != 0
           @buffer.reopen(@buffer.read())
         end
-        data = @io.read(READ_SIZE)
+        data = io.read(READ_SIZE)
 
         if data.nil?
           # :nocov:
-          # read(READ_SIZE) could potentially return nil if @io.eof? is true, 
+          # read(READ_SIZE) could potentially return nil if io.eof? is true, 
           # but I don't think it'll ever happen since that's checked for 
           # prior to entering _fill_buffer. I can't get this to happen in
           # testing, but I don't think it'll ever happen, anyway. So, skipping
@@ -54,9 +53,9 @@ module Threatinator
           prev_pos = @buffer.pos
           data = @buffer.gets(@separator)
           if data.nil? or data[-1] != @separator
-            # If we're at @io.eof?, then we should return whatever we have,
+            # If we're at io.eof?, then we should return whatever we have,
             # here. 
-            return data if @io.eof?
+            return data if io.eof?
 
             # If we're here, then we need to read more data onto the end of
             # the buffer.
@@ -79,7 +78,7 @@ module Threatinator
         loop do
           str = gets()
           return if str.nil?
-          return if str.empty? && @io.eof && @buffer.eof?
+          return if str.empty? && io.eof && @buffer.eof?
           yield str
         end
         nil
