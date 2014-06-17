@@ -4,6 +4,7 @@ source "https://rubygems.org"
 gem 'typhoeus'
 gem 'nokogiri'
 gem 'addressable'
+gem 'docile'
 gem 'virtus'
 
 group :test do
