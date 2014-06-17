@@ -36,4 +36,16 @@ describe Threatinator::Parsers::Getline do
     sio = StringIO.new()
     expect { described_class.new(sio, :separator => "asdf") }.to raise_error(ArgumentError)
   end
+
+  it "should work on really, really long lines" do
+    line1 = ("A" * 100_000) + "\n"
+    line2 = ("B" * 100_000) + "\n"
+    line3 = "C" * 100_000
+    sio = StringIO.new(line1 + line2 + line3)
+    parser = described_class.new(sio, :separator => "\n")
+
+    expect { |b|
+      parser.each(&b)
+    }.to yield_successive_args(line1, line2, line3)
+  end
 end
