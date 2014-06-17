@@ -4,12 +4,6 @@ require 'threatinator/feed_builder'
 describe Threatinator::FeedBuilder do
   let (:provider) { 'FakeSecureCo' }
   let (:name) { 'MaliciousDataFeed' }
-  let(:fetcher_io) { double("io") }
-  let(:fetcher_class) { FeedSpec::Fetcher }
-  let(:fetcher_opts) { { :io => fetcher_io } }
-  let(:parser_class) { FeedSpec::Parser }
-  let(:parser_opts) { {} }
-  let(:parser_block) { lambda {}  }
   let(:builder) { described_class.new }
 
   context "without having been configured" do
