@@ -1,10 +1,7 @@
-require 'threatinator/fetchers/http'
-require 'threatinator/exceptions'
 require 'virtus'
 
 module Threatinator
   class Feed
-    include Threatinator::Exceptions
     include Virtus.model(:strict => true)
 
     attribute :provider, String
