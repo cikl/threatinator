@@ -12,6 +12,7 @@ group :test do
   gem 'simplecov'
   gem 'rspec', '~> 3'
   gem 'webmock'
+  gem 'factory_girl', '~> 4'
 end
 
 group :development do
