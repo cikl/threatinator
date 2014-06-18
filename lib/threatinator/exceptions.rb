@@ -7,6 +7,15 @@ module Threatinator
     # Indicates an error during an IO operation
     class IOWrapperError < StandardError
     end
+
+    class InvalidAttributeError < StandardError
+      def initialize(attribute, expected, got)
+        @attribute = attribute
+        @expected = expected
+        @got = got
+        super("Invalid value for attribute #{attribute}. Expected #{expected}, got " + got.class().to_s)
+      end
+    end
   end
 end
 

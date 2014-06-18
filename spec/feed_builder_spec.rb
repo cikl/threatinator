@@ -9,19 +9,15 @@ describe Threatinator::FeedBuilder do
   context "without having been configured" do
     describe "#build" do
       it "should raise an error" do
-        expect { builder.build() }.to raise_error(Virtus::CoercionError)
+        expect { builder.build() }.to raise_error { |error|
+          expect(error).to be_kind_of(Threatinator::Exceptions::InvalidAttributeError)
+        }
       end
     end
   end
 
   describe "#filter_whitespace" do
-    before :each do 
-      builder.name name
-      builder.provider provider
-      builder.parse_eachline do |*args|
-      end
-      builder.fetch_http("http://foo.com/bar")
-    end
+    let(:builder) { build(:feed_builder) }
 
     it "should return the builder" do
       expect(builder.filter_whitespace).to eq(builder)
@@ -51,13 +47,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#filter_comments" do
-    before :each do 
-      builder.name name
-      builder.provider provider
-      builder.parse_eachline do |*args|
-      end
-      builder.fetch_http("http://foo.com/bar")
-    end
+    let(:builder) { build(:feed_builder) }
 
     it "should return the builder" do
       expect(builder.filter_comments).to eq(builder)
@@ -87,13 +77,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#filter" do
-    before :each do 
-      builder.name name
-      builder.provider provider
-      builder.parse_eachline do |*args|
-      end
-      builder.fetch_http("http://foo.com/bar")
-    end
+    let(:builder) { build(:feed_builder) }
 
     it "should return the builder" do
       expect(builder.filter() {  }).to eq(builder)
@@ -190,12 +174,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#provider" do
-    before :each do 
-      builder.name name
-      builder.parse_eachline do |*args|
-      end
-      builder.fetch_http("http://foo.com/bar")
-    end
+    let(:builder) { build(:feed_builder, provider: nil) }
 
     it "should return the builder" do
       expect(builder.provider("asdf")).to eq(builder)
@@ -213,12 +192,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#name" do
-    before :each do 
-      builder.provider provider
-      builder.parse_eachline do |*args|
-      end
-      builder.fetch_http("http://foo.com/bar")
-    end
+    let(:builder) { build(:feed_builder, name: nil) }
 
     it "should return the builder" do
       expect(builder.name("asdf")).to eq(builder)
@@ -237,12 +211,7 @@ describe Threatinator::FeedBuilder do
 
   describe "#fetch_http" do
     let(:url) { 'http://foo.com/bar' }
-    before :each do 
-      builder.name name
-      builder.provider provider
-      builder.parse_eachline do |*args|
-      end
-    end
+    let(:builder) { build(:feed_builder, fetch_http: nil) }
 
     it "should return the builder" do
       expect(builder.fetch_http('http://foo.bar/')).to eq(builder)
@@ -263,11 +232,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#parse_eachline" do
-    before :each do 
-      builder.name name
-      builder.provider provider
-      builder.fetch_http("http://foo.com/bar")
-    end
+    let(:builder) { build(:feed_builder, parse_eachline: nil) }
 
     it "should return the builder" do
       expect(builder.parse_eachline() {}).to eq(builder)

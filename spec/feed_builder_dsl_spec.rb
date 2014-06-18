@@ -8,7 +8,9 @@ describe "Threatinator#build_feed" do
 
   context "without having been configured" do
     it "should raise an error" do
-        expect { Threatinator.build_feed(feed_provider,feed_name) { } }.to raise_error(Virtus::CoercionError)
+        expect { Threatinator.build_feed(feed_provider,feed_name) { } }.to raise_error { |error|
+          expect(error).to be_kind_of(Threatinator::Exceptions::InvalidAttributeError)
+        }
     end
   end
 
