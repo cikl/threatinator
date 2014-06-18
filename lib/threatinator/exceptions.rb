@@ -13,7 +13,7 @@ module Threatinator
         @attribute = attribute
         @expected = expected
         @got = got
-        super("Invalid value for attribute #{attribute}. Expected #{expected}, got " + got.class().to_s)
+        super("Invalid value for attribute '#{attribute}'. Expected a '#{expected}', got " + got.class().to_s)
       end
     end
   end
