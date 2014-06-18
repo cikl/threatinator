@@ -1,15 +1,13 @@
-require 'threatinator/filter'
-
 module Threatinator
   class Feed
     def initialize(opts = {})
-      self.provider = opts.delete(:provider) if opts.has_key?(:provider)
-      self.name = opts.delete(:name) if opts.has_key?(:name)
-      self.fetcher_class = opts.delete(:fetcher_class) if opts.has_key?(:fetcher_class)
+      self.provider = opts.delete(:provider)
+      self.name = opts.delete(:name)
+      self.fetcher_class = opts.delete(:fetcher_class)
       self.fetcher_opts = opts.delete(:fetcher_opts) || {}
-      self.parser_class = opts.delete(:parser_class) if opts.has_key?(:parser_class)
+      self.parser_class = opts.delete(:parser_class)
       self.parser_opts = opts.delete(:parser_opts) || {}
-      self.parser_block = opts.delete(:parser_block) if opts.has_key?(:parser_block)
+      self.parser_block = opts.delete(:parser_block)
       self.filters = opts.delete(:filters) || []
     end
 
