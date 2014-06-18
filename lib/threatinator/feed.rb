@@ -1,4 +1,3 @@
-require 'virtus'
 require 'threatinator/filter'
 
 module Threatinator
