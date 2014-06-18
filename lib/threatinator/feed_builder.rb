@@ -2,6 +2,8 @@ require 'threatinator/feed'
 require 'threatinator/fetchers/http'
 require 'threatinator/parsers/getline'
 require 'threatinator/filters/block'
+require 'threatinator/filters/whitespace'
+require 'threatinator/filters/comments'
 
 module Threatinator
   class FeedBuilder
@@ -33,6 +35,20 @@ module Threatinator
     def filter(&block)
       @filters ||= []
       @filters << Threatinator::Filters::Block.new(block)
+      self
+    end
+
+    # Filter out whitespace lines. Only works on line-based text.
+    def filter_whitespace
+      @filters ||= []
+      @filters << Threatinator::Filters::Whitespace.new
+      self
+    end
+    
+    # Filter out whitespace lines. Only works on line-based text.
+    def filter_comments
+      @filters ||= []
+      @filters << Threatinator::Filters::Comments.new
       self
     end
 

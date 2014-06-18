@@ -14,6 +14,78 @@ describe Threatinator::FeedBuilder do
     end
   end
 
+  describe "#filter_whitespace" do
+    before :each do 
+      builder.name name
+      builder.provider provider
+      builder.parse_eachline do |*args|
+      end
+      builder.fetch_http("http://foo.com/bar")
+    end
+
+    it "should return the builder" do
+      expect(builder.filter_whitespace).to eq(builder)
+    end
+
+    context "the built feed" do
+      let(:feed) {
+        builder.filter_whitespace
+        builder.build
+      }
+      describe "#filters" do
+        it "should have one item" do
+          expect(feed.filters.length).to eq(1)
+        end
+
+        describe "the first item" do
+          subject {feed.filters[0]} 
+          it { should be_kind_of(Threatinator::Filters::Whitespace) }
+
+          it "should be the first filter we added" do
+            expect(subject.filter?("         \t \t ")).to eq(true)
+            expect(subject.filter?("   gobbledy goo")).to eq(false)
+          end
+        end
+      end
+    end
+  end
+
+  describe "#filter_comments" do
+    before :each do 
+      builder.name name
+      builder.provider provider
+      builder.parse_eachline do |*args|
+      end
+      builder.fetch_http("http://foo.com/bar")
+    end
+
+    it "should return the builder" do
+      expect(builder.filter_comments).to eq(builder)
+    end
+
+    context "the built feed" do
+      let(:feed) {
+        builder.filter_comments
+        builder.build
+      }
+      describe "#filters" do
+        it "should have one item" do
+          expect(feed.filters.length).to eq(1)
+        end
+
+        describe "the first item" do
+          subject {feed.filters[0]} 
+          it { should be_kind_of(Threatinator::Filters::Comments) }
+
+          it "should be the first filter we added" do
+            expect(subject.filter?("# this is a comment")).to eq(true)
+            expect(subject.filter?("Not a comment")).to eq(false)
+          end
+        end
+      end
+    end
+  end
+
   describe "#filter" do
     before :each do 
       builder.name name

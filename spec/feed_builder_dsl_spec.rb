@@ -20,12 +20,11 @@ describe "Threatinator#build_feed" do
         fetch_http("http://foo.com/bar")
 
         filter do |line|
-          line =~ /^#/ # comments
+          line =~ /Bad stuff/
         end
 
-        filter do |line|
-          line =~ /^\s*$/ # whitespace
-        end
+        filter_whitespace
+        filter_comments
 
         parse_eachline(separator: "\0") do |*args|
           # parsing stuff
@@ -53,9 +52,26 @@ describe "Threatinator#build_feed" do
     it "#parser_opts should be correct" do
       expect(feed.parser_opts).to eq({separator: "\0"})
     end
-    it "#filters should have two filters" do
-      expect(feed.filters.length).to eq(2)
-      expect(feed.filters).to match_array([kind_of(Threatinator::Filters::Block), kind_of(Threatinator::Filters::Block)])
+
+    describe "#filters" do
+      subject { feed.filters } 
+
+      it "should have three filters" do
+        expect(subject.length).to eq(3)
+      end
+
+      describe "filter 1" do
+        subject {feed.filters[0]}
+        it { should be_a(Threatinator::Filters::Block) }
+      end
+      describe "filter 2" do
+        subject {feed.filters[1]}
+        it { should be_a(Threatinator::Filters::Whitespace) }
+      end
+      describe "filter 3" do
+        subject {feed.filters[2] }
+        it { should be_a(Threatinator::Filters::Comments) }
+      end
     end
   end
 end
