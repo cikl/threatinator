@@ -1,4 +1,5 @@
 require 'virtus'
+require 'threatinator/filter'
 
 module Threatinator
   class Feed
@@ -11,5 +12,6 @@ module Threatinator
     attribute :parser_class, Class
     attribute :parser_opts, Hash, :default => lambda { |feed, attr| {} } 
     attribute :parser_block, Proc
+    attribute :filters, Array[Threatinator::Filter], :default => lambda { |feed, attr| [] }
   end
 end

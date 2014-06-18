@@ -14,6 +14,109 @@ describe Threatinator::FeedBuilder do
     end
   end
 
+  describe "#filter" do
+    before :each do 
+      builder.name name
+      builder.provider provider
+      builder.parse_eachline do |*args|
+      end
+      builder.fetch_http("http://foo.com/bar")
+    end
+
+    it "should return the builder" do
+      expect(builder.filter() {  }).to eq(builder)
+    end
+
+    context "the built feed, when one filter is specified" do
+      let(:feed) {
+        builder.filter do |line|
+          line == "FILTER1"
+        end
+        builder.build
+      }
+      describe "#filters" do
+        it "should have one item" do
+          expect(feed.filters.length).to eq(1)
+        end
+
+        describe "the first item" do
+          subject {feed.filters[0]} 
+          it { should be_kind_of(Threatinator::Filters::Block) }
+
+          it "should be the first filter we added" do
+            expect(subject.filter?("FILTER1")).to eq(true)
+            expect(subject.filter?("gobbledy goo")).to eq(false)
+          end
+        end
+      end
+    end
+
+    context "the built feed, when three filters are specified" do
+      let(:feed) {
+        builder.filter do |line|
+          line == "FILTER1"
+        end
+        builder.filter do |line|
+          line == "FILTER2"
+        end
+        builder.filter do |line|
+          line == "FILTER3"
+        end
+        builder.build
+      }
+      describe "#filters" do
+        it "should have one item" do
+          expect(feed.filters.length).to eq(3)
+        end
+
+        describe "the first filter" do
+          subject {feed.filters[0]} 
+          it { should be_kind_of(Threatinator::Filters::Block) }
+
+          it "should be the first filter we added" do
+            expect(subject.filter?("FILTER1")).to eq(true)
+            expect(subject.filter?("FILTER2")).to eq(false)
+            expect(subject.filter?("FILTER3")).to eq(false)
+          end
+        end
+
+        describe "the second filter" do
+          subject {feed.filters[1]} 
+          it { should be_kind_of(Threatinator::Filters::Block) }
+
+          it "should be the first filter we added" do
+            expect(subject.filter?("FILTER1")).to eq(false)
+            expect(subject.filter?("FILTER2")).to eq(true)
+            expect(subject.filter?("FILTER3")).to eq(false)
+          end
+        end
+
+        describe "the third filter" do
+          subject {feed.filters[2]} 
+          it { should be_kind_of(Threatinator::Filters::Block) }
+
+          it "should be the first filter we added" do
+            expect(subject.filter?("FILTER1")).to eq(false)
+            expect(subject.filter?("FILTER2")).to eq(false)
+            expect(subject.filter?("FILTER3")).to eq(true)
+          end
+        end
+
+      end
+    end
+
+    context "the built feed, when no filters are specified" do
+      let(:feed) {
+        builder.build
+      }
+      describe "#filters" do
+        it "should have no filters" do
+          expect(feed.filters.length).to eq(0)
+        end
+      end
+    end
+  end
+
   describe "#provider" do
     before :each do 
       builder.name name

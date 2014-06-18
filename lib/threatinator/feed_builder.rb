@@ -1,6 +1,7 @@
 require 'threatinator/feed'
 require 'threatinator/fetchers/http'
 require 'threatinator/parsers/getline'
+require 'threatinator/filters/block'
 
 module Threatinator
   class FeedBuilder
@@ -28,6 +29,13 @@ module Threatinator
       self
     end
 
+    # Specify a block filter for the parser
+    def filter(&block)
+      @filters ||= []
+      @filters << Threatinator::Filters::Block.new(block)
+      self
+    end
+
     def build
       Feed.new(
         :provider => @provider, 
@@ -36,7 +44,8 @@ module Threatinator
         :fetcher_opts => @fetcher_opts,
         :parser_class => @parser_class,
         :parser_opts => @parser_opts,
-        :parser_block => @parser_block
+        :parser_block => @parser_block,
+        :filters => @filters || []
       )
     end
   end

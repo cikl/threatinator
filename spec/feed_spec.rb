@@ -64,6 +64,12 @@ describe Threatinator::Feed do
       end
     end
 
+    describe "#filters" do
+      it "should return the default []" do
+        expect(feed.filters).to eq([])
+      end
+    end
+
   end
 end
 
