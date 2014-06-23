@@ -28,6 +28,7 @@ module Threatinator
     feed = Docile.dsl_eval(builder) do
       eval(filedata, binding, filename)
     end.build
+    register_feed(feed)
   end
 
   # @overload register_feed(provider_or_feed, name, &block)

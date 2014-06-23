@@ -101,6 +101,13 @@ describe Threatinator do
       expect(ret.name).to eq("feed1")
     end
 
+    it "should have registered the feed" do
+      expect(Threatinator.registry.count).to eq(0)
+      feed = Threatinator.register_feed_from_file(feedfile)
+      expect(Threatinator.registry.count).to eq(1)
+      expect(Threatinator.registry.get(feed.provider, feed.name)).to be(feed)
+    end
+
     it "should raise an error if the feed file cannot be found" do
       expect {
         Threatinator.register_feed_from_file(missing_file)
