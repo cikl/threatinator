@@ -1,6 +1,7 @@
 require 'threatinator/exceptions'
 
 module Threatinator
+  # Holds a set of threatinator feeds
   class Registry
     include Threatinator::Exceptions
 
@@ -26,10 +27,14 @@ module Threatinator
       @feeds[[provider, name]]
     end
 
+    # @return [Integer] the number of feeds in the registry
     def count
       @feeds.count
     end
 
+    # Enumerates through each feed in our registry
+    # @yield [feed]
+    # @yieldparam [Threatinator::Feed] feed A feed within the registry
     def each(&block)
       @feeds.each_value(&block)
     end
