@@ -1,0 +1,3 @@
+provider "provider1"
+name "name1"
+fetch_http('https://foobar/feed1.data')

@@ -9,6 +9,7 @@ module Threatinator
     end
 
     class InvalidAttributeError < StandardError
+      attr_reader :attribute, :expected, :got
       def initialize(attribute, expected, got)
         @attribute = attribute
         @expected = expected
@@ -23,6 +24,13 @@ module Threatinator
         @provider = provider
         @name = name
         super("provider: #{@provider}, name: #{@name}")
+      end
+    end
+
+    class FeedFileNotFoundError < StandardError
+      def initialize(filename)
+        @filename = filename
+        super("Failed to open/read feed file #{filename}")
       end
     end
   end

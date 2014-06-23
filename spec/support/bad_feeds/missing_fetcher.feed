@@ -1,0 +1,7 @@
+provider "provider1"
+name "name1"
+
+parse_eachline(:separator => "\n") do |builder, line|
+end
+
+

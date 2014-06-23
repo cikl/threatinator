@@ -18,6 +18,18 @@ module Threatinator
     return Docile.dsl_eval(builder, &block).build
   end
 
+  def self.register_feed_from_file(filename)
+    begin 
+      filedata = File.read(filename)
+    rescue Errno::ENOENT
+      raise Threatinator::Exceptions::FeedFileNotFoundError.new(filename)
+    end
+    builder = Threatinator::FeedBuilder.new
+    feed = Docile.dsl_eval(builder) do
+      eval(filedata, binding, filename)
+    end.build
+  end
+
   # @overload register_feed(provider_or_feed, name, &block)
   #   Builds and registers a feed.
   #   @param [String] provider_or_feed The name of the provider

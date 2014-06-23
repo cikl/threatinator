@@ -85,4 +85,62 @@ describe Threatinator do
       end
     end
   end
+
+  describe "#register_feed_from_file" do
+    let(:feedfile) {File.expand_path("../support/feeds/provider1/feed1.feed", __FILE__)}
+    let(:missing_file) {File.expand_path("../support/feeds/provider1/non-existant.feed", __FILE__)}
+    let(:missing_provider) {File.expand_path("../support/bad_feeds/missing_provider.feed", __FILE__)}
+    let(:missing_name) {File.expand_path("../support/bad_feeds/missing_name.feed", __FILE__)}
+    let(:missing_fetcher) {File.expand_path("../support/bad_feeds/missing_fetcher.feed", __FILE__)}
+    let(:missing_parser) {File.expand_path("../support/bad_feeds/missing_parser.feed", __FILE__)}
+
+    it "should return the feed after parsing the file" do
+      ret = Threatinator.register_feed_from_file(feedfile)
+      expect(ret).to be_a(Threatinator::Feed)
+      expect(ret.provider).to eq("provider1")
+      expect(ret.name).to eq("feed1")
+    end
+
+    it "should raise an error if the feed file cannot be found" do
+      expect {
+        Threatinator.register_feed_from_file(missing_file)
+      }.to raise_error(Threatinator::Exceptions::FeedFileNotFoundError)
+    end
+
+    it "should raise a InvalidAttributeError if the feed is missing a provider" do
+      expect do 
+        Threatinator.register_feed_from_file(missing_provider)
+      end.to raise_error { |e| 
+        expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
+        expect(e.attribute).to eq(:provider)
+      }
+    end
+
+    it "should raise a InvalidAttributeError if the feed is missing a name" do
+      expect do 
+        Threatinator.register_feed_from_file(missing_name)
+      end.to raise_error { |e| 
+        expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
+        expect(e.attribute).to eq(:name)
+      }
+    end
+
+    it "should raise a InvalidAttributeError if the feed is missing a fetcher statement" do
+      expect do 
+        Threatinator.register_feed_from_file(missing_fetcher)
+      end.to raise_error { |e| 
+        expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
+        expect(e.attribute).to eq(:fetcher_class)
+      }
+    end
+
+    it "should raise a InvalidAttributeError if the feed is missing a parser statement" do
+      expect do 
+        Threatinator.register_feed_from_file(missing_parser)
+      end.to raise_error { |e| 
+        expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
+        expect(e.attribute).to eq(:parser_class)
+      }
+    end
+  end
 end

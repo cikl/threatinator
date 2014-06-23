@@ -1,0 +1,6 @@
+provider "provider1"
+name "feed1"
+fetch_http('https://foobar/feed1.data')
+
+parse_eachline(:separator => "\n") do |builder, line|
+end
