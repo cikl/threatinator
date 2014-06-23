@@ -18,6 +18,8 @@ module Threatinator
     return Docile.dsl_eval(builder, &block).build
   end
 
+  # @param [String] filename The name of the file to read the feed from
+  # @raise [FeedFileNotFoundError] if the file is not found
   def self.register_feed_from_file(filename)
     begin 
       filedata = File.read(filename)
@@ -29,6 +31,19 @@ module Threatinator
       eval(filedata, binding, filename)
     end.build
     register_feed(feed)
+  end
+
+  # Recursively loads and registers feeds from all paths contained in the 
+  # paths array.
+  # @param [Array<String>] paths A set of paths
+  def self.load_feeds(paths)
+    paths.each do |feed_path|
+      pattern = File.join(feed_path, "**", "*.feed")
+      Dir.glob(pattern).each do |filename|
+        self.register_feed_from_file(filename)
+      end
+    end
+    nil
   end
 
   # @overload register_feed(provider_or_feed, name, &block)
