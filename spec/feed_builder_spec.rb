@@ -253,6 +253,186 @@ describe Threatinator::FeedBuilder do
       end
     end
   end
+
+  shared_examples_for "a DSL loader" do
+    # Expects :feed_loader as a proc
+      let(:feed_string) { ' 
+provider "provider1"
+name "feed1"
+fetch_http("https://foobar/feed1.data")
+
+parse_eachline(:separator => "\n") do |builder, line|
+end' }
+
+    it "should return an instance of Threatinator::FeedBuilder" do
+      expect(feed_loader.call(feed_string)).to be_a(Threatinator::FeedBuilder)
+    end
+
+    it "should return a builder after parsing" do
+      builder = feed_loader.call(feed_string)
+      expect(builder).to be_a(Threatinator::FeedBuilder)
+      feed = builder.build
+      expect(feed.provider).to eq("provider1")
+      expect(feed.name).to eq("feed1")
+      expect(feed.fetcher_class).to eq(Threatinator::Fetchers::Http)
+      expect(feed.parser_class).to eq(Threatinator::Parsers::Getline)
+    end
+    
+    context "when str contains invalid syntax" do
+      let(:feed_string) { 'provider "my_provider"
+name "my_provider"
+foo = 123 456'}
+
+      it "should raise an error on a syntax error" do
+        expect {
+          feed_loader.call(feed_string)
+        }.to raise_error { |e|
+          expect(e).to be_a(SyntaxError)
+        }
+      end
+    end
+
+    describe "#build" do
+      context "without having been configured" do
+        it "should raise an error" do
+          expect { feed_loader.call("").build }.to raise_error { |error|
+            expect(error).to be_kind_of(Threatinator::Exceptions::InvalidAttributeError)
+          }
+        end
+      end
+
+      context "when configured to fetch a url and parse each line, the feed" do
+        let(:url) { "http://foo.com/bar" }
+        let(:feed_string) {
+          'provider "my_feed_provider"
+          name "my_feed_name"
+
+          fetch_http("http://foo.com/bar")
+
+          filter do |line|
+            line =~ /Bad stuff/
+          end
+
+          filter_whitespace
+          filter_comments
+
+          parse_eachline(separator: "\0") do |*args|
+            # parsing stuff
+          end'
+        }
+        let(:feed) { feed_loader.call(feed_string).build() }
+
+        it "#provider should be correct" do
+          expect(feed.provider).to eq("my_feed_provider")
+        end
+
+        it "#name should be correct" do
+          expect(feed.name).to eq("my_feed_name")
+        end
+
+        it "#fetcher_class should be Threatinator::Fetchers::Http" do
+          expect(feed.fetcher_class).to eq(Threatinator::Fetchers::Http)
+        end
+        it "#fetcher_opts should be have the URL" do
+          expect(feed.fetcher_opts).to eq({ url: "http://foo.com/bar" })
+        end
+        it "#parser_class should be Threatinator::Parsers::Getline" do
+          expect(feed.parser_class).to eq(Threatinator::Parsers::Getline)
+        end
+        it "#parser_opts should be correct" do
+          expect(feed.parser_opts).to eq({separator: "\0"})
+        end
+
+        describe "#filters" do
+          subject { feed.filters } 
+
+          it "should have three filters" do
+            expect(subject.length).to eq(3)
+          end
+
+          describe "filter 1" do
+            subject {feed.filters[0]}
+            it { should be_a(Threatinator::Filters::Block) }
+          end
+          describe "filter 2" do
+            subject {feed.filters[1]}
+            it { should be_a(Threatinator::Filters::Whitespace) }
+          end
+          describe "filter 3" do
+            subject {feed.filters[2] }
+            it { should be_a(Threatinator::Filters::Comments) }
+          end
+        end
+      end
+    end
+
+  end
+
+  describe :from_string do
+    it_should_behave_like "a DSL loader" do
+      let(:feed_loader) { lambda { |arg| Threatinator::FeedBuilder.from_string(arg) } }
+    end
+  end
+
+  describe :from_file do
+    before :each do
+      @tempdir = Dir.mktmpdir
+    end
+
+    after :each do
+      FileUtils.remove_entry_secure @tempdir
+    end
+
+    it_should_behave_like "a DSL loader" do
+      let(:feed_loader) { 
+        lambda do |arg| 
+          filename = File.join(@tempdir, "file.feed")
+          File.open(filename, "w") do |fio|
+            fio.write(arg)
+          end
+          Threatinator::FeedBuilder.from_file(filename)
+        end
+      }
+    end
+
+    let(:feedfile) {File.expand_path("../support/feeds/provider1/feed1.feed", __FILE__)}
+    let(:missing_file) {File.expand_path("../support/feeds/provider1/non-existant.feed", __FILE__)}
+
+    it "should return a builder after parsing the file" do
+      builder = Threatinator::FeedBuilder.from_file(feedfile)
+      expect(builder).to be_a(Threatinator::FeedBuilder)
+      feed = builder.build
+      expect(feed.provider).to eq("provider1")
+      expect(feed.name).to eq("feed1")
+    end
+
+    it "should raise Threatinator::Exceptions::FeedFileNotFoundError if the feed file cannot be found" do
+      expect {
+        Threatinator::FeedBuilder.from_file(missing_file)
+      }.to raise_error(Threatinator::Exceptions::FeedFileNotFoundError)
+    end
+
+    it "should call from_string(data, filename, lineno)" do
+      data = File.read(feedfile)
+      expect(Threatinator::FeedBuilder).to receive(:from_string).with(data, feedfile, 0)
+      Threatinator::FeedBuilder.from_file(feedfile)
+    end
+
+  end
+
+  describe :from_dsl do
+    it_should_behave_like "a DSL loader" do
+      let(:feed_loader) { 
+        lambda do |arg| 
+          Threatinator::FeedBuilder.from_dsl do
+            eval(arg)
+          end
+        end
+      }
+    end
+
+
+  end
 end
 
 

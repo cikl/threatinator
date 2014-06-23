@@ -1,4 +1,6 @@
+require 'docile'
 require 'threatinator/feed'
+require 'threatinator/exceptions'
 require 'threatinator/fetchers/http'
 require 'threatinator/parsers/getline'
 require 'threatinator/filters/block'
@@ -63,6 +65,42 @@ module Threatinator
         :parser_block => @parser_block,
         :filters => @filters || []
       )
+    end
+
+    # Loads the provided file, and generates a builder from it.
+    # @param [String] filename The name of the file to read the feed from
+    # @raise [FeedFileNotFoundError] if the file is not found
+    def self.from_file(filename)
+      begin 
+        filedata = File.read(filename)
+      rescue Errno::ENOENT
+        raise Threatinator::Exceptions::FeedFileNotFoundError.new(filename)
+      end
+      from_string(filedata, filename, 0)
+    end
+
+    # Generates a builder from a string via eval.
+    # @param [String] str The DSL code that specifies the feed.
+    # @param [String] filename (nil) Passed to eval. 
+    # @param [String] lineno (nil) Passed to eval. 
+    # @raise [FeedFileNotFoundError] if the file is not found
+    # @see Kernel#eval for details on filename and lineno
+    def self.from_string(str, filename = nil, lineno = nil)
+      from_dsl do
+        args = [str, binding]
+        unless filename.nil?
+          args << filename
+          unless lineno.nil?
+            args << lineno
+          end
+        end
+        eval(*args)
+      end
+    end
+
+    # Executes the block parameter within DSL scope
+    def self.from_dsl(&block)
+      Docile.dsl_eval(self.new, &block)
     end
   end
 end
