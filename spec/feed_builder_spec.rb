@@ -256,13 +256,14 @@ describe Threatinator::FeedBuilder do
 
   shared_examples_for "a DSL loader" do
     # Expects :feed_loader as a proc
-      let(:feed_string) { ' 
-provider "provider1"
+      let(:feed_string) { 
+'provider "provider1"
 name "feed1"
 fetch_http("https://foobar/feed1.data")
 
 parse_eachline(:separator => "\n") do |builder, line|
-end' }
+end'
+      }
 
     it "should return an instance of Threatinator::FeedBuilder" do
       expect(feed_loader.call(feed_string)).to be_a(Threatinator::FeedBuilder)
@@ -293,12 +294,61 @@ foo = 123 456'}
     end
 
     describe "#build" do
-      context "without having been configured" do
-        it "should raise an error" do
-          expect { feed_loader.call("").build }.to raise_error { |error|
-            expect(error).to be_kind_of(Threatinator::Exceptions::InvalidAttributeError)
-          }
-        end
+      it "should raise an InvalidAttributeError if the feed is empty" do
+        expect { feed_loader.call("").build }.to raise_error { |error|
+          expect(error).to be_kind_of(Threatinator::Exceptions::InvalidAttributeError)
+        }
+      end
+      it "should raise a InvalidAttributeError if the feed is missing a provider" do
+        feed_string = '
+name "feed1"
+fetch_http("https://foobar/feed1.data")
+parse_eachline(:separator => "\n") {}'
+        expect do 
+          feed_loader.call(feed_string).build
+        end.to raise_error { |e| 
+          expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
+          expect(e.attribute).to eq(:provider)
+        }
+      end
+
+      it "should raise a InvalidAttributeError if the feed is missing a name" do
+        feed_string = '
+provider "provider1"
+fetch_http("https://foobar/feed1.data")
+parse_eachline(:separator => "\n") {}'
+        expect do 
+          feed_loader.call(feed_string).build
+        end.to raise_error { |e| 
+          expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
+          expect(e.attribute).to eq(:name)
+        }
+      end
+
+      it "should raise a InvalidAttributeError if the feed is missing a fetcher statement" do
+        feed_string = '
+provider "provider1"
+name "feed1"
+parse_eachline(:separator => "\n") {}'
+        expect do 
+          feed_loader.call(feed_string).build
+        end.to raise_error { |e| 
+          expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
+          expect(e.attribute).to eq(:fetcher_class)
+        }
+      end
+
+      it "should raise a InvalidAttributeError if the feed is missing a parser statement" do
+        feed_string = '
+provider "provider1"
+name "feed1"
+fetch_http("https://foobar/feed1.data")'
+        expect do 
+          feed_loader.call(feed_string).build
+        end.to raise_error { |e| 
+          expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
+          expect(e.attribute).to eq(:parser_class)
+        }
       end
 
       context "when configured to fetch a url and parse each line, the feed" do
