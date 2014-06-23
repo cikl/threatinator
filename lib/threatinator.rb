@@ -50,6 +50,8 @@ module Threatinator
     feed
   end
 
+  # The global registry
+  # @return [Threatinator::Registry]
   def self.registry
     @registry
   end
