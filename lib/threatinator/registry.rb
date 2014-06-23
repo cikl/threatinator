@@ -33,6 +33,11 @@ module Threatinator
     def each(&block)
       @feeds.each_value(&block)
     end
+
+    # Removes all feeds from the registry
+    def clear
+      @feeds.clear
+    end
   end
 end
 

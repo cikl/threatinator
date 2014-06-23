@@ -4,6 +4,27 @@ require 'threatinator/registry'
 describe Threatinator::Registry do
   let(:registry) { described_class.new }
   let(:ten_feeds) { 1.upto(10).map { |i| build(:feed, provider: "prov#{i}", name: "name#{i}") } }
+
+  describe "#clear" do
+    it "should remove all existing registrations" do
+      ten_feeds.each do |feed|
+        registry.register(feed)
+      end
+      expect(registry.count).to eq(10)
+      registry.clear
+      expect(registry.count).to eq(0)
+
+      expect {
+        ten_feeds.each do |feed|
+          registry.register(feed)
+        end
+      }.not_to raise_error
+      expect(registry.count).to eq(10)
+    end
+
+
+  end
+
   describe "#register" do
     it "should register the provided feed" do
       feed = build(:feed, provider: "my_provider", name: "my_name")
