@@ -9,12 +9,11 @@ module Threatinator
     end
 
     class InvalidAttributeError < StandardError
-      attr_reader :attribute, :expected, :got
-      def initialize(attribute, expected, got)
+      attr_reader :attribute, :got
+      def initialize(attribute, got)
         @attribute = attribute
-        @expected = expected
         @got = got
-        super("Invalid value for attribute '#{attribute}'. Expected a '#{expected}', got " + got.class().to_s)
+        super("Invalid value for attribute '#{attribute}'. Got " + got.class().to_s)
       end
     end
 
