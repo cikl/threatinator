@@ -1,7 +1,9 @@
 require 'threatinator'
+require 'threatinator/event_builder'
 require 'threatinator/registry'
 require 'threatinator/feed_builder'
 require 'threatinator/feed_runner'
+require 'threatinator/outputs/csv'
 
 module Threatinator
   # Runs all things Threatinator.
@@ -31,10 +33,11 @@ module Threatinator
       end
     end
 
-    def run(provider, name)
+    def run(provider, name, output_builder, opts = {})
       _load_feeds()
       feed = @registry.get(provider, name)
-      feed_runner = Threatinator::FeedRunner.new(feed)
+      output_formatter = output_builder.build_for_feed(feed)
+      feed_runner = Threatinator::FeedRunner.new(feed, output_formatter)
       feed_runner.run()
     end
 

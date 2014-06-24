@@ -1,4 +1,5 @@
 require 'threatinator/runner'
+require 'threatinator/output_builder'
 require 'slop'
 
 module Threatinator
@@ -25,6 +26,33 @@ module Threatinator
       end
     end
 
+    def self.do_run_command(runner, opts, args)
+      provider = args.shift or raise "Missing provider"
+      name = args.shift or raise "Missing name"
+      return if opts[:dryrun] == true
+      output_builder = create_output_builder(opts[:'output-format'], opts)
+
+      runner.run(provider, name, output_builder, opts)
+    end
+
+    def self.create_output_builder(type, opts = {})
+      builder = Threatinator::OutputBuilder.new
+      case type
+      when 'csv'
+        require 'threatinator/outputs/csv'
+        # TODO allow folks to specify the output IO
+        builder.output_class Threatinator::Outputs::CSV
+        builder.output_io $stdout
+      when 'rubydebug'
+        require 'threatinator/outputs/rubydebug'
+        builder.output_class Threatinator::Outputs::Rubydebug
+        builder.output_io $stdout
+      else 
+        raise ArgumentError.new("Unknown output format: #{type}")
+      end
+      return builder
+    end
+
     def self.process!(cli_args, runner)
       opts = Slop.parse!(cli_args, help: true, strict: true) do
         command 'list' do
@@ -44,16 +72,18 @@ module Threatinator
         command 'run' do
           GlobalOptions.add(self)
           description "processes a feed"
+
+          on '-f=', '--output-format', "Output format (csv, rubydebug)", as: String, default: 'csv'
+
           run do |slop, args|
             opts = slop.to_hash
             GlobalOptions.process!(runner, opts, args)
-            provider = args.shift or raise "Missing provider"
-            name = args.shift or raise "Missing name"
-            unless opts[:dryrun] == true
-              runner.run(provider, name)
-            end
+            Threatinator::CLI.do_run_command(runner, opts, args)
           end
-        end
+        end # run
+      
+      
+      
       end
     end
   end

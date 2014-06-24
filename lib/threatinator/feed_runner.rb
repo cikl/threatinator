@@ -1,12 +1,14 @@
-require 'threatinator/entry_builder'
+require 'threatinator/event_builder'
 
 module Threatinator
   # Runs those feeds!
   class FeedRunner
 
     # @param [Threatinator::Feed] feed The feed that we want to run.
-    def initialize(feed)
+    def initialize(feed, output_formatter)
       @feed = feed
+      @output_formatter = output_formatter
+      @event_builder = Threatinator::EventBuilder.new
     end
 
     def _init_fetcher()
@@ -26,7 +28,6 @@ module Threatinator
     # @option opts [IO-like] :io Override the fetcher by providing 
     #  an IO directly. 
     def run(opts = {})
-      entry_builder = Threatinator::EntryBuilder.new
       unless fetched_io = opts.delete(:io)
         fetched_io = _fetch()
       end
@@ -35,12 +36,22 @@ module Threatinator
 
       filters = @feed.filters
       parser_block = @feed.parser_block
+      create_event_proc = @event_builder.create_event_proc()
 
       parser.each do |*args|
         next if filters.any? { |filter| filter.filter?(*args) }
-        args.unshift(entry_builder)
+        args.unshift(create_event_proc)
         parser_block.call(*args)
+        if @event_builder.count == 0
+          # Keep track of the fact that this line did not generate any events?
+        else 
+          @event_builder.each_built_event do |event|
+            @output_formatter.handle_event(event)
+          end
+          @event_builder.clear
+        end
       end
     end
+
   end
 end
