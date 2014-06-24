@@ -13,7 +13,7 @@ module Threatinator
       def initialize(attribute, got)
         @attribute = attribute
         @got = got
-        super("Invalid value for attribute '#{attribute}'. Got " + got.class().to_s)
+        super("Invalid value for attribute '#{attribute}'. Got " + got.inspect)
       end
     end
 

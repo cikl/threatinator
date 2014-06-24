@@ -1,3 +1,5 @@
+require 'threatinator/entry_builder'
+
 module Threatinator
   # Runs those feeds!
   class FeedRunner
@@ -24,6 +26,7 @@ module Threatinator
     # @option opts [IO-like] :io Override the fetcher by providing 
     #  an IO directly. 
     def run(opts = {})
+      entry_builder = Threatinator::EntryBuilder.new
       unless fetched_io = opts.delete(:io)
         fetched_io = _fetch()
       end
@@ -33,7 +36,6 @@ module Threatinator
       filters = @feed.filters
       parser_block = @feed.parser_block
 
-      entry_builder = nil
       parser.each do |*args|
         next if filters.any? { |filter| filter.filter?(*args) }
         args.unshift(entry_builder)
