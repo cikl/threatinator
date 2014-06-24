@@ -29,7 +29,7 @@ module Threatinator
 
       def _handle_error(e)
         case e
-        when Zlib::GzipFile::Error, ::IOError
+        when Zlib::GzipFile::Error, Zlib::DataError, ::IOError
           return Threatinator::Exceptions::IOWrapperError.new
         else 
           e
