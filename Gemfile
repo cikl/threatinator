@@ -5,6 +5,7 @@ gem 'typhoeus'
 gem 'nokogiri'
 gem 'addressable'
 gem 'docile'
+gem 'slop'
 
 group :test do
   gem 'rake'

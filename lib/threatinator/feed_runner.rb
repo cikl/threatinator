@@ -33,8 +33,10 @@ module Threatinator
       filters = @feed.filters
       parser_block = @feed.parser_block
 
+      entry_builder = nil
       parser.each do |*args|
         next if filters.any? { |filter| filter.filter?(*args) }
+        args.unshift(entry_builder)
         parser_block.call(*args)
       end
     end

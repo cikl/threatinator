@@ -55,9 +55,9 @@ describe Threatinator::FeedRunner do
       allow(feed_runner).to receive(:_fetch).and_return(mock_io)
       allow(feed_runner).to receive(:_init_parser).with(mock_io).and_return(mock_parser)
       expect(mock_parser).to receive(:each).and_yield("a1", "b1").and_yield("a2", "b2").and_yield("a3", "b3")
-      expect(feed.parser_block).to receive(:call).with("a1", "b1").ordered
-      expect(feed.parser_block).to receive(:call).with("a2", "b2").ordered
-      expect(feed.parser_block).to receive(:call).with("a3", "b3").ordered
+      expect(feed.parser_block).to receive(:call).with(kind_of(Object), "a1", "b1").ordered
+      expect(feed.parser_block).to receive(:call).with(kind_of(Object), "a2", "b2").ordered
+      expect(feed.parser_block).to receive(:call).with(kind_of(Object), "a3", "b3").ordered
       feed_runner.run
     end
     it "should not call the parser_block if the data was filtered" do
@@ -71,11 +71,11 @@ describe Threatinator::FeedRunner do
       mock_filter = double("filter")
       feed.filters = [ mock_filter ]
       expect(mock_filter).to receive(:filter?).with("a1", "b1").ordered.and_return(false)
-      expect(feed.parser_block).to receive(:call).with("a1", "b1").ordered
+      expect(feed.parser_block).to receive(:call).with(kind_of(Object), "a1", "b1").ordered
 
       expect(mock_filter).to receive(:filter?).with("a2", "b2").ordered.and_return(true)
       expect(mock_filter).to receive(:filter?).with("a3", "b3").ordered.and_return(false)
-      expect(feed.parser_block).to receive(:call).with("a3", "b3").ordered
+      expect(feed.parser_block).to receive(:call).with(kind_of(Object), "a3", "b3").ordered
 
       feed_runner.run
     end
