@@ -1,7 +1,7 @@
 require 'threatinator/property_definer'
 
 module Threatinator
-  class Entry
+  class Event
     include Threatinator::PropertyDefiner
 
     VALID_TYPES = Set.new([:c2, :attacker, :malware_host, :spamming, :scanning])
