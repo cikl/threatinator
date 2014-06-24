@@ -4,6 +4,26 @@ Threatinator is a ruby library for parsing threat data feeds. It is a component 
 
 The repository is located at: https://github.com/cikl/threatinator
 
+## Development
+
+First, set up your dependencies.
+
+```
+bundle install
+```
+
+### Listing feeds
+
+```
+bundle exec bin/threatinator list
+```
+
+### Running a feed
+
+```
+bundle exec bin/threatinator run alienvault ip_reputation
+```
+
 ## Contributing and Issue Tracking
 
 Before you file a bug or submit a pull request, please review our 
