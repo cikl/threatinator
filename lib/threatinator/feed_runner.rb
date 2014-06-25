@@ -1,4 +1,6 @@
 require 'threatinator/event_builder'
+require 'threatinator/instrumentation/feed_report'
+require 'threatinator/instrumentation/record_report'
 
 module Threatinator
   # Runs those feeds!
@@ -38,20 +40,31 @@ module Threatinator
       parser_block = @feed.parser_block
       create_event_proc = @event_builder.create_event_proc()
 
+      feed_report = Threatinator::Instrumentation::FeedReport.new(@feed)
+
       parser.each do |record|
-        if filters.any? { |filter| filter.filter?(record) }
-          next
-        end
-        parser_block.call(create_event_proc, record)
-        if @event_builder.count == 0
-          # Keep track of the fact that this line did not generate any events?
-        else 
-          @event_builder.each_built_event do |event|
-            @output_formatter.handle_event(event)
+        record_report = Threatinator::Instrumentation::RecordReport.new(record)
+        begin
+          if filters.any? { |filter| filter.filter?(record) }
+            record_report.filtered!
+            next
           end
+          parser_block.call(create_event_proc, record)
+          if @event_builder.count == 0
+            # Keep track of the fact that this line did not generate any events?
+          else 
+            @event_builder.each_built_event do |event|
+              record_report.add_event(event)
+              @output_formatter.handle_event(event)
+            end
+          end
+        ensure 
+          feed_report.add_record_report(record_report)
           @event_builder.clear
         end
       end
+
+      feed_report
     end
 
   end

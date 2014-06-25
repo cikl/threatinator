@@ -38,7 +38,10 @@ module Threatinator
       feed = @registry.get(provider, name)
       output_formatter = output_builder.build_for_feed(feed)
       feed_runner = Threatinator::FeedRunner.new(feed, output_formatter)
-      feed_coverage = feed_runner.run(opts)
+      feed_report = feed_runner.run(opts)
+      if feed_report.num_records_missed != 0
+        $stderr.puts "WARNING: #{feed_report.num_records_missed} lines/records were MISSED (neither filtered nor parsed). You may need to update your feed specification!" 
+      end
     end
 
     def _register_feed_from_file(filename)
