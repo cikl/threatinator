@@ -24,6 +24,14 @@ bundle exec bin/threatinator list
 bundle exec bin/threatinator run alienvault ip_reputation
 ```
 
+### Getting help
+
+All commands respond to '--help' to provide details on their usage. 
+
+```
+bundle exec bin/threatinator run --help
+```
+
 ## Contributing and Issue Tracking
 
 Before you file a bug or submit a pull request, please review our 
