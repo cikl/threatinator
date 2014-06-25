@@ -55,10 +55,10 @@ describe Threatinator::FeedRunner do
       mock_parser = double("parser")
       allow(feed_runner).to receive(:_fetch).and_return(mock_io)
       allow(feed_runner).to receive(:_init_parser).with(mock_io).and_return(mock_parser)
-      expect(mock_parser).to receive(:each).and_yield("a1", "b1").and_yield("a2", "b2").and_yield("a3", "b3")
-      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a1", "b1").ordered
-      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a2", "b2").ordered
-      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a3", "b3").ordered
+      expect(mock_parser).to receive(:each).and_yield("a1").and_yield("a2").and_yield("a3")
+      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a1").ordered
+      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a2").ordered
+      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a3").ordered
       feed_runner.run
     end
     it "should not call the parser_block if the data was filtered" do
@@ -66,17 +66,17 @@ describe Threatinator::FeedRunner do
       mock_parser = double("parser")
       allow(feed_runner).to receive(:_fetch).and_return(mock_io)
       allow(feed_runner).to receive(:_init_parser).with(mock_io).and_return(mock_parser)
-      expect(mock_parser).to receive(:each).and_yield("a1", "b1").and_yield("a2", "b2").and_yield("a3", "b3")
+      expect(mock_parser).to receive(:each).and_yield("a1").and_yield("a2").and_yield("a3")
 
 
       mock_filter = double("filter")
       feed.filters = [ mock_filter ]
-      expect(mock_filter).to receive(:filter?).with("a1", "b1").ordered.and_return(false)
-      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a1", "b1").ordered
+      expect(mock_filter).to receive(:filter?).with("a1").ordered.and_return(false)
+      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a1").ordered
 
-      expect(mock_filter).to receive(:filter?).with("a2", "b2").ordered.and_return(true)
-      expect(mock_filter).to receive(:filter?).with("a3", "b3").ordered.and_return(false)
-      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a3", "b3").ordered
+      expect(mock_filter).to receive(:filter?).with("a2").ordered.and_return(true)
+      expect(mock_filter).to receive(:filter?).with("a3").ordered.and_return(false)
+      expect(feed.parser_block).to receive(:call).with(kind_of(Proc), "a3").ordered
 
       feed_runner.run
     end

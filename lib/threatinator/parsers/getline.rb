@@ -1,3 +1,4 @@
+require 'threatinator/record'
 require 'threatinator/parser'
 require 'stringio'
 
@@ -14,6 +15,7 @@ module Threatinator
       def initialize(io, opts = {})
         @separator = opts.delete(:separator) || "\n"
         @buffer = StringIO.new
+        @io_pos = 0
 
         unless @separator.length == 1
           raise ArgumentError.new(":separator must be exactly one character long")
@@ -40,6 +42,8 @@ module Threatinator
           return 0
           # :nocov:
         end
+
+        @io_pos += data.length
 
         @buffer.seek(0, IO::SEEK_END)
         @buffer.write(data)
@@ -75,11 +79,15 @@ module Threatinator
       # @yieldparam line [String] a line from the IO stream.
       def each
         return enum_for(:each) unless block_given?
+        lineno = 1
         loop do
           str = gets()
           return if str.nil?
           return if str.empty? && io.eof && @buffer.eof?
-          yield str
+          pos_end = @io_pos - @buffer.length + @buffer.pos
+          pos_start = pos_end - str.length
+          yield Record.new(str, line_number: lineno, pos_start: pos_start, pos_end: pos_end)
+          lineno += 1
         end
         nil
       end

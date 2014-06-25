@@ -8,9 +8,10 @@ module Threatinator
         @block = block
       end
 
+      # @param [Threatinator::Record] record The record to filter
       # @return [Boolean] true if filtered, false otherwise.
-      def filter?(*args)
-        !! @block.call(*args)
+      def filter?(record)
+        !! @block.call(record)
       end
     end
   end

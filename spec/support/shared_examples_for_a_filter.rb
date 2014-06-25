@@ -5,10 +5,10 @@ shared_examples_for "a filter" do
 
   describe "#filter?" do
     it "should return true for data that is meant to be filtered" do
-      expect(filter.filter?(*should_filter)).to eq(true)
+      expect(filter.filter?(should_filter)).to eq(true)
     end
     it "should return false for data that is meant to be filtered" do
-      expect(filter.filter?(*shouldnt_filter)).to eq(false)
+      expect(filter.filter?(shouldnt_filter)).to eq(false)
     end
   end
 end

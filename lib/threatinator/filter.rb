@@ -3,9 +3,10 @@ module Threatinator
   class Filter
     # What is passed in as arguments depends upon the parser. 
     #
+    # @param [Threatinator::Record] record The record to filter
     # @return [Boolean] true if filtered, false otherwise.
-    def filter?(*args)
-      raise NotImplementedError.new("#{self.class}.filter?(*args) not implemented")
+    def filter?(record)
+      raise NotImplementedError.new("#{self.class}.filter?(record) not implemented")
     end
   end
 end

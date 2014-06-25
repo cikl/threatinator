@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'threatinator/feed_builder'
+require 'threatinator/record'
 
 describe Threatinator::FeedBuilder do
   let (:provider) { 'FakeSecureCo' }
@@ -38,8 +39,8 @@ describe Threatinator::FeedBuilder do
           it { should be_kind_of(Threatinator::Filters::Whitespace) }
 
           it "should be the first filter we added" do
-            expect(subject.filter?("         \t \t ")).to eq(true)
-            expect(subject.filter?("   gobbledy goo")).to eq(false)
+            expect(subject.filter?(Threatinator::Record.new("         \t \t "))).to eq(true)
+            expect(subject.filter?(Threatinator::Record.new("   gobbledy goo"))).to eq(false)
           end
         end
       end
@@ -68,8 +69,8 @@ describe Threatinator::FeedBuilder do
           it { should be_kind_of(Threatinator::Filters::Comments) }
 
           it "should be the first filter we added" do
-            expect(subject.filter?("# this is a comment")).to eq(true)
-            expect(subject.filter?("Not a comment")).to eq(false)
+            expect(subject.filter?(Threatinator::Record.new("# this is a comment"))).to eq(true)
+            expect(subject.filter?(Threatinator::Record.new("Not a comment"))).to eq(false)
           end
         end
       end

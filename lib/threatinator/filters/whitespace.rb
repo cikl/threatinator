@@ -8,9 +8,10 @@ module Threatinator
         @re = /^\s*$/
       end
 
+      # @param [Threatinator::Record] record The record to filter
       # @return [Boolean] true if filtered, false otherwise.
-      def filter?(line)
-        !! @re.match(line)
+      def filter?(record)
+        !! @re.match(record.data)
       end
     end
   end
