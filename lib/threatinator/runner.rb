@@ -38,7 +38,11 @@ module Threatinator
       feed = @registry.get(provider, name)
       output_formatter = output_builder.build_for_feed(feed)
       feed_runner = Threatinator::FeedRunner.new(feed, output_formatter)
-      feed_runner.run()
+      feed_coverage = feed_runner.run(opts)
+      require 'pp'
+      pp [:filtered, feed_coverage.records_filtered.count, 
+          :parsed, feed_coverage.records_parsed.count, 
+          :missed, feed_coverage.records_missed.count]
     end
 
     def _register_feed_from_file(filename)

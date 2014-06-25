@@ -1,4 +1,5 @@
 require 'threatinator/event_builder'
+require 'threatinator/instrumentation/feed'
 
 module Threatinator
   # Runs those feeds!
@@ -29,6 +30,7 @@ module Threatinator
     #  an IO directly. 
     def run(opts = {})
       unless fetched_io = opts.delete(:io)
+        puts "FETCHING!"
         fetched_io = _fetch()
       end
 
@@ -38,19 +40,28 @@ module Threatinator
       parser_block = @feed.parser_block
       create_event_proc = @event_builder.create_event_proc()
 
+      feed_coverage = Threatinator::Instrumentation::Feed.new(@feed)
+
       parser.each do |*args|
-        next if filters.any? { |filter| filter.filter?(*args) }
+        record_coverage = feed_coverage.add_record(args)
+        if filters.any? { |filter| filter.filter?(*args) }
+          record_coverage.filtered!
+          next
+        end
         args.unshift(create_event_proc)
         parser_block.call(*args)
         if @event_builder.count == 0
           # Keep track of the fact that this line did not generate any events?
         else 
           @event_builder.each_built_event do |event|
+            record_coverage.add_event(event)
             @output_formatter.handle_event(event)
           end
           @event_builder.clear
         end
       end
+
+      feed_coverage
     end
 
   end

@@ -27,12 +27,19 @@ module Threatinator
     end
 
     def self.do_run_command(runner, opts, args)
+      run_opts = {}
       provider = args.shift or raise "Missing provider"
       name = args.shift or raise "Missing name"
       return if opts[:dryrun] == true
       output_builder = create_output_builder(opts[:'output-format'], opts)
+      if filename = opts[:"read-data-from-file"]
+        puts "Opening #{filename}"
+        run_opts[:io] = File.open(filename, "r")
+      end
 
-      runner.run(provider, name, output_builder, opts)
+      runner.run(provider, name, output_builder, run_opts)
+    ensure 
+      run_opts[:io].close unless run_opts[:io].nil?
     end
 
     def self.create_output_builder(type, opts = {})
@@ -46,6 +53,10 @@ module Threatinator
       when 'rubydebug'
         require 'threatinator/outputs/rubydebug'
         builder.output_class Threatinator::Outputs::Rubydebug
+        builder.output_io $stdout
+      when 'null'
+        require 'threatinator/outputs/null'
+        builder.output_class Threatinator::Outputs::Null
         builder.output_io $stdout
       else 
         raise ArgumentError.new("Unknown output format: #{type}")
@@ -73,7 +84,9 @@ module Threatinator
           GlobalOptions.add(self)
           description "processes a feed"
 
-          on '-f=', '--output-format', "Output format (csv, rubydebug)", as: String, default: 'csv'
+          on '-r=', '--read-data-from-file', "Read data from the specified file rather than fetching"
+
+          on '-f=', '--output-format', "Output format (csv, rubydebug, null)", as: String, default: 'csv'
 
           run do |slop, args|
             opts = slop.to_hash
