@@ -1,6 +1,7 @@
 module Threatinator
   module Instrumentation
     class RecordReport
+      attr_reader :event_count
       def initialize(record)
         @event_count = 0
         @filtered = false

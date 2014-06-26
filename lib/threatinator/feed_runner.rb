@@ -39,17 +39,22 @@ module Threatinator
     # @param [Hash] opts The options hash
     # @option opts [IO-like] :io Override the fetcher by providing 
     #  an IO directly. 
+    # @option opts [Proc] :record_callback A callback that allows 
     def run(opts = {})
       unless fetched_io = opts.delete(:io)
         fetched_io = _fetch()
       end
+      record_callback = opts.delete(:record_callback)
 
       _init_feed_report()
 
       parser = _init_parser(fetched_io)
 
       parser.each do |record|
-        parse_record(record)
+        rr = parse_record(record)
+        unless record_callback.nil?
+          record_callback.call(record, rr)
+        end
       end
 
       @feed_report
