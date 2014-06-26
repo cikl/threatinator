@@ -124,10 +124,12 @@ describe Threatinator::CLI do
 
   describe "run command" do
     let(:mock_runner) { double("runner") }
+    let(:mock_feed_report) { double("mock_feed_report") }
     let(:args) { %w[run myprovider myname] }
     before :each do
       allow(mock_runner).to receive(:add_feed_path)
-      allow(mock_runner).to receive(:run)
+      allow(mock_runner).to receive(:run).and_return(mock_feed_report)
+      allow(mock_feed_report).to receive(:num_records_missed).and_return(0)
     end
 
     it "should call runner.run" do
