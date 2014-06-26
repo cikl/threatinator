@@ -1,10 +1,16 @@
 require 'threatinator/instrumentation/feed_report'
+require 'threatinator/instrumentation/detailed_record_report'
 module Threatinator
   module Instrumentation
     class DetailedFeedReport < FeedReport
-      def initialize(feed)
-        super(feed)
+      attr_reader :record_reports
+      def initialize()
+        super()
         @record_reports = []
+      end
+
+      def wrap_record(record)
+        DetailedRecordReport.new(record)
       end
 
       def add_record_report(record_report)

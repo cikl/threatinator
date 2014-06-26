@@ -5,9 +5,12 @@ Bundler.setup :default, :test
 require 'pathname'
 SPEC_ROOT = Pathname.new(__FILE__).dirname.expand_path
 PROJECT_ROOT =  (SPEC_ROOT + '../').expand_path
+FEEDS_ROOT =  (PROJECT_ROOT + 'feeds').expand_path
+FEED_DATA_ROOT =  (SPEC_ROOT + 'feeds/data').expand_path
 
 require 'webmock/rspec'
 require 'simplecov'
+require 'rspec/its'
 
 SimpleCov.start do
   project_root = RSpec::Core::RubyProject.root
@@ -22,6 +25,7 @@ Dir["#{SPEC_ROOT.to_s}/support/**/*.rb"].sort.each { |f| require f}
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include IOHelpers
+  config.extend FeedHelpers, :feed
 
   config.expect_with :rspec do |c|
     c.syntax = :expect

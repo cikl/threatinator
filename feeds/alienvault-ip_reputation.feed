@@ -2,7 +2,9 @@ provider "alienvault"
 name "ip_reputation"
 fetch_http('https://reputation.alienvault.com/reputation.generic')
 
-feed_re = /^(?<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) # (?<type>(Scanning Host|C&C|Malicious Host|Malware Domain|Spamming|Malware IP|Malware distribution)) (?<cc>[A-Z]{2})?,(?<city>[^,]*),(?<lat>-?[0-9]+(\.[0-9]+)?),(?<lon>-?[0-9]+(\.[0-9]+)?)/
+# Examples:
+#  108.59.1.5 # Scanning Host A1,,0.0,0.0
+feed_re = /^(?<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) # (?<type>(Scanning Host|C&C|Malicious Host|Malware Domain|Spamming|Malware IP|Malware distribution)) (?<cc>[A-Z]{2}|A1|A1|O1)?,(?<city>[^,]*),(?<lat>-?[0-9]+(\.[0-9]+)?),(?<lon>-?[0-9]+(\.[0-9]+)?)/
 
 filter_whitespace
 filter_comments

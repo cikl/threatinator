@@ -29,7 +29,7 @@ module Threatinator
     class FeedFileNotFoundError < StandardError
       def initialize(filename)
         @filename = filename
-        super("Failed to open/read feed file #{filename}")
+        super("Failed to open/read feed file '#{filename}'")
       end
     end
   end

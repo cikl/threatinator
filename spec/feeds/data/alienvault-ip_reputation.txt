@@ -1,0 +1,18 @@
+
+###
+# Alienvault IP Reputation Database
+# https://reputation.alienvault.com/
+###
+
+# Generic format
+
+37.205.198.162 # Scanning Host IT,,42.8333015442,12.8332996368
+182.131.22.235 # Scanning Host CN,Chengdu,30.6667003632,104.066703796
+58.250.71.43 # Scanning Host CN,Guangzhou,23.1166992188,113.25
+211.160.19.250 # Scanning Host CN,Hang,30.2936000824,120.161399841
+203.121.165.16 # C&C TH,,15.0,100.0
+211.151.57.196 # Scanning Host CN,Beijing,39.9289016724,116.388298035
+108.59.1.5 # Scanning Host A1,,0.0,0.0
+108.59.5.139 # Scanning Host US,,39.6734008789,-75.7052001953
+108.85.139.165 # Scanning Host US,Los Angeles,34.043800354,-118.251197815
+109.169.60.121 # Scanning Host US,,38.0,-97.0

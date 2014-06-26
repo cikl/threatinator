@@ -11,6 +11,7 @@ group :test do
   gem 'rake'
   gem 'simplecov'
   gem 'rspec', '~> 3'
+  gem 'rspec-its'
   gem 'webmock'
   gem 'factory_girl', '~> 4'
 end

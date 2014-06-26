@@ -7,14 +7,24 @@ module Threatinator
   class FeedRunner
 
     # @param [Threatinator::Feed] feed The feed that we want to run.
-    def initialize(feed, output_formatter)
+    # @param [Threatinator::Output] output_formatter
+    def initialize(feed, output_formatter, opts = {})
       @feed = feed
+      @feed_report_class = opts[:feed_report_class] || Threatinator::Instrumentation::FeedReport 
       @output_formatter = output_formatter
       @event_builder = Threatinator::EventBuilder.new
+      @feed_filters = @feed.filters
+      @parser_block = @feed.parser_block
+      @create_event_proc = @event_builder.create_event_proc()
+      _init_feed_report()
     end
 
     def _init_fetcher()
       @feed.fetcher_class.new(@feed.fetcher_opts)
+    end
+
+    def _init_feed_report()
+      @feed_report = @feed_report_class.new
     end
 
     def _fetch()
@@ -34,37 +44,36 @@ module Threatinator
         fetched_io = _fetch()
       end
 
+      _init_feed_report()
+
       parser = _init_parser(fetched_io)
 
-      filters = @feed.filters
-      parser_block = @feed.parser_block
-      create_event_proc = @event_builder.create_event_proc()
-
-      feed_report = Threatinator::Instrumentation::FeedReport.new(@feed)
-
       parser.each do |record|
-        record_report = Threatinator::Instrumentation::RecordReport.new(record)
-        begin
-          if filters.any? { |filter| filter.filter?(record) }
-            record_report.filtered!
-            next
-          end
-          parser_block.call(create_event_proc, record)
-          if @event_builder.count == 0
-            # Keep track of the fact that this line did not generate any events?
-          else 
-            @event_builder.each_built_event do |event|
-              record_report.add_event(event)
-              @output_formatter.handle_event(event)
-            end
-          end
-        ensure 
-          feed_report.add_record_report(record_report)
-          @event_builder.clear
-        end
+        parse_record(record)
       end
 
-      feed_report
+      @feed_report
+    end
+
+    def parse_record(record)
+      @event_builder.clear
+      rr = @feed_report.wrap_record(record)
+      if @feed_filters.any? { |filter| filter.filter?(record) }
+        rr.filtered!
+        return rr
+      end
+      @parser_block.call(@create_event_proc, record)
+      if @event_builder.count == 0
+        # Keep track of the fact that this line did not generate any events?
+      else 
+        @event_builder.each_built_event do |event|
+          rr.add_event(event)
+          @output_formatter.handle_event(event)
+        end
+      end
+      return rr
+    ensure 
+      @feed_report.add_record_report(rr)
     end
 
   end
