@@ -105,7 +105,7 @@ module Threatinator
 
           on '-f=', '--output-format', "Output format (csv, rubydebug, null)", as: String, default: 'csv'
 
-          on '--coverage=', "Write coverage analysis to the specified file (CSV format)", as: String, default: false
+          on '--coverage=', "Write coverage analysis to the specified file (CSV format)", as: String
 
           run do |slop, args|
             opts = slop.to_hash
