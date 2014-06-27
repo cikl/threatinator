@@ -6,6 +6,7 @@ module Threatinator
       def initialize(feed, output_io)
         super(feed, output_io)
         @csv = ::CSV.new(self.output_io, 
+                         :write_headers => true,
                          :headers => [
                            :provider,
                            :feed_name,
