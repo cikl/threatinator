@@ -19,7 +19,7 @@ module Threatinator
     end
 
     def add_fqdn(fqdn)
-      self.fqdns << fqdns
+      self.fqdns << fqdn
     end
   end
 end
