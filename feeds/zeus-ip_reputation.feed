@@ -12,7 +12,7 @@ parse_eachline(:separator => "\n") do |event_generator, record|
   next if m.nil?
 
   event_generator.call() do |event|
-	event.type = :c2
+    event.type = :c2
     event.add_ipv4(m[:ip]) do |ipv4_event|
     end
   end
