@@ -25,6 +25,11 @@ describe 'feeds/zeus-ip_reputation.feed', :feed do
     it "should have parsed 1 event" do
       expect(events.count).to eq(1)
     end
+	describe 'event 0' do
+      subject { events[0] }
+      its(:type) { is_expected.to be(:c2) }
+      its(:ipv4s) { is_expected.to match_array(['109.229.210.250']) }
+    end
   end
 
   describe_parsing_a_record '141.105.67.94' do
@@ -33,6 +38,11 @@ describe 'feeds/zeus-ip_reputation.feed', :feed do
     end
     it "should have parsed 1 event" do
       expect(events.count).to eq(1)
+    end
+	describe 'event 0' do
+      subject { events[0] }
+      its(:type) { is_expected.to be(:c2) }
+      its(:ipv4s) { is_expected.to match_array(['141.105.67.94']) }
     end
   end
 end
