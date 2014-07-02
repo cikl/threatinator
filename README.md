@@ -37,7 +37,7 @@ bundle exec bin/threatinator run --help
 Before you file a bug or submit a pull request, please review our 
 [contribution guidelines](https://github.com/cikl/cikl/wiki/Contributing).
 
-All issues are managed within here: [cikl/threatinator/issues](https://github.com/cikl/threatinator/issues).
+All issues are managed here: [cikl/threatinator/issues](https://github.com/cikl/threatinator/issues).
 
 ## License
 Copyright (C) 2014 Michael Ryan (github.com/justfalter)
