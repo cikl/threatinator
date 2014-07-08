@@ -1,0 +1,14 @@
+
+// This file will be automatically updated daily and populated with the last 30 days of malicious IP addresses.
+// Last updated 2014-07-08	
+
+91.188.117.157
+216.151.164.53
+91.222.136.251
+208.111.160.6
+5.79.71.240
+162.159.242.11
+218.75.155.39
+96.17.197.34
+176.32.99.47
+23.66.230.137
