@@ -1,0 +1,10 @@
+# Provided by nothink.org
+# SSH blacklist, last 24 hours (IP address)
+# Generated 2014-07-08 22:05:01 UTC
+1.93.26.15
+31.196.84.131
+36.39.246.121
+61.144.43.235
+64.111.196.174
+88.191.151.44
+94.32.71.168
