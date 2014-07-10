@@ -1,0 +1,16 @@
+################################################################################
+# abuse.ch SpyEye domain blocklist                                             #
+#                                                                              #
+# For questions please referer to https://spyeyetracker.abuse.ch/blocklist.php #
+################################################################################
+
+beromder56.com
+detadomain.su
+doemguing.net
+firexiasds.wha.la
+futuretelefonica.com
+gate.eyeonarte.it
+helen33nasanorth.com
+sebortemesd5.com
+stendtlong.net
+
