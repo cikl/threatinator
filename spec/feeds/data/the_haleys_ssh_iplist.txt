@@ -1,0 +1,12 @@
+# IP addresses launching SSH dictionary attacks. As of Fri, 11 Jul 2014 15:22:17 +0100
+ALL : 1.30.20.146 
+ALL : 1.82.184.23 
+ALL : 1.82.184.25 
+ALL : 1.85.2.246 
+ALL : 1.93.22.107 
+ALL : 1.93.24.62 
+ALL : 1.93.24.72 
+ALL : 1.93.25.63 
+ALL : 1.93.25.165 
+ALL : 1.93.25.234 
+ALL : 1.93.25.253 
