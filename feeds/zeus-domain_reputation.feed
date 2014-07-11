@@ -1,0 +1,18 @@
+provider "abuse_ch"
+name "zeus_domain_reputation"
+fetch_http('https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist')
+
+feed_re = /^(?<domain>.*)/
+
+filter_whitespace
+filter_comments
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  m = feed_re.match(record.data)
+  next if m.nil?
+
+  event_generator.call() do |event|
+    event.type = :c2
+    event.add_fqdn(m[:domain])
+  end
+end
