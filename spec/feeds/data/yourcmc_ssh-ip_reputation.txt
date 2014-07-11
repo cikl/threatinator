@@ -1,0 +1,27 @@
+#
+# EVIL SSH HOSTLIST
+#
+
+#
+# Hosts having these IPv4 addresses were caught bruteforcing ssh login attempts
+# Thanks to pam_abl module -- http://sourceforge.net/projects/pam-abl/
+# VitaliF, 2008-*
+# http://vmx.yourcmc.ru/BAD_HOSTS.IP4
+#
+
+101.109.85.141
+101.64.234.130
+101.78.134.166
+108.162.193.155
+108.162.193.55
+108.174.52.186
+109.120.157.63
+109.123.105.154
+109.123.105.217
+109.123.125.85
+109.123.91.52
+109.123.95.92
+109.165.10.125
+109.165.15.113
+109.165.35.137
+109.165.75.40

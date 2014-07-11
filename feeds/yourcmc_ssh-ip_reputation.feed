@@ -1,0 +1,19 @@
+provider "yourcmc"
+name "ssh-ip_reputation"
+fetch_http('http://vmx.yourcmc.ru/BAD_HOSTS.IP4')
+
+feed_re = /^(?<ip>.*)/
+
+filter_whitespace
+filter_comments
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  m = feed_re.match(record.data)
+  next if m.nil?
+
+  event_generator.call() do |event|
+    event.type = :scanning
+    event.add_ipv4(m[:ip]) do |ipv4_event|
+    end
+  end
+end
