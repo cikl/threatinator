@@ -1,0 +1,31 @@
+;For more information about this file see http://www.mirc.com/serverslist.html
+
+[timestamp]
+date=13/06/2012
+
+[networks]
+n0=DALnet
+n1=EFnet
+n2=Freenode
+n3=GameSurge
+n4=IRCnet
+n5=Quakenet
+n6=Rizon
+n7=SwiftIRC
+n8=Undernet
+n9=WebChat
+
+[servers]
+n0=Random serverSERVER:irc.dal.net:6660-6667GROUP:DALnet
+n1=Random AU serverSERVER:irc.au.dal.net:6665-6668,7000GROUP:DALnet
+n2=Random EU serverSERVER:irc.eu.dal.net:6665-6668,7000GROUP:DALnet
+n3=Random US serverSERVER:irc.us.dal.net:6665-6668,7000GROUP:DALnet
+n4=US, CA, OrangeSERVER:krypt.ca.us.dal.net:6665-6668,7000GROUP:DALnet
+n5=US, NJ, ChoopaSERVER:choopa.nj.us.dal.net:6667:GROUP:DALnet
+n6=US, VA, RichmondSERVER:punch.va.us.dal.net:6665-6668,7000GROUP:DALnet
+n7=US, WA, SeattleSERVER:serverbuffet.wa.us.dal.net:6665-6668,7000GROUP:DALnet
+n8=Random serverSERVER:irc.efnet.org:6667GROUP:EFnet
+n9=CA, AB, CalgarySERVER:irc.arcti.ca:6665-6669GROUP:EFnet
+n10=CA, ON, TorontoSERVER:irc.teksavvy.ca:6661-6669GROUP:EFnet
+n11=EU, DK, AarhusSERVER:irc.inet.tele.dk:6661-6669GROUP:EFnet
+n12=EU, NL, AmsterdamSERVER:efnet.xs4all.nl:6661-6669GROUP:EFnet

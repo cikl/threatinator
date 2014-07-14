@@ -1,0 +1,28 @@
+provider "mirc"
+name "domain_reputation"
+fetch_http('http://www.mirc.com/servers.ini')
+
+feed_re = /^.*\:(?<domain>[a-z,A-Z,0-9,\-,\.]*)\:.*\:.*/
+
+filter_whitespace
+filter_comments
+
+# Filter out //comments
+filter do |record|
+  !(record.data =~ /\:/)
+  end
+  
+# Filter out //comments
+filter do |record|
+  (record.data =~ /^\;/)
+  end
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  m = feed_re.match(record.data)
+  next if m.nil?
+
+  event_generator.call() do |event|
+    event.type = :c2
+    event.add_fqdn(m[:domain])
+  end
+end
