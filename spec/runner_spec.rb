@@ -133,14 +133,16 @@ EOS
     context "with no feed paths" do
       it "should output the header" do
         runner.list(io_out: io_out);
-        expect(io_out.string.lines[0]).to eq("provider  name  type  link/path\n")
-        expect(io_out.string.lines[1]).to eq("--------  ----  ----  ---------\n")
+        lines = io_out.string.lines.to_a
+        expect(lines[0]).to eq("provider  name  type  link/path\n")
+        expect(lines[1]).to eq("--------  ----  ----  ---------\n")
       end
 
       it "should output the footer with a total of 0" do
         runner.list(io_out: io_out);
-        expect(io_out.string.lines[-2]).to eq("--------  ----  ----  ---------\n")
-        expect(io_out.string.lines[-1]).to eq("Total: 0\n")
+        lines = io_out.string.lines.to_a
+        expect(lines[-2]).to eq("--------  ----  ----  ---------\n")
+        expect(lines[-1]).to eq("Total: 0\n")
       end
     end
 
@@ -154,9 +156,10 @@ EOS
           generate_feedfile(File.join(@feed_path, "feed.feed"), "A" * 30, "x", "http://x")
 
           runner.list(io_out: io_out);
-          expect(io_out.string.lines[0]).to eq("provider                        name  type  link/path\n")
-          expect(io_out.string.lines[1]).to eq("------------------------------  ----  ----  ---------\n")
-          expect(io_out.string.lines[-2]).to eq("------------------------------  ----  ----  ---------\n")
+          lines = io_out.string.lines.to_a
+          expect(lines[0]).to eq("provider                        name  type  link/path\n")
+          expect(lines[1]).to eq("------------------------------  ----  ----  ---------\n")
+          expect(lines[-2]).to eq("------------------------------  ----  ----  ---------\n")
         end
 
         it "should vary the width of 'name' based on the longest feed name" do
@@ -165,9 +168,10 @@ EOS
           generate_feedfile(File.join(@feed_path, "feed.feed"), 'a', "A" * 30, "http://x")
 
           runner.list(io_out: io_out);
-          expect(io_out.string.lines[0]).to eq("provider  name                            type  link/path\n")
-          expect(io_out.string.lines[1]).to eq("--------  ------------------------------  ----  ---------\n")
-          expect(io_out.string.lines[-2]).to eq("--------  ------------------------------  ----  ---------\n")
+          lines = io_out.string.lines.to_a
+          expect(lines[0]).to eq("provider  name                            type  link/path\n")
+          expect(lines[1]).to eq("--------  ------------------------------  ----  ---------\n")
+          expect(lines[-2]).to eq("--------  ------------------------------  ----  ---------\n")
         end
 
         it "should vary the width of 'link/path' based on the longest link name" do
@@ -176,9 +180,10 @@ EOS
           generate_feedfile(File.join(@feed_path, "feed.feed"), 'a', 'b', "http://" + ("A" * 30))
 
           runner.list(io_out: io_out);
-          expect(io_out.string.lines[0]).to eq("provider  name  type  link/path                            \n")
-          expect(io_out.string.lines[1]).to eq("--------  ----  ----  -------------------------------------\n")
-          expect(io_out.string.lines[-2]).to eq("--------  ----  ----  -------------------------------------\n")
+          lines = io_out.string.lines.to_a
+          expect(lines[0]).to eq("provider  name  type  link/path                            \n")
+          expect(lines[1]).to eq("--------  ----  ----  -------------------------------------\n")
+          expect(lines[-2]).to eq("--------  ----  ----  -------------------------------------\n")
         end
       end
 
@@ -194,7 +199,7 @@ EOS
           generate_feedfile(File.join(@feed_path, "feed8.feed"), 'provider_a', 'feed_b')
 
           runner.list(io_out: io_out);
-          lines = io_out.string.lines
+          lines = io_out.string.lines.to_a
           expect(lines[2]).to eq("provider_a  feed_a  http  https://foobar/provider_a/feed_a.data\n")
           expect(lines[3]).to eq("provider_a  feed_b  http  https://foobar/provider_a/feed_b.data\n")
           expect(lines[4]).to eq("provider_a  feed_c  http  https://foobar/provider_a/feed_c.data\n")
@@ -213,7 +218,8 @@ EOS
             generate_feedfile(File.join(@feed_path, "feed#{i}.feed"), "a#{i}", 'b', "http://" + ("A" * 10))
           end
           runner.list(io_out: io_out);
-          expect(io_out.string.lines[-1]).to eq("Total: 20\n")
+          lines = io_out.string.lines.to_a
+          expect(lines[-1]).to eq("Total: 20\n")
         end
       end
     end
