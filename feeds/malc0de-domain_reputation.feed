@@ -1,0 +1,23 @@
+provider "malc0de"
+name "domain_reputation"
+fetch_http('http://malc0de.com/bl/BOOT')
+
+feed_re = /^PRIMARY (?<domain>[a-z,0-9,A-Z,\-,\.]*)/
+
+filter_whitespace
+filter_comments
+
+# Filter out //comments
+filter do |record|
+  (record.data =~ /^\/\//)
+  end
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  m = feed_re.match(record.data)
+  next if m.nil?
+
+  event_generator.call() do |event|
+    event.type = :malware_host
+    event.add_fqdn(m[:domain])
+  end
+end

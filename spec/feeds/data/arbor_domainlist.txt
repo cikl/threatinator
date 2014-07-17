@@ -1,0 +1,11 @@
+#
+# ATLAS Currently monitored fastflux domains
+# (c) 2014 Arbor Networks
+#
+# comments: atlas@arbornetworks.com
+# generated: Thu Jul  3 00:20:16 2014
+#
+# DOMAIN
+brylanehome.com
+emltrk.com
+

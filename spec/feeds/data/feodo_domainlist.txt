@@ -1,0 +1,18 @@
+##########################################################################
+# Feodo Domain Blocklist                                                 #
+#                                                                        #
+# For questions please refer to https://feodotracker.abuse.ch/blocklist/ #
+##########################################################################
+# START
+avcctrnrxx.com
+belijvetercat.ru
+beliyvolkalak.ru
+bestofthewest.ru
+buriymishka.ru
+deepandtouch.ru
+djubkafriend.ru
+europastewmk.ru
+giaddkbzcyaoim.com
+godaddy-up.ru
+hawozkino.com
+jvrdwnload.ru

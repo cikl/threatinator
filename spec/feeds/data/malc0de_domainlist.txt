@@ -1,0 +1,18 @@
+
+// This file will be automatically updated daily and populated with the last 30 days of malicious domains.
+// It will return 127.0.0.1 for all domains found to be distributing malware
+// Additional information to get this working can be found http://www.malwaredomains.com/wordpress/?page_id=6
+// Last updated 2014-07-08	
+
+PRIMARY beespace.com.ua blockeddomain.hosts
+PRIMARY opencandy.com blockeddomain.hosts
+PRIMARY netdna-cdn.com blockeddomain.hosts
+PRIMARY drivers.drp.su blockeddomain.hosts
+PRIMARY dropcanvas.com blockeddomain.hosts
+PRIMARY 52z.com blockeddomain.hosts
+PRIMARY baixaki.com.br blockeddomain.hosts
+PRIMARY nzs.com.br blockeddomain.hosts
+PRIMARY uniblue.com blockeddomain.hosts
+PRIMARY downloadsrv13.com blockeddomain.hosts
+PRIMARY cachelocal.org blockeddomain.hosts
+PRIMARY ttriber.com blockeddomain.hosts

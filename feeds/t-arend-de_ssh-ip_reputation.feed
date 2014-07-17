@@ -1,0 +1,19 @@
+provider "t-arend-de"
+name "ssh_ip_reputation"
+fetch_http('http://www.t-arend.de/linux/badguys.txt')
+
+feed_re = /^sshd\: (?<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
+
+filter_whitespace
+filter_comments
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  m = feed_re.match(record.data)
+  next if m.nil?
+
+  event_generator.call() do |event|
+    event.type = :c2
+    event.add_ipv4(m[:ip]) do |ipv4_event|
+    end
+  end
+end
