@@ -14,8 +14,6 @@ module Threatinator
     def initialize
       @feed_paths = []
       @registry = Threatinator::Registry.new
-      @io_out = $stdout
-      @io_err = $stderr
     end
 
     def add_feed_path(path) 
@@ -27,10 +25,41 @@ module Threatinator
     end
 
     def list(opts = {})
+      io_out = opts[:io_out] || $stdout
+      io_err = opts[:io_err] || $stderr
       _load_feeds()
+      feed_info = [['provider', 'name', 'type', 'link/path']]
       @registry.each do |feed|
-        @io_out.puts [feed.provider, feed.name].join("\t")
+        info = [ feed.provider, feed.name ]
+        type = "unknown"
+        link = "unknown"
+        case feed.fetcher_class.to_s
+        when 'Threatinator::Fetchers::Http'
+          type = "http"
+          link = feed.fetcher_opts[:url]
+        end
+        info << type
+        info << link
+        feed_info << info
       end
+      return if feed_info.count == 0
+      fmts = []
+      widths = []
+      0.upto(3) do |i|
+        max = feed_info.max { |a,b| a[i].length <=> b[i].length }[i].length
+        widths << max
+        fmts << "%#{max}s"
+      end
+      fmt = "%-#{widths[0]}s  %-#{widths[1]}s  %-#{widths[2]}s  %-#{widths[3]}s\n"
+      io_out.printf(fmt, *(feed_info.shift))
+      sep = widths.map {|x| '-' * x }
+      io_out.printf(fmt, *sep)
+      feed_info.sort! { |a,b| [a[0], a[1]] <=> [b[0], b[1]] }
+      feed_info.each  do |info|
+        io_out.printf(fmt, *info)
+      end
+      io_out.printf(fmt, *sep)
+      io_out.puts("Total: #{feed_info.count}")
     end
 
     def run(provider, name, output_builder, opts = {})
