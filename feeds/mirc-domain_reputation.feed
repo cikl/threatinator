@@ -2,7 +2,7 @@ provider "mirc"
 name "domain_reputation"
 fetch_http('http://www.mirc.com/servers.ini')
 
-feed_re = /^.*\:(?<domain>[a-z,A-Z,0-9,\-,\.]*)\:.*\:.*/
+feed_re = /:(?<domain>[a-zA-Z0-9\-\.]*\.[a-z]{2,4}):/
 
 filter_whitespace
 filter_comments
