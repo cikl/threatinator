@@ -4,10 +4,10 @@ module Threatinator
     class FetchFailed < StandardError
     end
     
-    # Indicates an error during an IO operation
-    class IOWrapperError < StandardError
+    # Indicates that the decode operation failed
+    class DecoderError < StandardError
     end
-
+    
     class InvalidAttributeError < StandardError
       attr_reader :attribute, :got
       def initialize(attribute, got)

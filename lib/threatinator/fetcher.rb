@@ -5,7 +5,7 @@ module Threatinator
     def initialize(opts = {})
     end
 
-    # @return [Threatinator::IOWrapper] an IOWrapper
+    # @return [IO] an IO object
     def fetch
       raise NotImplementedError.new("#{self.class}#fetch not implemented!")
     end

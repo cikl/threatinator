@@ -6,10 +6,11 @@ shared_examples_for "a fetcher" do
   subject { fetcher }
   it { should respond_to(:fetch) }
 
-  context "#fetch" do
+  context "the object returned by #fetch" do
     subject { fetcher.fetch }
 
-    it { should be_kind_of(Threatinator::IOWrapper) }
+    it_should_behave_like "an IO-like object"
+
     it "should return the expected data when #read" do
       expect(subject.read()).to eq(expected_data)
     end
