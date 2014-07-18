@@ -255,6 +255,29 @@ describe Threatinator::FeedBuilder do
     end
   end
 
+  describe "#parse_csv" do
+    let(:builder) { build(:feed_builder, :without_parser) }
+
+    it "should return the builder" do
+      expect(builder.parse_csv() {}).to eq(builder)
+    end
+
+    context "the built feed" do
+      let(:parser_block) { lambda { } }
+      let(:parser_opts) { { } }
+      let(:feed) {
+        builder.parse_csv(parser_opts, &parser_block)
+        builder.build
+      }
+      it "#parser_class should be Threatinator::Parsers::CSVParser" do
+        expect(feed.parser_class).to eq(Threatinator::Parsers::CSVParser)
+      end
+      it "#parser_opts should be correct" do
+        expect(feed.parser_opts).to eq(parser_opts)
+      end
+    end
+  end
+
   shared_examples_for "a DSL loader" do
     # Expects :feed_loader as a proc
       let(:feed_string) { 
