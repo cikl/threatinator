@@ -1,6 +1,5 @@
 require 'threatinator/record'
 require 'threatinator/parser'
-require 'stringio'
 
 module Threatinator
   module Parsers
