@@ -1,20 +1,67 @@
-require 'threatinator/property_definer'
+require 'threatinator/exceptions'
 
 module Threatinator
   class Feed
-    include Threatinator::PropertyDefiner
 
     def initialize(opts = {})
-      _parse_properties(opts)
+      @provider = opts.delete(:provider)
+      @name = opts.delete(:name)
+      @fetcher_class = opts.delete(:fetcher_class)
+      @fetcher_opts = opts.delete(:fetcher_opts) || {}
+      @parser_class = opts.delete(:parser_class)
+      @parser_opts = opts.delete(:parser_opts) || {}
+      @parser_block = opts.delete(:parser_block)
+      @filters = opts.delete(:filters) || []
+      validate!
     end
 
-    property :provider, type: String
-    property :name, type: String
-    property :fetcher_class, type: Class
-    property :fetcher_opts, type: Hash, default: lambda { Hash.new }
-    property :parser_class, type: Class
-    property :parser_opts, type: Hash, default: lambda { Hash.new }
-    property :parser_block, type: Proc
-    property :filters, type: Array, default: lambda { Array.new }
+    def provider
+      @provider.dup
+    end
+
+    def name
+      @name.dup
+    end
+
+    def fetcher_class
+      @fetcher_class
+    end
+
+    def fetcher_opts
+      Marshal.load(Marshal.dump(@fetcher_opts))
+    end
+
+    def parser_class
+      @parser_class
+    end
+
+    def parser_opts
+      Marshal.load(Marshal.dump(@parser_opts))
+    end
+
+    def parser_block
+      @parser_block
+    end
+
+    def filters
+      @filters.dup
+    end
+
+    def validate!
+      validate_attribute!(:provider, @provider, ::String)
+      validate_attribute!(:name, @name, ::String)
+      validate_attribute!(:fetcher_class, @fetcher_class, ::Class)
+      validate_attribute!(:fetcher_opts, @fetcher_opts, ::Hash)
+      validate_attribute!(:parser_class, @parser_class, ::Class)
+      validate_attribute!(:parser_opts, @parser_opts, ::Hash)
+      validate_attribute!(:parser_block, @parser_block, ::Proc)
+      validate_attribute!(:filters, @filters, ::Array)
+    end
+
+    def validate_attribute!(name, val, type)
+      unless val.kind_of?(type)
+        raise Threatinator::Exceptions::InvalidAttributeError.new(name, val)
+      end
+    end
   end
 end
