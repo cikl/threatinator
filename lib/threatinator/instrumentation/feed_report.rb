@@ -4,11 +4,13 @@ module Threatinator
     class FeedReport
       attr_reader :num_records_parsed, :num_records_filtered, 
         :num_records_missed
+      attr_reader :total
 
       def initialize()
         @num_records_parsed = 0
         @num_records_missed = 0
         @num_records_filtered = 0
+        @total = 0
       end
 
       def wrap_record(record)
@@ -24,6 +26,7 @@ module Threatinator
       end
 
       def add_record_report(record_report)
+        @total += 1
         if record_report.parsed?
           @num_records_parsed += 1
         elsif record_report.filtered?

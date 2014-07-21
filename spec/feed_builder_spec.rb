@@ -18,7 +18,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#filter_whitespace" do
-    let(:builder) { build(:feed_builder) }
+    let(:builder) { build(:feed_builder, :buildable) }
 
     it "should return the builder" do
       expect(builder.filter_whitespace).to eq(builder)
@@ -48,7 +48,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#filter_comments" do
-    let(:builder) { build(:feed_builder) }
+    let(:builder) { build(:feed_builder, :buildable) }
 
     it "should return the builder" do
       expect(builder.filter_comments).to eq(builder)
@@ -78,7 +78,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#filter" do
-    let(:builder) { build(:feed_builder) }
+    let(:builder) { build(:feed_builder, :buildable) }
 
     it "should return the builder" do
       expect(builder.filter() {  }).to eq(builder)
@@ -175,7 +175,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#provider" do
-    let(:builder) { build(:feed_builder, provider: nil) }
+    let(:builder) { build(:feed_builder, :without_provider) }
 
     it "should return the builder" do
       expect(builder.provider("asdf")).to eq(builder)
@@ -193,7 +193,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#name" do
-    let(:builder) { build(:feed_builder, name: nil) }
+    let(:builder) { build(:feed_builder, :without_name) }
 
     it "should return the builder" do
       expect(builder.name("asdf")).to eq(builder)
@@ -212,7 +212,7 @@ describe Threatinator::FeedBuilder do
 
   describe "#fetch_http" do
     let(:url) { 'http://foo.com/bar' }
-    let(:builder) { build(:feed_builder, fetch_http: nil) }
+    let(:builder) { build(:feed_builder, :without_fetcher) }
 
     it "should return the builder" do
       expect(builder.fetch_http('http://foo.bar/')).to eq(builder)
@@ -233,7 +233,7 @@ describe Threatinator::FeedBuilder do
   end
 
   describe "#parse_eachline" do
-    let(:builder) { build(:feed_builder, parse_eachline: nil) }
+    let(:builder) { build(:feed_builder, :without_parser) }
 
     it "should return the builder" do
       expect(builder.parse_eachline() {}).to eq(builder)

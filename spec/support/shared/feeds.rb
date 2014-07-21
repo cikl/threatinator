@@ -62,10 +62,27 @@ module FeedHelpers
 
   def describe_parsing_a_record(data, &block)
     context("parsing a record from '#{data}'", :caller => caller) do
-      let(:record) { Threatinator::Record.new(data) }
-      let(:record_report) { feed_runner.parse_record(record) }
-      include_context 'a parsed record'
-      instance_exec(&block)
+      before :each do
+        sio = StringIO.new(data)
+        @record = @record_report = nil
+        cb = lambda do |record, rr|
+          @record = record
+          @record_report = rr
+        end
+
+        @feed_report = feed_runner.run(:io => sio, :record_callback => cb)
+      end
+      let(:feed_report) { @feed_report }
+      it "should have handled exactly 1 record" do
+        expect(feed_report.total).to eq(1)
+      end
+
+      describe "the record" do
+        let(:record) { @record }
+        let(:record_report) { @record_report }
+        include_context 'a parsed record'
+        instance_exec(&block)
+      end
     end
   end
 
