@@ -3,6 +3,7 @@ require 'threatinator/feed'
 require 'threatinator/exceptions'
 require 'threatinator/fetchers/http'
 require 'threatinator/parsers/getline'
+require 'threatinator/parsers/csv'
 require 'threatinator/filters/block'
 require 'threatinator/filters/whitespace'
 require 'threatinator/filters/comments'
@@ -28,6 +29,13 @@ module Threatinator
 
     def parse_eachline(opts = {}, &block)
       @parser_class = Threatinator::Parsers::Getline
+      @parser_opts = opts
+      @parser_block = block
+      self
+    end
+
+    def parse_csv(opts = {}, &block)
+      @parser_class = Threatinator::Parsers::CSVParser
       @parser_opts = opts
       @parser_block = block
       self
