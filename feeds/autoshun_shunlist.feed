@@ -1,0 +1,15 @@
+provider "autoshun"
+name "shunlist"
+fetch_http('http://www.autoshun.org/files/shunlist.csv')
+
+filter do |record|
+  record.data[:ip].start_with?("Shunlist as of")
+end
+
+parse_csv(:headers => [:ip, :last_seen, :reason]) do |event_generator, record|
+  event_generator.call do |event|
+    event.type = :scanning
+    event.add_ipv4(record.data[:ip]) do |ipv4_event|
+    end
+  end
+end
