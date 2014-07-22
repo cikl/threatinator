@@ -50,7 +50,7 @@ module FeedHelpers
     describe 'fetching' do
       it "should fetch the url #{url}" do
         stub_request(:get, url)
-        feed_runner._fetch()
+        feed.fetcher_builder.call().fetch()
         expect(a_request(:get, url)).to have_been_made
       end
     end

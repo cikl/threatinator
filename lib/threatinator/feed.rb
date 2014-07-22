@@ -2,16 +2,26 @@ require 'threatinator/exceptions'
 
 module Threatinator
   class Feed
-
+    # @param [Hash] opts Options hash
+    # @option opts [String] :provider The name of the provider
+    # @option opts [String] :name The name of the feed
+    # @option opts [Proc] :parser_block A block that will be called by the 
+    #   parser each time it processes a record.
+    # @option opts [Proc] :parser_builder A proc that, when called, will 
+    #   return a brand new instance of a Threatinator::Parser.
+    # @option opts [Proc] :fetcher_builder A proc that, when called, will 
+    #   return a brand new instance of a Threatinator::Fetcher.
+    # @option opts [Array<Proc>] :filter_builders An array of procs that, 
+    #   when called, will each return an instance of a filter (something that 
+    #   responds to :filter?)
     def initialize(opts = {})
       @provider = opts.delete(:provider)
       @name = opts.delete(:name)
-      @fetcher_class = opts.delete(:fetcher_class)
-      @fetcher_opts = opts.delete(:fetcher_opts) || {}
-      @parser_class = opts.delete(:parser_class)
-      @parser_opts = opts.delete(:parser_opts) || {}
       @parser_block = opts.delete(:parser_block)
-      @filters = opts.delete(:filters) || []
+
+      @parser_builder = opts.delete(:parser_builder)
+      @fetcher_builder = opts.delete(:fetcher_builder)
+      @filter_builders = opts.delete(:filter_builders) || []
       validate!
     end
 
@@ -23,43 +33,36 @@ module Threatinator
       @name.dup
     end
 
-    def fetcher_class
-      @fetcher_class
-    end
-
-    def fetcher_opts
-      Marshal.load(Marshal.dump(@fetcher_opts))
-    end
-
-    def parser_class
-      @parser_class
-    end
-
-    def parser_opts
-      Marshal.load(Marshal.dump(@parser_opts))
-    end
-
     def parser_block
       @parser_block
     end
 
-    def filters
-      @filters.dup
+    def fetcher_builder
+      @fetcher_builder
+    end
+
+    def parser_builder
+      @parser_builder
+    end
+
+    def filter_builders
+      @filter_builders.dup
     end
 
     def validate!
-      validate_attribute!(:provider, @provider, ::String)
-      validate_attribute!(:name, @name, ::String)
-      validate_attribute!(:fetcher_class, @fetcher_class, ::Class)
-      validate_attribute!(:fetcher_opts, @fetcher_opts, ::Hash)
-      validate_attribute!(:parser_class, @parser_class, ::Class)
-      validate_attribute!(:parser_opts, @parser_opts, ::Hash)
-      validate_attribute!(:parser_block, @parser_block, ::Proc)
-      validate_attribute!(:filters, @filters, ::Array)
+      validate_attribute!(:provider, @provider) { |x| x.kind_of?(::String) }
+      validate_attribute!(:name, @name) { |x| x.kind_of?(::String) }
+      validate_attribute!(:parser_block, @parser_block) { |x| x.kind_of?(::Proc) }
+      validate_attribute!(:fetcher_builder, @fetcher_builder) { |x| x.kind_of?(::Proc) }
+      validate_attribute!(:parser_builder, @parser_builder) { |x| x.kind_of?(::Proc) }
+      validate_attribute!(:filter_builders, @filter_builders) do |x|
+        x.kind_of?(::Array) &&
+          x.all? { |e| e.kind_of?(::Proc) }
+      end
     end
 
-    def validate_attribute!(name, val, type)
-      unless val.kind_of?(type)
+    def validate_attribute!(name, val, &block)
+      unless block.call(val) == true
         raise Threatinator::Exceptions::InvalidAttributeError.new(name, val)
       end
     end

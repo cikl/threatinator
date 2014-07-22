@@ -5,19 +5,19 @@ describe Threatinator::Feed do
   let (:provider) { 'FakeSecureCo' }
   let (:name) { 'MaliciousDataFeed' }
   let(:fetcher_io) { double("io") }
-  let(:fetcher_class) { FeedSpec::Fetcher }
-  let(:fetcher_opts) { { :io => fetcher_io } }
-  let(:parser_class) { FeedSpec::Parser }
-  let(:parser_opts) { {} }
   let(:parser_block) { lambda {}  }
+  let(:filter_builders) { [] }
+  let(:fetcher_builder) { lambda { FeedSpec::Fetcher.new({}) }  }
+  let(:parser_builder) { lambda { FeedSpec::Parser.new({}) { } }  }
 
   let(:feed_opts) { 
     {
       :provider => provider, 
       :name => name,
-      :fetcher_class => fetcher_class,
-      :parser_class => parser_class,
-      :parser_block => parser_block
+      :parser_block => parser_block,
+      :fetcher_builder => fetcher_builder,
+      :parser_builder => parser_builder,
+      :filter_builders => filter_builders
     }
   }
 
@@ -81,42 +81,39 @@ describe Threatinator::Feed do
     include_examples "a field with an invalid value", {}
   end
 
-  describe ":fetcher_class" do
-    let(:field) { :fetcher_class } 
-    include_examples "a field that is required", :fetcher_class
-    include_examples "a field with a valid value", FeedSpec::Fetcher
+  describe ":fetcher_builder" do
+    let(:field) { :fetcher_builder} 
+    include_examples "a field that is required", :fetcher_builder
+    include_examples "a field with a valid value", lambda { } 
+    include_examples "a field with an invalid value", Class.new
     include_examples "a field with an invalid value", 1234
     include_examples "a field with an invalid value", :asdf
     include_examples "a field with an invalid value", []
     include_examples "a field with an invalid value", {}
-  end
-  describe ":fetcher_opts" do
-    let(:field) { :fetcher_opts } 
-    include_examples "a field with a default", {}
-    include_examples "a field that is immutable"
-    include_examples "a field with a valid value", {some: "data"}
-    include_examples "a field with an invalid value", 1234
-    include_examples "a field with an invalid value", :asdf
-    include_examples "a field with an invalid value", []
   end
 
-  describe ":parser_class" do
-    let(:field) { :parser_class } 
-    include_examples "a field that is required", :parser_class
-    include_examples "a field with a valid value", FeedSpec::Parser
+  describe ":parser_builder" do
+    let(:field) { :parser_builder } 
+    include_examples "a field that is required", :parser_builder
+    include_examples "a field with a valid value", lambda { } 
+    include_examples "a field with an invalid value", Class.new
     include_examples "a field with an invalid value", 1234
     include_examples "a field with an invalid value", :asdf
     include_examples "a field with an invalid value", []
     include_examples "a field with an invalid value", {}
   end
-  describe ":parser_opts" do
-    let(:field) { :parser_opts } 
-    include_examples "a field with a default", {}
+
+  describe ":filter_builders" do
+    let(:field) { :filter_builders} 
+    include_examples "a field with a default", []
+    include_examples "a field with a valid value", []
+    include_examples "a field with a valid value", [ lambda { }  ]
     include_examples "a field that is immutable"
-    include_examples "a field with a valid value", {some: "data"}
+    include_examples "a field with an invalid value", Class.new
     include_examples "a field with an invalid value", 1234
     include_examples "a field with an invalid value", :asdf
-    include_examples "a field with an invalid value", []
+    include_examples "a field with an invalid value", [1,2,3]
+    include_examples "a field with an invalid value", {}
   end
 
   describe ":parser_block" do
@@ -126,16 +123,6 @@ describe Threatinator::Feed do
     include_examples "a field with an invalid value", 1234
     include_examples "a field with an invalid value", :asdf
     include_examples "a field with an invalid value", []
-  end
-
-  describe ":filters" do
-    let(:field) { :filters } 
-    include_examples "a field with a default", []
-    include_examples "a field that is immutable"
-    include_examples "a field with a valid value", []
-    include_examples "a field with an invalid value", 1234
-    include_examples "a field with an invalid value", :asdf
-    include_examples "a field with an invalid value", {}
   end
 
   context "when initialized with required fields" do
@@ -155,39 +142,9 @@ describe Threatinator::Feed do
       end
     end
 
-    describe "#fetcher_class" do
-      it "should return the fetcher_class" do
-        expect(feed.fetcher_class).to eq(fetcher_class)
-      end
-    end
-
-    describe "#fetcher_opts" do
-      it "should return the default {}" do
-        expect(feed.fetcher_opts).to eq({})
-      end
-    end
-
-    describe "#parser_class" do
-      it "should return the parser_class" do
-        expect(feed.parser_class).to eq(parser_class)
-      end
-    end
-
     describe "#parser_block" do
       it "should return the parser_block" do
         expect(feed.parser_block).to eq(parser_block)
-      end
-    end
-
-    describe "#parser_opts" do
-      it "should return the default {}" do
-        expect(feed.parser_opts).to eq({})
-      end
-    end
-
-    describe "#filters" do
-      it "should return the default []" do
-        expect(feed.filters).to eq([])
       end
     end
 

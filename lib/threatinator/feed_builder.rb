@@ -22,43 +22,49 @@ module Threatinator
 
     def fetch_http(url, opts = {})
       opts[:url] = url
-      @fetcher_class = Threatinator::Fetchers::Http
-      @fetcher_opts = opts
+      @fetcher_builder = lambda do
+        opts_dup = Marshal.load(Marshal.dump(opts))
+        Threatinator::Fetchers::Http.new(opts_dup)
+      end
       self
     end
 
     def parse_eachline(opts = {}, &block)
-      @parser_class = Threatinator::Parsers::Getline
-      @parser_opts = opts
+      @parser_builder = lambda do
+        opts_dup = Marshal.load(Marshal.dump(opts))
+        Threatinator::Parsers::Getline.new(opts_dup, &block)
+      end
       @parser_block = block
       self
     end
 
     def parse_csv(opts = {}, &block)
-      @parser_class = Threatinator::Parsers::CSVParser
-      @parser_opts = opts
+      @parser_builder = lambda do
+        opts_dup = Marshal.load(Marshal.dump(opts))
+        Threatinator::Parsers::CSVParser.new(opts_dup, &block)
+      end
       @parser_block = block
       self
     end
 
     # Specify a block filter for the parser
     def filter(&block)
-      @filters ||= []
-      @filters << Threatinator::Filters::Block.new(block)
+      @filter_builders ||= []
+      @filter_builders << lambda { Threatinator::Filters::Block.new(block) }
       self
     end
 
     # Filter out whitespace lines. Only works on line-based text.
     def filter_whitespace
-      @filters ||= []
-      @filters << Threatinator::Filters::Whitespace.new
+      @filter_builders ||= []
+      @filter_builders << lambda { Threatinator::Filters::Whitespace.new }
       self
     end
     
     # Filter out whitespace lines. Only works on line-based text.
     def filter_comments
-      @filters ||= []
-      @filters << Threatinator::Filters::Comments.new
+      @filter_builders ||= []
+      @filter_builders << lambda { Threatinator::Filters::Comments.new }
       self
     end
 
@@ -66,12 +72,10 @@ module Threatinator
       Feed.new(
         :provider => @provider, 
         :name => @name,
-        :fetcher_class => @fetcher_class,
-        :fetcher_opts => @fetcher_opts,
-        :parser_class => @parser_class,
-        :parser_opts => @parser_opts,
         :parser_block => @parser_block,
-        :filters => @filters || []
+        :fetcher_builder => @fetcher_builder,
+        :parser_builder => @parser_builder,
+        :filter_builders => @filter_builders,
       )
     end
 

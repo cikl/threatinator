@@ -9,5 +9,14 @@ module Threatinator
     def fetch
       raise NotImplementedError.new("#{self.class}#fetch not implemented!")
     end
+
+    def ==(other)
+      true
+    end
+
+    def eql?(other)
+      self.class == other.class &&
+        self == other
+    end
   end
 end

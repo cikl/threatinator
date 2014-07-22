@@ -6,7 +6,8 @@ module Threatinator
   module Parsers
     # Parses an IO, yielding a record with a CSV::Row.
     class CSVParser < Threatinator::Parser
-      # @param [IO] io The IO from which we will read.
+      attr_reader :csv_opts, :row_separator, :col_separator, :headers
+
       # @param [Hash] opts 
       # @option opts [String, :auto] :row_separator A string that represent the row
       #  separator. Identical to ::CSV.new's :row_sep.
@@ -17,23 +18,39 @@ module Threatinator
       # @option opts [Hash] :csv_opts A hash of options that will be passed to
       #  Ruby's CSV.new. 
       # @see ::CSV
-      def initialize(io, opts = {})
+      def initialize(opts = {})
         @csv_opts = {}.merge(opts.delete(:csv_opts) || {})
-        @csv_opts[:return_headers] = true
-        @csv_opts[:row_sep] = opts.delete(:row_separator) if opts.has_key?(:row_separator)
-        @csv_opts[:col_sep] = opts.delete(:col_separator) if opts.has_key?(:col_separator)
-        @csv_opts[:headers] = opts.delete(:headers) if opts.has_key?(:headers)
+        @row_separator = opts.delete(:row_separator)
+        @col_separator = opts.delete(:col_separator)
+        @headers = opts.delete(:headers)
 
-        super(io, opts)
+        super(opts)
       end
 
+      def ==(other)
+        @csv_opts == other.csv_opts &&
+          @row_separator == other.row_separator &&
+          @col_separator == other.col_separator &&
+          @headers == other.headers &&
+          super(other)
+      end
+
+      def _build_csv_opts
+        opts = {}.merge(@csv_opts)
+        opts[:return_headers] = true
+        opts[:row_sep] = @row_separator unless @row_separator.nil?
+        opts[:col_sep] = @col_separator unless @col_separator.nil?
+        opts[:headers] = @headers unless @headers.nil?
+        opts
+      end
+
+      # @param [IO] io
       # @yield [record] Gives one line to the block
       # @yieldparam record [Record] a record
-      def each
-        return enum_for(:each) unless block_given?
+      def run(io)
         lineno = 1
         previous_pos = io.pos
-        csv = ::CSV.new(io, @csv_opts)
+        csv = ::CSV.new(io, _build_csv_opts())
         csv.each do |row|
           begin
             if row.kind_of?(::CSV::Row)

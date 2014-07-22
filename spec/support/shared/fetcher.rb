@@ -6,6 +6,30 @@ shared_examples_for "a fetcher" do
   subject { fetcher }
   it { should respond_to(:fetch) }
 
+  it "should == itself" do
+    expect(fetcher).to be == fetcher
+  end
+
+  it "should == an identically configured instance" do
+    expect(fetcher_builder.call()).to be == fetcher_builder.call()
+  end
+
+  it "should not == a differently configured instance" do
+    expect(fetcher_builder.call()).not_to be == fetcher_builder_different.call()
+  end
+
+  it "should eql?(itself)" do
+    expect(fetcher).to eql(fetcher)
+  end
+
+  it "should eql? an identically configured instance" do
+    expect(fetcher_builder.call()).to eql(fetcher_builder.call())
+  end
+
+  it "should not eql? an differently configured instance" do
+    expect(fetcher_builder.call()).not_to eql(fetcher_builder_different.call())
+  end
+
   context "the object returned by #fetch" do
     subject { fetcher.fetch }
 

@@ -31,12 +31,13 @@ module Threatinator
       feed_info = [['provider', 'name', 'type', 'link/path']]
       @registry.each do |feed|
         info = [ feed.provider, feed.name ]
+        fetcher = feed.fetcher_builder.call()
         type = "unknown"
         link = "unknown"
-        case feed.fetcher_class.to_s
-        when 'Threatinator::Fetchers::Http'
+        case fetcher
+        when Threatinator::Fetchers::Http
           type = "http"
-          link = feed.fetcher_opts[:url]
+          link = fetcher.url
         end
         info << type
         info << link
