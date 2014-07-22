@@ -17,6 +17,15 @@ describe Threatinator::FeedBuilder do
     end
   end
 
+  shared_examples_for "a filter builder" do
+    it "should be a Proc" do
+      expect(filter_builder).to be_a(::Proc)
+    end
+    it "should generate a filter when called" do
+      expect(filter_builder.call).to respond_to(:filter?)
+    end
+  end
+
   describe "#filter_whitespace" do
     let(:builder) { build(:feed_builder, :buildable) }
 
@@ -29,18 +38,17 @@ describe Threatinator::FeedBuilder do
         builder.filter_whitespace
         builder.build
       }
-      describe "#filters" do
+      describe "#filter_builders" do
         it "should have one item" do
-          expect(feed.filters.length).to eq(1)
+          expect(feed.filter_builders.length).to eq(1)
         end
 
         describe "the first item" do
-          subject {feed.filters[0]} 
-          it { should be_kind_of(Threatinator::Filters::Whitespace) }
+          let(:filter_builder) { feed.filter_builders[0] }
+          it_should_behave_like "a filter builder"
 
-          it "should be the first filter we added" do
-            expect(subject.filter?(Threatinator::Record.new("         \t \t "))).to eq(true)
-            expect(subject.filter?(Threatinator::Record.new("   gobbledy goo"))).to eq(false)
+          it "should build Threatinator::Filters::Whitespace when called" do
+            expect(filter_builder.call).to be_kind_of(Threatinator::Filters::Whitespace)
           end
         end
       end
@@ -59,18 +67,16 @@ describe Threatinator::FeedBuilder do
         builder.filter_comments
         builder.build
       }
-      describe "#filters" do
+      describe "#filter_builders" do
         it "should have one item" do
-          expect(feed.filters.length).to eq(1)
+          expect(feed.filter_builders.length).to eq(1)
         end
 
         describe "the first item" do
-          subject {feed.filters[0]} 
-          it { should be_kind_of(Threatinator::Filters::Comments) }
-
-          it "should be the first filter we added" do
-            expect(subject.filter?(Threatinator::Record.new("# this is a comment"))).to eq(true)
-            expect(subject.filter?(Threatinator::Record.new("Not a comment"))).to eq(false)
+          let(:filter_builder) { feed.filter_builders[0] }
+          it_should_behave_like "a filter builder"
+          it "should build a Threatinator::Filters::Comments when called" do
+            expect(filter_builder.call).to be_kind_of(Threatinator::Filters::Comments)
           end
         end
       end
@@ -91,18 +97,17 @@ describe Threatinator::FeedBuilder do
         end
         builder.build
       }
-      describe "#filters" do
+      describe "#filter_builders" do
         it "should have one item" do
-          expect(feed.filters.length).to eq(1)
+          expect(feed.filter_builders.length).to eq(1)
         end
 
         describe "the first item" do
-          subject {feed.filters[0]} 
-          it { should be_kind_of(Threatinator::Filters::Block) }
+          let(:filter_builder) { feed.filter_builders[0] }
+          it_should_behave_like "a filter builder"
 
-          it "should be the first filter we added" do
-            expect(subject.filter?("FILTER1")).to eq(true)
-            expect(subject.filter?("gobbledy goo")).to eq(false)
+          it "should build a Threatinator::Filters::Block when called" do
+            expect(filter_builder.call).to be_kind_of(Threatinator::Filters::Block)
           end
         end
       end
@@ -110,52 +115,59 @@ describe Threatinator::FeedBuilder do
 
     context "the built feed, when three filters are specified" do
       let(:feed) {
-        builder.filter do |line|
-          line == "FILTER1"
+        builder.filter do |record|
+          record.data == "FILTER1"
         end
-        builder.filter do |line|
-          line == "FILTER2"
-        end
-        builder.filter do |line|
-          line == "FILTER3"
-        end
+        builder.filter_comments
+        builder.filter_whitespace
         builder.build
       }
-      describe "#filters" do
-        it "should have one item" do
-          expect(feed.filters.length).to eq(3)
+      describe "#filter_builders" do
+        it "should have three items" do
+          expect(feed.filter_builders.length).to eq(3)
         end
 
-        describe "the first filter" do
-          subject {feed.filters[0]} 
-          it { should be_kind_of(Threatinator::Filters::Block) }
+        describe "the first filter builder" do
+          let(:filter_builder) { feed.filter_builders[0] }
+          it_should_behave_like "a filter builder"
+          describe "when called" do
+            subject {filter_builder.call}
+            it { should be_kind_of(Threatinator::Filters::Block) }
+            it "should be the first filter we added" do
+              expect(subject.filter?(build(:record, data:"FILTER1"))).to  eq(true)
+              expect(subject.filter?(build(:record, data:"#comment"))).to eq(false)
+              expect(subject.filter?(build(:record, data:"   "))).to      eq(false)
+            end
+          end
 
-          it "should be the first filter we added" do
-            expect(subject.filter?("FILTER1")).to eq(true)
-            expect(subject.filter?("FILTER2")).to eq(false)
-            expect(subject.filter?("FILTER3")).to eq(false)
+        end
+
+        describe "the second filter builder" do
+          let(:filter_builder) { feed.filter_builders[1] }
+          it_should_behave_like "a filter builder"
+          describe "when called" do
+            subject {filter_builder.call}
+            it { should be_kind_of(Threatinator::Filters::Comments) }
+            it "should be the first filter we added" do
+              expect(subject.filter?(build(:record, data:"FILTER1"))).to  eq(false)
+              expect(subject.filter?(build(:record, data:"#comment"))).to eq(true)
+              expect(subject.filter?(build(:record, data:"   "))).to      eq(false)
+            end
           end
         end
 
-        describe "the second filter" do
-          subject {feed.filters[1]} 
-          it { should be_kind_of(Threatinator::Filters::Block) }
-
-          it "should be the first filter we added" do
-            expect(subject.filter?("FILTER1")).to eq(false)
-            expect(subject.filter?("FILTER2")).to eq(true)
-            expect(subject.filter?("FILTER3")).to eq(false)
-          end
-        end
-
-        describe "the third filter" do
-          subject {feed.filters[2]} 
-          it { should be_kind_of(Threatinator::Filters::Block) }
-
-          it "should be the first filter we added" do
-            expect(subject.filter?("FILTER1")).to eq(false)
-            expect(subject.filter?("FILTER2")).to eq(false)
-            expect(subject.filter?("FILTER3")).to eq(true)
+        describe "the third filter builder" do
+          let(:filter_builder) { feed.filter_builders[2] }
+          it_should_behave_like "a filter builder"
+          describe "when called" do
+            let(:filter) { filter_builder.call }
+            subject { filter }
+            it { should be_kind_of(Threatinator::Filters::Whitespace) }
+            it "should be the first filter we added" do
+              expect(subject.filter?(build(:record, data:"FILTER1"))).to  eq(false)
+              expect(subject.filter?(build(:record, data:"#comment"))).to eq(false)
+              expect(subject.filter?(build(:record, data:"   "))).to      eq(true)
+            end
           end
         end
 
@@ -166,9 +178,9 @@ describe Threatinator::FeedBuilder do
       let(:feed) {
         builder.build
       }
-      describe "#filters" do
-        it "should have no filters" do
-          expect(feed.filters.length).to eq(0)
+      describe "#filter_builders" do
+        it "should have no filter builders" do
+          expect(feed.filter_builders.length).to eq(0)
         end
       end
     end
@@ -223,12 +235,36 @@ describe Threatinator::FeedBuilder do
         builder.fetch_http(url)
         builder.build
       }
-      it "#fetcher_class should be Threatinator::Fetchers::Http" do
-        expect(feed.fetcher_class).to eq(Threatinator::Fetchers::Http)
+      describe "#fetcher_builder" do
+        let(:fetcher_builder) { feed.fetcher_builder }
+        it "should be a Proc" do
+          expect(fetcher_builder).to be_a(::Proc)
+        end
+        it "should return an instance of Threatinator::Fetchers::Http when called" do
+          expect(fetcher_builder.call).to be_a(Threatinator::Fetchers::Http)
+        end
+        it "should return a brand new instance of a Threatinator::Fetchers::Http with each call" do
+          expect(fetcher_builder.call).not_to be(fetcher_builder.call)
+        end
+        it "should return instances that are eql? to each other" do
+          expect(fetcher_builder.call).to eql(fetcher_builder.call)
+        end
       end
-      it "#fetcher_opts should be have the URL" do
-        expect(feed.fetcher_opts).to eq({ url: url })
-      end
+    end
+  end
+
+  shared_examples_for "a parser builder" do
+    it "should be a Proc" do
+      expect(parser_builder).to be_a(::Proc)
+    end
+    it "should return a kind of Threatinator::Parser when called" do
+      expect(parser_builder.call).to be_a(Threatinator::Parser)
+    end
+    it "should return a brand new instances of a parser with each call" do
+      expect(parser_builder.call).not_to be(parser_builder.call)
+    end
+    it "should return instances that are eql? to each other" do
+      expect(parser_builder.call).to eql(parser_builder.call)
     end
   end
 
@@ -241,16 +277,16 @@ describe Threatinator::FeedBuilder do
 
     context "the built feed" do
       let(:parser_block) { lambda { } }
-      let(:parser_opts) { { separator: "\n" } }
       let(:feed) {
-        builder.parse_eachline(parser_opts, &parser_block)
+        builder.parse_eachline(separator: "\n", &parser_block)
         builder.build
       }
-      it "#parser_class should be Threatinator::Parsers::Getline" do
-        expect(feed.parser_class).to eq(Threatinator::Parsers::Getline)
-      end
-      it "#parser_opts should be correct" do
-        expect(feed.parser_opts).to eq(parser_opts)
+      describe "#parser_builder" do
+        let(:parser_builder) { feed.parser_builder}
+        it_should_behave_like "a parser builder"
+        it "should return an instance of Threatinator::Parsers::Getline when called" do
+          expect(parser_builder.call).to be_a(Threatinator::Parsers::Getline)
+        end
       end
     end
   end
@@ -264,16 +300,16 @@ describe Threatinator::FeedBuilder do
 
     context "the built feed" do
       let(:parser_block) { lambda { } }
-      let(:parser_opts) { { } }
       let(:feed) {
-        builder.parse_csv(parser_opts, &parser_block)
+        builder.parse_csv({}, &parser_block)
         builder.build
       }
-      it "#parser_class should be Threatinator::Parsers::CSVParser" do
-        expect(feed.parser_class).to eq(Threatinator::Parsers::CSVParser)
-      end
-      it "#parser_opts should be correct" do
-        expect(feed.parser_opts).to eq(parser_opts)
+      describe "#parser_builder" do
+        let(:parser_builder) { feed.parser_builder}
+        it_should_behave_like "a parser builder"
+        it "should return an instance of Threatinator::Parsers::CSVParser when called" do
+          expect(parser_builder.call).to be_a(Threatinator::Parsers::CSVParser)
+        end
       end
     end
   end
@@ -299,8 +335,7 @@ end'
       feed = builder.build
       expect(feed.provider).to eq("provider1")
       expect(feed.name).to eq("feed1")
-      expect(feed.fetcher_class).to eq(Threatinator::Fetchers::Http)
-      expect(feed.parser_class).to eq(Threatinator::Parsers::Getline)
+      expect(feed.parser_builder.call).to eq(Threatinator::Parsers::Getline.new(separator: "\n"))
     end
     
     context "when str contains invalid syntax" do
@@ -358,7 +393,7 @@ parse_eachline(:separator => "\n") {}'
           feed_loader.call(feed_string).build
         end.to raise_error { |e| 
           expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
-          expect(e.attribute).to eq(:fetcher_class)
+          expect(e.attribute).to eq(:fetcher_builder)
         }
       end
 
@@ -371,7 +406,6 @@ fetch_http("https://foobar/feed1.data")'
           feed_loader.call(feed_string).build
         end.to raise_error { |e| 
           expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
-          expect(e.attribute).to eq(:parser_class)
         }
       end
 
@@ -404,36 +438,27 @@ fetch_http("https://foobar/feed1.data")'
           expect(feed.name).to eq("my_feed_name")
         end
 
-        it "#fetcher_class should be Threatinator::Fetchers::Http" do
-          expect(feed.fetcher_class).to eq(Threatinator::Fetchers::Http)
-        end
-        it "#fetcher_opts should be have the URL" do
-          expect(feed.fetcher_opts).to eq({ url: "http://foo.com/bar" })
-        end
-        it "#parser_class should be Threatinator::Parsers::Getline" do
-          expect(feed.parser_class).to eq(Threatinator::Parsers::Getline)
-        end
-        it "#parser_opts should be correct" do
-          expect(feed.parser_opts).to eq({separator: "\0"})
+        it "#parser_builder should generate the proper Threatinator::Parsers::Getline" do
+          expect(feed.parser_builder.call).to eq(Threatinator::Parsers::Getline.new(separator:"\0"))
         end
 
-        describe "#filters" do
-          subject { feed.filters } 
+        describe "#filter_builders" do
+          subject { feed.filter_builders } 
 
-          it "should have three filters" do
+          it "should have three filter builders" do
             expect(subject.length).to eq(3)
           end
 
           describe "filter 1" do
-            subject {feed.filters[0]}
+            subject {feed.filter_builders[0].call}
             it { should be_a(Threatinator::Filters::Block) }
           end
           describe "filter 2" do
-            subject {feed.filters[1]}
+            subject {feed.filter_builders[1].call}
             it { should be_a(Threatinator::Filters::Whitespace) }
           end
           describe "filter 3" do
-            subject {feed.filters[2] }
+            subject {feed.filter_builders[2].call }
             it { should be_a(Threatinator::Filters::Comments) }
           end
         end

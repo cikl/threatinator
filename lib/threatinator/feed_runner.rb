@@ -13,27 +13,14 @@ module Threatinator
       @feed_report_class = opts[:feed_report_class] || Threatinator::Instrumentation::FeedReport 
       @output_formatter = output_formatter
       @event_builder = Threatinator::EventBuilder.new
-      @feed_filters = @feed.filters
+      @feed_filters = @feed.filter_builders.map { |x| x.call } 
       @parser_block = @feed.parser_block
       @create_event_proc = @event_builder.create_event_proc()
       _init_feed_report()
     end
 
-    def _init_fetcher()
-      @feed.fetcher_class.new(@feed.fetcher_opts)
-    end
-
     def _init_feed_report()
       @feed_report = @feed_report_class.new
-    end
-
-    def _fetch()
-      fetcher = _init_fetcher()
-      return fetcher.fetch()
-    end
-
-    def _init_parser(fetched_io)
-      @feed.parser_class.new(fetched_io, @feed.parser_opts)
     end
 
     # @param [Hash] opts The options hash
@@ -42,15 +29,17 @@ module Threatinator
     # @option opts [Proc] :record_callback A callback that allows 
     def run(opts = {})
       unless fetched_io = opts.delete(:io)
-        fetched_io = _fetch()
+        fetcher = @feed.fetcher_builder.call()
+        fetched_io = fetcher.fetch()
       end
+
       record_callback = opts.delete(:record_callback)
 
       _init_feed_report()
 
-      parser = _init_parser(fetched_io)
+      parser = @feed.parser_builder.call()
 
-      parser.each do |record|
+      parser.run(fetched_io) do |record|
         rr = parse_record(record)
         unless record_callback.nil?
           record_callback.call(record, rr)

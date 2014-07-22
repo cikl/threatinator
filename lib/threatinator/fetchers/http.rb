@@ -6,6 +6,7 @@ require 'tempfile'
 module Threatinator
   module Fetchers
     class Http < Threatinator::Fetcher
+      attr_reader :url
       # @param [Hash] opts An options hash. 
       # @option opts [Addressable::URI] :url The URL that is to be fetched 
       #   (required)
@@ -13,6 +14,10 @@ module Threatinator
       def initialize(opts = {})
         @url = opts.delete(:url) or raise ArgumentError.new("Missing :url")
         super(opts)
+      end
+
+      def ==(other)
+        @url == other.url && super(other)
       end
 
       # @return [IO] an IO-style object.

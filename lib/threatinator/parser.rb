@@ -1,17 +1,22 @@
 module Threatinator
   class Parser
-    attr_reader :io
-    protected :io
-
-    # @param [IO-like object] io An IO-like object
     # @param [Hash] opts An options hash. See subclasses for details.
-    def initialize(io, opts = {})
-      @io = io
+    def initialize(opts = {})
     end
 
-    # What is emitted by this method will vary by the parser implementation.
-    def each
-      raise NotImplementedError.new("#{self.class}#each not implemented!")
+    # Runs the parser against the provided io, yielding records.
+    # @param [IO] io The IO to be parsed.
+    def run(io)
+      raise NotImplementedError.new("#{self.class}#run not implemented!")
+    end
+
+    def ==(other)
+      true
+    end
+
+    def eql?(other)
+      self.class == other.class &&
+        self == other
     end
   end
 end
