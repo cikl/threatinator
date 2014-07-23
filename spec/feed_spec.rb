@@ -7,6 +7,7 @@ describe Threatinator::Feed do
   let(:fetcher_io) { double("io") }
   let(:parser_block) { lambda {}  }
   let(:filter_builders) { [] }
+  let(:decoder_builders) { [] }
   let(:fetcher_builder) { lambda { FeedSpec::Fetcher.new({}) }  }
   let(:parser_builder) { lambda { FeedSpec::Parser.new({}) { } }  }
 
@@ -17,7 +18,8 @@ describe Threatinator::Feed do
       :parser_block => parser_block,
       :fetcher_builder => fetcher_builder,
       :parser_builder => parser_builder,
-      :filter_builders => filter_builders
+      :filter_builders => filter_builders,
+      :decoder_builders => filter_builders,
     }
   }
 
@@ -105,6 +107,19 @@ describe Threatinator::Feed do
 
   describe ":filter_builders" do
     let(:field) { :filter_builders} 
+    include_examples "a field with a default", []
+    include_examples "a field with a valid value", []
+    include_examples "a field with a valid value", [ lambda { }  ]
+    include_examples "a field that is immutable"
+    include_examples "a field with an invalid value", Class.new
+    include_examples "a field with an invalid value", 1234
+    include_examples "a field with an invalid value", :asdf
+    include_examples "a field with an invalid value", [1,2,3]
+    include_examples "a field with an invalid value", {}
+  end
+
+  describe ":decoder_builders" do
+    let(:field) { :decoder_builders} 
     include_examples "a field with a default", []
     include_examples "a field with a valid value", []
     include_examples "a field with a valid value", [ lambda { }  ]

@@ -26,6 +26,59 @@ describe Threatinator::FeedBuilder do
     end
   end
 
+  shared_examples_for "a decoder builder" do
+    it "should be a Proc" do
+      expect(decoder_builder).to be_a(::Proc)
+    end
+    it "should generate a kind of Threatinator::Decoder when called" do
+      expect(decoder_builder.call).to be_kind_of Threatinator::Decoder
+    end
+  end
+
+  shared_examples_for "an alias of #decode_gzip" do
+    let(:method_name) { :decode_gzip }
+    let(:builder) { build(:feed_builder, :buildable) }
+    it "should return the builder" do
+      expect(builder.send(method_name)).to eq(builder)
+    end
+
+    specify "calling the method should add a decoder_builder proc that generates a Threatinator::Decoders::Gzip" do
+      builder.send(method_name)
+      feed = builder.build
+      expect(feed.decoder_builders.count).to eq(1)
+      decoder_builder = feed.decoder_builders.first
+      expect(decoder_builder).to be_a(::Proc)
+      expect(decoder_builder.call).to be_a(Threatinator::Decoders::Gzip)
+    end
+
+    specify "multiple calls should add as many decoder_builders in the built feed" do
+      5.times do 
+        builder.send(method_name)
+      end
+
+      feed = builder.build
+      expect(feed.decoder_builders.count).to eq(5)
+    end
+  end
+
+  describe "#decode_gzip" do
+    it_should_behave_like "an alias of #decode_gzip" do
+      let(:method_name) { :decode_gzip }
+    end
+  end
+
+  describe "#extract_gzip" do
+    it_should_behave_like "an alias of #decode_gzip" do
+      let(:method_name) { :extract_gzip }
+    end
+  end
+
+  describe "#gunzip" do
+    it_should_behave_like "an alias of #decode_gzip" do
+      let(:method_name) { :gunzip}
+    end
+  end
+
   describe "#filter_whitespace" do
     let(:builder) { build(:feed_builder, :buildable) }
 

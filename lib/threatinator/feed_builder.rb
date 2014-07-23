@@ -1,6 +1,7 @@
 require 'docile'
 require 'threatinator/feed'
 require 'threatinator/exceptions'
+require 'threatinator/decoders/gzip'
 require 'threatinator/fetchers/http'
 require 'threatinator/parsers/getline'
 require 'threatinator/parsers/csv'
@@ -68,6 +69,19 @@ module Threatinator
       self
     end
 
+    # Add the Gzip decoder
+    def decode_gzip
+      decoder_builders << lambda { Threatinator::Decoders::Gzip.new }
+      self
+    end
+    alias_method :extract_gzip, :decode_gzip
+    alias_method :gunzip, :decode_gzip
+
+    def decoder_builders
+      @decoder_builders ||= []
+    end
+    private :decoder_builders
+
     def build
       Feed.new(
         :provider => @provider, 
@@ -76,6 +90,7 @@ module Threatinator
         :fetcher_builder => @fetcher_builder,
         :parser_builder => @parser_builder,
         :filter_builders => @filter_builders,
+        :decoder_builders => decoder_builders
       )
     end
 

@@ -14,6 +14,8 @@ module Threatinator
     # @option opts [Array<Proc>] :filter_builders An array of procs that, 
     #   when called, will each return an instance of a filter (something that 
     #   responds to :filter?)
+    # @option opts [Array<Proc>] :decoder_builders An array of procs that, 
+    #   when called, will each return an instance of a Threatinator::Decoder
     def initialize(opts = {})
       @provider = opts.delete(:provider)
       @name = opts.delete(:name)
@@ -22,6 +24,7 @@ module Threatinator
       @parser_builder = opts.delete(:parser_builder)
       @fetcher_builder = opts.delete(:fetcher_builder)
       @filter_builders = opts.delete(:filter_builders) || []
+      @decoder_builders = opts.delete(:decoder_builders) || []
       validate!
     end
 
@@ -49,6 +52,10 @@ module Threatinator
       @filter_builders.dup
     end
 
+    def decoder_builders
+      @decoder_builders.dup
+    end
+
     def validate!
       validate_attribute!(:provider, @provider) { |x| x.kind_of?(::String) }
       validate_attribute!(:name, @name) { |x| x.kind_of?(::String) }
@@ -56,6 +63,11 @@ module Threatinator
       validate_attribute!(:fetcher_builder, @fetcher_builder) { |x| x.kind_of?(::Proc) }
       validate_attribute!(:parser_builder, @parser_builder) { |x| x.kind_of?(::Proc) }
       validate_attribute!(:filter_builders, @filter_builders) do |x|
+        x.kind_of?(::Array) &&
+          x.all? { |e| e.kind_of?(::Proc) }
+      end
+
+      validate_attribute!(:decoder_builders, @decoder_builders) do |x|
         x.kind_of?(::Array) &&
           x.all? { |e| e.kind_of?(::Proc) }
       end

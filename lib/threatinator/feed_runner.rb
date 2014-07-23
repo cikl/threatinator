@@ -14,6 +14,7 @@ module Threatinator
       @output_formatter = output_formatter
       @event_builder = Threatinator::EventBuilder.new
       @feed_filters = @feed.filter_builders.map { |x| x.call } 
+      @decoders = @feed.decoder_builders.map { |x| x.call } 
       @parser_block = @feed.parser_block
       @create_event_proc = @event_builder.create_event_proc()
       _init_feed_report()
@@ -28,9 +29,13 @@ module Threatinator
     #  an IO directly. 
     # @option opts [Proc] :record_callback A callback that allows 
     def run(opts = {})
-      unless fetched_io = opts.delete(:io)
+      unless io = opts.delete(:io)
         fetcher = @feed.fetcher_builder.call()
-        fetched_io = fetcher.fetch()
+        io = fetcher.fetch()
+      end
+
+      @decoders.each do |decoder|
+        io = decoder.decode(io)
       end
 
       record_callback = opts.delete(:record_callback)
@@ -39,7 +44,7 @@ module Threatinator
 
       parser = @feed.parser_builder.call()
 
-      parser.run(fetched_io) do |record|
+      parser.run(io) do |record|
         rr = parse_record(record)
         unless record_callback.nil?
           record_callback.call(record, rr)

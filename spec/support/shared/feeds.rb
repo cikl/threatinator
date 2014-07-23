@@ -40,9 +40,69 @@ end
 shared_examples_for 'any feed', :feed do
   # Expects :provider, :name, :feed
   subject { feed } 
-  its(:provider) { is_expected.to eq(provider) }
-  its(:name) { is_expected.to eq(name) }
   it { should be_a(Threatinator::Feed) }
+
+  describe "#provider" do
+    subject { feed.provider }
+    it { is_expected.to be_a(::String) }
+    it { is_expected.to eq(provider) }
+  end
+
+  describe "#name" do
+    subject { feed.name}
+    it { is_expected.to be_a(::String) }
+    it { is_expected.to eq(name) }
+  end
+
+  describe "#parser_block" do
+    subject { feed.parser_block }
+    it { is_expected.to be_a(::Proc) }
+  end
+
+  describe "#fetcher_builder" do
+    subject { feed.fetcher_builder }
+    it { is_expected.to be_a ::Proc }
+    specify "when called, it should generate a kind of Threatinator::Fetcher" do
+      expect(subject.call).to be_kind_of(Threatinator::Fetcher)
+    end
+  end
+
+  describe "#parser_builder" do
+    subject { feed.parser_builder }
+    it { is_expected.to be_a ::Proc }
+
+    specify "when called, it should generate a kind of Threatinator::Parser" do
+      expect(subject.call).to be_kind_of(Threatinator::Parser)
+    end
+  end
+
+  describe "#filter_builders" do
+    subject { feed.filter_builders }
+
+    it "should be an Array of Proc objects" do
+      expect(subject).to be_an ::Array
+    end
+
+    specify "each Proc, when called, should generate an object that responds to :filter?" do
+      subject.each do |filter_builder|
+        expect(filter_builder.call).to respond_to(:filter?)
+      end
+    end
+  end
+
+  describe "#decoder_builders" do
+    subject { feed.decoder_builders }
+
+    it "should be an Array of Proc objects" do
+      expect(subject).to be_an ::Array
+    end
+
+    specify "each Proc, when called, should generate a kind of Threatinator::Decoder" do
+      subject.each do |decoder_builder|
+        expect(decoder_builder.call).to be_kind_of(Threatinator::Decoder)
+      end
+    end
+  end
 end
 
 module FeedHelpers

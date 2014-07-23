@@ -11,10 +11,13 @@ describe Threatinator::FeedRunner do
   let(:parser_builder) { lambda { parser} }
 
   let(:filter_builders) { [] }
+  let(:decoder_builders) { [] }
 
   let(:feed) {
     build(:feed, fetcher_builder: fetcher_builder, 
-          parser_builder: parser_builder, filter_builders: filter_builders)
+          parser_builder: parser_builder, filter_builders: filter_builders,
+          decoder_builders: decoder_builders
+         )
   }
 
   let(:feed_runner) { described_class.new(feed, output_formatter) }
@@ -78,6 +81,27 @@ describe Threatinator::FeedRunner do
         expect(filter).to receive(:filter?).with(record3).ordered.and_return(false)
         expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record3).ordered
 
+        feed_runner.run
+      end
+    end
+
+    context "decoding" do
+      before :each do
+        allow(fetcher).to receive(:fetch).and_return(io)
+      end
+      let(:decoder1) { double("decoder") }
+      let(:decoder2) { double("decoder") }
+      let(:decoder3) { double("decoder") }
+      let(:decoder_builders) { [ lambda {decoder1}, lambda {decoder2}, lambda {decoder3} ] }
+      it "should do a bunch of stuff" do
+        decoded_io1 = double("decoded_io1")
+        decoded_io2 = double("decoded_io2")
+        decoded_io3 = double("decoded_io3")
+
+        expect(decoder1).to receive(:decode).with(io).and_return(decoded_io1)
+        expect(decoder2).to receive(:decode).with(decoded_io1).and_return(decoded_io2)
+        expect(decoder3).to receive(:decode).with(decoded_io2).and_return(decoded_io3)
+        expect(parser).to receive(:run).with(decoded_io3)
         feed_runner.run
       end
     end
