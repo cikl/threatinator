@@ -17,6 +17,7 @@ module Threatinator
         end
         
         zio.close
+        io.close unless io.closed?
         tempfile.rewind
         tempfile.set_encoding(self.encoding)
         tempfile

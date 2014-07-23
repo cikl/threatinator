@@ -10,6 +10,15 @@ shared_examples_for "a decoder" do
   describe "an instance" do
     subject { decoder }
     it { is_expected.to respond_to(:decode) }
+
+    it "should close the IO that it decodes from" do
+      data = encode_data_proc.call("here's some data")
+      io = StringIO.new(data)
+      expect(io).not_to be_closed
+      decoder.decode(io)
+      expect(io).to be_closed
+    end
+
   end
 
   describe "decoding a UTF-8 string" do 

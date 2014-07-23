@@ -9,6 +9,7 @@ FactoryGirl.define do
     fetcher_builder { lambda { Threatinator::Fetcher.new({}) } } 
     parser_builder { lambda { Threatinator::Parser.new({}) } } 
     filter_builders { [] }
+    decoder_builders { [] }
     parser_block { lambda { |*args| } }
 
     initialize_with { new(attributes) }
