@@ -4,7 +4,7 @@ module Threatinator
   class Event
     include Threatinator::PropertyDefiner
 
-    VALID_TYPES = Set.new([:c2, :attacker, :malware_host, :spamming, :scanning])
+    VALID_TYPES = Set.new([:c2, :attacker, :malware_host, :spamming, :scanning, :phishing])
 
     def initialize(opts = {})
       _parse_properties(opts)

@@ -154,7 +154,7 @@ module FeedHelpers
       before :each do
         fio = File.open(filename, 'r')
         @feed_report = feed_runner.run(:io => fio)
-        fio.close
+        fio.close unless fio.closed?
       end
       let(:feed_report) { @feed_report }
       include_context "a parsed feed"
