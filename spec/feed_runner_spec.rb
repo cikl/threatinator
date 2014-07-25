@@ -93,7 +93,7 @@ describe Threatinator::FeedRunner do
       let(:decoder2) { double("decoder") }
       let(:decoder3) { double("decoder") }
       let(:decoder_builders) { [ lambda {decoder1}, lambda {decoder2}, lambda {decoder3} ] }
-      it "should do a bunch of stuff" do
+      it "should run through each decoder in the order it was added to the feed" do
         decoded_io1 = double("decoded_io1")
         decoded_io2 = double("decoded_io2")
         decoded_io3 = double("decoded_io3")
@@ -103,6 +103,11 @@ describe Threatinator::FeedRunner do
         expect(decoder3).to receive(:decode).with(decoded_io2).and_return(decoded_io3)
         expect(parser).to receive(:run).with(decoded_io3)
         feed_runner.run
+      end
+
+      it "should skip decoding if the :skip_decoding was set to true" do
+        expect(parser).to receive(:run).with(io)
+        feed_runner.run(skip_decoding: true)
       end
     end
   end

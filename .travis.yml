@@ -6,6 +6,10 @@ rvm:
   - jruby-19mode
 # - jruby-20mode  # So slow
 
+matrix:
+  allow_failures:
+    - rvm: jruby-19mode
+
 services: rabbitmq
 
 env:

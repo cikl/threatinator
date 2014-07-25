@@ -28,14 +28,19 @@ module Threatinator
     # @option opts [IO-like] :io Override the fetcher by providing 
     #  an IO directly. 
     # @option opts [Proc] :record_callback A callback that allows 
+    # @option opts [Boolean] :skip_decoding (false) Skip all decoding if set 
+    #  to true. Useful for testing.
     def run(opts = {})
+      skip_decoding = !!opts.delete(:skip_decoding)
       unless io = opts.delete(:io)
         fetcher = @feed.fetcher_builder.call()
         io = fetcher.fetch()
       end
 
-      @decoders.each do |decoder|
-        io = decoder.decode(io)
+      unless skip_decoding == true
+        @decoders.each do |decoder|
+          io = decoder.decode(io)
+        end
       end
 
       record_callback = opts.delete(:record_callback)

@@ -7,6 +7,9 @@ module Threatinator
     # Indicates that the decode operation failed
     class DecoderError < StandardError
     end
+
+    class ParseError < StandardError
+    end
     
     class InvalidAttributeError < StandardError
       attr_reader :attribute, :got

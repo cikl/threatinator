@@ -5,6 +5,7 @@ require 'threatinator/decoders/gzip'
 require 'threatinator/fetchers/http'
 require 'threatinator/parsers/getline'
 require 'threatinator/parsers/csv'
+require 'threatinator/parsers/json'
 require 'threatinator/filters/block'
 require 'threatinator/filters/whitespace'
 require 'threatinator/filters/comments'
@@ -27,6 +28,15 @@ module Threatinator
         opts_dup = Marshal.load(Marshal.dump(opts))
         Threatinator::Fetchers::Http.new(opts_dup)
       end
+      self
+    end
+
+    def parse_json(opts = {}, &block)
+      @parser_builder = lambda do
+        opts_dup = Marshal.load(Marshal.dump(opts))
+        Threatinator::Parsers::JSON.new(opts_dup, &block)
+      end
+      @parser_block = block
       self
     end
 
