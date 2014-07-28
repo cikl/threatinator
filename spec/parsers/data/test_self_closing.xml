@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<doc>
+  <x>
+    <a />
+    <y>
+      <a />
+      <z foo="bar1"/>
+      <z foo="bar2"/>
+    </y>
+    <y>
+      <a />
+      <a />
+      <z foo="bar3"/>
+      <z foo="bar4"/>
+    </y>
+  </x>
+  <a />
+  <a />
+</doc>
+

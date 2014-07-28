@@ -7,6 +7,7 @@ SPEC_ROOT = Pathname.new(__FILE__).dirname.expand_path
 PROJECT_ROOT =  (SPEC_ROOT + '../').expand_path
 FEEDS_ROOT =  (PROJECT_ROOT + 'feeds').expand_path
 FEED_DATA_ROOT =  (SPEC_ROOT + 'feeds/data').expand_path
+PARSER_DATA_ROOT =  (SPEC_ROOT + 'parsers/data').expand_path
 
 require 'webmock/rspec'
 require 'simplecov'

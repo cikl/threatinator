@@ -6,6 +6,8 @@ require 'threatinator/fetchers/http'
 require 'threatinator/parsers/getline'
 require 'threatinator/parsers/csv'
 require 'threatinator/parsers/json'
+require 'threatinator/parsers/xml'
+require 'threatinator/parsers/xml/pattern'
 require 'threatinator/filters/block'
 require 'threatinator/filters/whitespace'
 require 'threatinator/filters/comments'
@@ -30,6 +32,17 @@ module Threatinator
       end
       self
     end
+
+  def parse_xml(pattern_string, opts = {}, &block)
+    @parser_builder = lambda do
+      pattern = Threatinator::Parsers::XML::Pattern.new(pattern_string)
+      opts_dup = Marshal.load(Marshal.dump(opts))
+      opts_dup[:pattern] = pattern
+      Threatinator::Parsers::XML.new(opts_dup, &block)
+    end
+    @parser_block = block
+    self
+  end
 
     def parse_json(opts = {}, &block)
       @parser_builder = lambda do
