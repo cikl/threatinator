@@ -321,6 +321,29 @@ describe Threatinator::FeedBuilder do
     end
   end
 
+  describe "#parse_xml" do
+    let(:builder) { build(:feed_builder, :without_parser) }
+
+    it "should return the builder" do
+      expect(builder.parse_xml('/some/path') {}).to eq(builder)
+    end
+
+    context "the built feed" do
+      let(:parser_block) { lambda { } }
+      let(:feed) {
+        builder.parse_xml('/some/path', &parser_block)
+        builder.build
+      }
+      describe "#parser_builder" do
+        let(:parser_builder) { feed.parser_builder}
+        it_should_behave_like "a parser builder"
+        it "should return an instance of Threatinator::Parsers::XML when called" do
+          expect(parser_builder.call).to be_a(Threatinator::Parsers::XML)
+        end
+      end
+    end
+  end
+
   describe "#parse_json" do
     let(:builder) { build(:feed_builder, :without_parser) }
 

@@ -40,4 +40,12 @@ shared_examples_for "a parser when compared to a differently configured parser" 
   end
 end
 
+module ParserHelpers
+  def parser_data(filename)
+    (PARSER_DATA_ROOT + filename).to_s
+  end
+end
 
+shared_context "a parser", :parser do
+  include ParserHelpers
+end
