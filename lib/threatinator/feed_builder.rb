@@ -7,7 +7,6 @@ require 'threatinator/parsers/getline'
 require 'threatinator/parsers/csv'
 require 'threatinator/parsers/json'
 require 'threatinator/parsers/xml'
-require 'threatinator/parsers/xml/pattern'
 require 'threatinator/filters/block'
 require 'threatinator/filters/whitespace'
 require 'threatinator/filters/comments'
@@ -38,7 +37,7 @@ module Threatinator
       pattern = Threatinator::Parsers::XML::Pattern.new(pattern_string)
       opts_dup = Marshal.load(Marshal.dump(opts))
       opts_dup[:pattern] = pattern
-      Threatinator::Parsers::XML.new(opts_dup, &block)
+      Threatinator::Parsers::XML::Parser.new(opts_dup, &block)
     end
     @parser_block = block
     self
@@ -47,7 +46,7 @@ module Threatinator
     def parse_json(opts = {}, &block)
       @parser_builder = lambda do
         opts_dup = Marshal.load(Marshal.dump(opts))
-        Threatinator::Parsers::JSON.new(opts_dup, &block)
+        Threatinator::Parsers::JSON::Parser.new(opts_dup, &block)
       end
       @parser_block = block
       self
@@ -56,7 +55,7 @@ module Threatinator
     def parse_eachline(opts = {}, &block)
       @parser_builder = lambda do
         opts_dup = Marshal.load(Marshal.dump(opts))
-        Threatinator::Parsers::Getline.new(opts_dup, &block)
+        Threatinator::Parsers::Getline::Parser.new(opts_dup, &block)
       end
       @parser_block = block
       self
@@ -65,7 +64,7 @@ module Threatinator
     def parse_csv(opts = {}, &block)
       @parser_builder = lambda do
         opts_dup = Marshal.load(Marshal.dump(opts))
-        Threatinator::Parsers::CSVParser.new(opts_dup, &block)
+        Threatinator::Parsers::CSV::Parser.new(opts_dup, &block)
       end
       @parser_block = block
       self

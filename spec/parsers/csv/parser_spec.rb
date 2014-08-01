@@ -1,18 +1,18 @@
 require 'spec_helper'
-require 'threatinator/parsers/csv'
+require 'threatinator/parsers/csv/parser'
 require 'stringio'
 require 'threatinator/record'
 
-describe Threatinator::Parsers::CSVParser do
+describe Threatinator::Parsers::CSV::Parser do
   it_should_behave_like "a parser when compared to an identically configured parser" do
-    let(:parser1) { Threatinator::Parsers::CSVParser.new(:row_separator => "X") }
-    let(:parser2) { Threatinator::Parsers::CSVParser.new(:row_separator => "X") }
+    let(:parser1) { described_class.new(:row_separator => "X") }
+    let(:parser2) { described_class.new(:row_separator => "X") }
   end
   
   context "two instances with differently configured row_separators" do
     it_should_behave_like "a parser when compared to a differently configured parser" do
-      let(:parser1) { Threatinator::Parsers::CSVParser.new(:row_separator => "X") }
-      let(:parser2) { Threatinator::Parsers::CSVParser.new(:row_separator => "Y") }
+      let(:parser1) { described_class.new(:row_separator => "X") }
+      let(:parser2) { described_class.new(:row_separator => "Y") }
     end
   end
 

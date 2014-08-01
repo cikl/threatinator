@@ -2,13 +2,13 @@ require 'spec_helper'
 require 'threatinator/parsers/xml'
 require 'threatinator/parsers/xml/pattern'
 
-describe Threatinator::Parsers::XML, :parser do
+describe Threatinator::Parsers::XML::Parser, :parser do
   context "two instances with identically configured patterns" do
     it_should_behave_like "a parser when compared to an identically configured parser" do
       let(:pattern1) { Threatinator::Parsers::XML::Pattern.new('/foo/bar') }
       let(:pattern2) { Threatinator::Parsers::XML::Pattern.new('/foo/bar') }
-      let(:parser1) { Threatinator::Parsers::XML.new(pattern: pattern1) }
-      let(:parser2) { Threatinator::Parsers::XML.new(pattern: pattern2) }
+      let(:parser1) { described_class.new(pattern: pattern1) }
+      let(:parser2) { described_class.new(pattern: pattern2) }
     end
   end
 
@@ -16,8 +16,8 @@ describe Threatinator::Parsers::XML, :parser do
     it_should_behave_like "a parser when compared to a differently configured parser" do
       let(:pattern1) { Threatinator::Parsers::XML::Pattern.new('/foo/bar') }
       let(:pattern2) { Threatinator::Parsers::XML::Pattern.new('//foo/bar') }
-      let(:parser1) { Threatinator::Parsers::XML.new(pattern: pattern1) }
-      let(:parser2) { Threatinator::Parsers::XML.new(pattern: pattern2) }
+      let(:parser1) { described_class.new(pattern: pattern1) }
+      let(:parser2) { described_class.new(pattern: pattern2) }
     end
   end
 

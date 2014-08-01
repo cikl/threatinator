@@ -1,13 +1,12 @@
 require 'spec_helper'
-require 'threatinator/parsers/json'
+require 'threatinator/parsers/json/parser'
 require 'stringio'
-require 'threatinator/record'
 require 'multi_json'
 
-describe Threatinator::Parsers::JSON do
+describe Threatinator::Parsers::JSON::Parser do
   it_should_behave_like "a parser when compared to an identically configured parser" do
-    let(:parser1) { Threatinator::Parsers::JSON.new() }
-    let(:parser2) { Threatinator::Parsers::JSON.new() }
+    let(:parser1) { described_class.new() }
+    let(:parser2) { described_class.new() }
   end
 
   let(:element1) { 
@@ -44,15 +43,15 @@ describe Threatinator::Parsers::JSON do
     let(:json_string) { MultiJson.dump([element1, element2, element3]) }
     let(:io) { StringIO.new(json_string) }
 
-    it "should yield each of the array's elements as the :data of a JSONRecord" do
+    it "should yield each of the array's elements as the :data of a Parsers::JSON::Record" do
       parser = described_class.new()
 
       expect { |b|
         parser.run(io, &b)
       }.to yield_successive_args(
-        Threatinator::JSONRecord.new(element1), 
-        Threatinator::JSONRecord.new(element2), 
-        Threatinator::JSONRecord.new(element3)
+        Threatinator::Parsers::JSON::Record.new(element1), 
+        Threatinator::Parsers::JSON::Record.new(element2), 
+        Threatinator::Parsers::JSON::Record.new(element3)
       )
     end
   end
@@ -61,15 +60,15 @@ describe Threatinator::Parsers::JSON do
     let(:json_string) { MultiJson.dump({'foo' => element1, 'bar' => element2, 'bla' => element3}) }
     let(:io) { StringIO.new(json_string) }
 
-    it "should yield each of the hash's key/value pairs as the :key and :data of a JSONRecord" do
+    it "should yield each of the hash's key/value pairs as the :key and :data of a Parsers::JSON::Record" do
       parser = described_class.new()
 
       expect { |b|
         parser.run(io, &b)
       }.to yield_successive_args(
-        Threatinator::JSONRecord.new(element1, key: 'foo'), 
-        Threatinator::JSONRecord.new(element2, key: 'bar'), 
-        Threatinator::JSONRecord.new(element3, key: 'bla')
+        Threatinator::Parsers::JSON::Record.new(element1, key: 'foo'), 
+        Threatinator::Parsers::JSON::Record.new(element2, key: 'bar'), 
+        Threatinator::Parsers::JSON::Record.new(element3, key: 'bla')
       )
     end
   end
@@ -99,8 +98,8 @@ describe Threatinator::Parsers::JSON do
           parser.run(io, &b)
         }.to raise_error(Threatinator::Exceptions::ParseError)
       }.to yield_successive_args(
-        Threatinator::JSONRecord.new(element1, key: 'foo'), 
-        Threatinator::JSONRecord.new(element2, key: 'bar')
+        Threatinator::Parsers::JSON::Record.new(element1, key: 'foo'), 
+        Threatinator::Parsers::JSON::Record.new(element2, key: 'bar')
       )
     end
   end
