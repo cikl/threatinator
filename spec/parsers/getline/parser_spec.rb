@@ -1,18 +1,18 @@
 require 'spec_helper'
-require 'threatinator/parsers/getline'
+require 'threatinator/parsers/getline/parser'
 require 'stringio'
 require 'threatinator/record'
 
-describe Threatinator::Parsers::Getline do
+describe Threatinator::Parsers::Getline::Parser do
   it_should_behave_like "a parser when compared to an identically configured parser" do
-    let(:parser1) { Threatinator::Parsers::Getline.new(:separator => "X") }
-    let(:parser2) { Threatinator::Parsers::Getline.new(:separator => "X") }
+    let(:parser1) { described_class.new(:separator => "X") }
+    let(:parser2) { described_class.new(:separator => "X") }
   end
   
   context "two instances with differently configured separators" do
     it_should_behave_like "a parser when compared to a differently configured parser" do
-      let(:parser1) { Threatinator::Parsers::Getline.new(:separator => "X") }
-      let(:parser2) { Threatinator::Parsers::Getline.new(:separator => "Y") }
+      let(:parser1) { described_class.new(:separator => "X") }
+      let(:parser2) { described_class.new(:separator => "Y") }
     end
   end
 

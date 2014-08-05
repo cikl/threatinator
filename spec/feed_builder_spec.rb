@@ -337,8 +337,8 @@ describe Threatinator::FeedBuilder do
       describe "#parser_builder" do
         let(:parser_builder) { feed.parser_builder}
         it_should_behave_like "a parser builder"
-        it "should return an instance of Threatinator::Parsers::XML when called" do
-          expect(parser_builder.call).to be_a(Threatinator::Parsers::XML)
+        it "should return an instance of Threatinator::Parsers::XML::Parser when called" do
+          expect(parser_builder.call).to be_a(Threatinator::Parsers::XML::Parser)
         end
       end
     end
@@ -360,8 +360,8 @@ describe Threatinator::FeedBuilder do
       describe "#parser_builder" do
         let(:parser_builder) { feed.parser_builder}
         it_should_behave_like "a parser builder"
-        it "should return an instance of Threatinator::Parsers::JSON when called" do
-          expect(parser_builder.call).to be_a(Threatinator::Parsers::JSON)
+        it "should return an instance of Threatinator::Parsers::JSON::Parser when called" do
+          expect(parser_builder.call).to be_a(Threatinator::Parsers::JSON::Parser)
         end
       end
     end
@@ -383,8 +383,8 @@ describe Threatinator::FeedBuilder do
       describe "#parser_builder" do
         let(:parser_builder) { feed.parser_builder}
         it_should_behave_like "a parser builder"
-        it "should return an instance of Threatinator::Parsers::Getline when called" do
-          expect(parser_builder.call).to be_a(Threatinator::Parsers::Getline)
+        it "should return an instance of Threatinator::Parsers::Getline::Parser when called" do
+          expect(parser_builder.call).to be_a(Threatinator::Parsers::Getline::Parser)
         end
       end
     end
@@ -406,8 +406,8 @@ describe Threatinator::FeedBuilder do
       describe "#parser_builder" do
         let(:parser_builder) { feed.parser_builder}
         it_should_behave_like "a parser builder"
-        it "should return an instance of Threatinator::Parsers::CSVParser when called" do
-          expect(parser_builder.call).to be_a(Threatinator::Parsers::CSVParser)
+        it "should return an instance of Threatinator::Parsers::CSV::Parser when called" do
+          expect(parser_builder.call).to be_a(Threatinator::Parsers::CSV::Parser)
         end
       end
     end
@@ -434,7 +434,7 @@ end'
       feed = builder.build
       expect(feed.provider).to eq("provider1")
       expect(feed.name).to eq("feed1")
-      expect(feed.parser_builder.call).to eq(Threatinator::Parsers::Getline.new(separator: "\n"))
+      expect(feed.parser_builder.call).to eq(Threatinator::Parsers::Getline::Parser.new(separator: "\n"))
     end
     
     context "when str contains invalid syntax" do
@@ -537,8 +537,8 @@ fetch_http("https://foobar/feed1.data")'
           expect(feed.name).to eq("my_feed_name")
         end
 
-        it "#parser_builder should generate the proper Threatinator::Parsers::Getline" do
-          expect(feed.parser_builder.call).to eq(Threatinator::Parsers::Getline.new(separator:"\0"))
+        it "#parser_builder should generate the proper Threatinator::Parsers::Getline::Parser" do
+          expect(feed.parser_builder.call).to eq(Threatinator::Parsers::Getline::Parser.new(separator:"\0"))
         end
 
         describe "#filter_builders" do

@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'threatinator/json_record'
+require 'threatinator/parsers/json/record'
 
-describe Threatinator::JSONRecord do
+describe Threatinator::Parsers::JSON::Record do
   it_should_behave_like 'a record' do
     let(:data) { {"some" => "data"} }
     let(:opts) { { } }
