@@ -4,4 +4,5 @@
 .gem
 *.war
 /coverage/
+/coverage.vim
 Gemfile.lock

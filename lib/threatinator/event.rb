@@ -10,6 +10,8 @@ module Threatinator
       _parse_properties(opts)
     end
 
+    property :feed_provider, type: String
+    property :feed_name, type: String
     property :type, type: Symbol, validate: lambda { |obj, val| VALID_TYPES.include?(val) }
     property :ipv4s, type: Array, default: lambda { Array.new }
     property :fqdns, type: Array, default: lambda { Array.new }

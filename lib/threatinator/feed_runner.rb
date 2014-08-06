@@ -12,7 +12,7 @@ module Threatinator
       @feed = feed
       @feed_report_class = opts[:feed_report_class] || Threatinator::Instrumentation::FeedReport 
       @output_formatter = output_formatter
-      @event_builder = Threatinator::EventBuilder.new
+      @event_builder = Threatinator::EventBuilder.new(@feed)
       @feed_filters = @feed.filter_builders.map { |x| x.call } 
       @decoders = @feed.decoder_builders.map { |x| x.call } 
       @parser_block = @feed.parser_block
@@ -78,6 +78,14 @@ module Threatinator
       return rr
     ensure 
       @feed_report.add_record_report(rr)
+    end
+
+    # Runs a feed
+    # @param [Threatinator::Feed] feed The feed to run
+    # @param [Threatinator::Output] output The output instance
+    # @param [Hash] run_opts Options passed to #run. See #run .
+    def self.run(feed, output, run_opts = {})
+      self.new(feed, output).run(run_opts)
     end
 
   end

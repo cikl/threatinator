@@ -1,9 +1,8 @@
 require 'threatinator'
 require 'threatinator/event_builder'
-require 'threatinator/registry'
+require 'threatinator/feed_registry'
 require 'threatinator/feed_builder'
 require 'threatinator/feed_runner'
-require 'threatinator/outputs/csv'
 
 module Threatinator
   # Runs all things Threatinator.
@@ -13,7 +12,7 @@ module Threatinator
     # @param 
     def initialize
       @feed_paths = []
-      @registry = Threatinator::Registry.new
+      @registry = Threatinator::FeedRegistry.new
     end
 
     def add_feed_path(path) 
@@ -63,13 +62,13 @@ module Threatinator
       io_out.puts("Total: #{feed_info.count}")
     end
 
-    def run(provider, name, output_builder, opts = {})
+    def run(provider, name, output, opts = {})
       _load_feeds()
       feed = @registry.get(provider, name)
-      output_formatter = output_builder.build_for_feed(feed)
-      feed_runner = Threatinator::FeedRunner.new(feed, output_formatter)
-      feed_report = feed_runner.run(opts)
-      return feed_report
+      if feed.nil?
+        raise Threatinator::Exceptions::UnknownFeed.new(provider, name)
+      end
+      Threatinator::FeedRunner.run(feed, output, opts)
     end
 
     def _register_feed_from_file(filename)

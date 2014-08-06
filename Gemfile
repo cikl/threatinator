@@ -13,7 +13,9 @@ end
 group :test do
   gem 'rake'
   gem 'multi_json'
-  gem 'simplecov'
+  gem 'simplecov', '~> 0.9'
+  gem 'simplecov-vim', '= 0.0.1'
+  gem 'simplecov-csv'
   gem 'rspec', '~> 3'
   gem 'rspec-its'
   gem 'webmock'

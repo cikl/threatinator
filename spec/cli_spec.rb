@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'threatinator/cli'
 require 'threatinator/runner'
+require 'fileutils'
 
 shared_examples_for "a command parsing path options" do
   describe "--help" do
@@ -119,7 +120,6 @@ describe Threatinator::CLI do
     it_should_behave_like "a command parsing path options" do
       let(:command_method) { :list }
     end
-
   end
 
   describe "run command" do
@@ -139,6 +139,74 @@ describe Threatinator::CLI do
 
     it_should_behave_like "a command parsing path options" do
       let(:command_method) { :run }
+    end
+  end
+
+  describe "#build_output(name)" do
+    def generate_output_plugin(libdir, name, classname)
+      output_dir = File.join(libdir, 'threatinator', 'outputs')
+      filename = File.join(output_dir, "#{name}.rb")
+      FileUtils.mkdir_p output_dir
+      File.open(filename, "w") do |fio|
+        fio.write <<EOS
+require 'threatinator/output'
+require 'threatinator/plugins'
+class #{classname} < Threatinator::Output
+  Threatinator::Plugins.register_output(:'#{name.to_s}', self)
+end
+EOS
+      end
+    end
+
+    before :each do
+      @tempdir = Dir.mktmpdir
+      @libdir = File.join(@tempdir, 'lib')
+      FileUtils.mkdir_p @libdir
+      $:.unshift @libdir
+
+      @output_name = generate(:output_name)
+      @classname = "Output_#{@output_name}"
+      generate_output_plugin(@libdir, @output_name, @classname)
+    end
+
+    after :each do
+      FileUtils.remove_entry_secure @tempdir
+      $:.shift
+    end
+
+    context "when an output plugin exists for the given name" do
+      it "loads the file 'threatinator/outputs/<name that was provided>'" do
+        expect {
+          Kernel.const_get(@classname.to_sym)
+        }.to raise_error(::NameError)
+
+        Threatinator::CLI.build_output(@output_name)
+        klass = Kernel.const_get(@classname.to_sym)
+        expect(klass).to be_a(Class)
+        expect(klass.ancestors).to include(Threatinator::Output)
+      end
+
+      it "returns an instance of the output" do
+        v = Threatinator::CLI.build_output(@output_name)
+        klass = Kernel.const_get(@classname.to_sym)
+        expect(v).to be_a(klass)
+      end
+    end
+
+    context "when an output plugin DOES NOT exist for the given name" do
+      it "raises Threatinator::Exceptions::UnknownPlugin" do
+        expect {
+          Threatinator::CLI.build_output("flibidy-floo")
+        }.to raise_error(Threatinator::Exceptions::UnknownPlugin)
+      end
+    end
+
+    context "when name is nil" do
+      it "raises Threatinator::Exceptions::UnknownPlugin" do
+        expect {
+          Threatinator::CLI.build_output(nil)
+        }.to raise_error(Threatinator::Exceptions::UnknownPlugin)
+      end
     end
   end
 
