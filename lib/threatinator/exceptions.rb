@@ -10,6 +10,9 @@ module Threatinator
 
     class ParseError < StandardError
     end
+
+    class UnknownPlugin < StandardError
+    end
     
     class InvalidAttributeError < StandardError
       attr_reader :attribute, :got
@@ -20,12 +23,15 @@ module Threatinator
       end
     end
 
-    class FeedAlreadyRegisteredError < StandardError
+    class AlreadyRegisteredError < StandardError
+    end
+
+    class UnknownFeed < StandardError
       attr_reader :provider, :name
       def initialize(provider, name)
         @provider = provider
         @name = name
-        super("provider: #{@provider}, name: #{@name}")
+        super("Failed to find feed with provider '#{provider}' and name '#{name}'")
       end
     end
 

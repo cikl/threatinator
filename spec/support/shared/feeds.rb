@@ -32,7 +32,7 @@ shared_context 'for feeds', :feed => lambda { true } do
   end
 
   let(:feed_path) { feed_path.to_s }
-  let(:output_formatter) { Threatinator::Outputs::Null.new(feed, $stdout) }
+  let(:output_formatter) { Threatinator::Outputs::Null.new() }
   let(:feed_runner) { Threatinator::FeedRunner.new(feed, output_formatter, :feed_report_class => Threatinator::Instrumentation::DetailedFeedReport) }
   let(:feed) { @feed_builder.build() }
 end

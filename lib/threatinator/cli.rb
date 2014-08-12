@@ -1,6 +1,7 @@
 require 'threatinator/runner'
-require 'threatinator/output_builder'
+require 'threatinator/plugins'
 require 'slop'
+require 'pp'
 
 module Threatinator
   module CLI
@@ -26,12 +27,31 @@ module Threatinator
       end
     end
 
+    def self.build_output(name)
+      if name.nil?
+        raise Threatinator::Exceptions::UnknownPlugin.new("No output-format provided")
+      end
+
+      output_plugin_path = "threatinator/outputs/#{name}"
+      begin
+        require output_plugin_path
+      rescue ::LoadError
+        $stderr.puts "WARNING: failed to require '#{output_plugin_path}'"
+      end
+
+      klass = Threatinator::Plugins.get_output_by_name(name)
+      klass.new()
+    end
+
     def self.do_run_command(runner, opts, args)
       run_opts = {}
       provider = args.shift or raise "Missing provider"
       name = args.shift or raise "Missing name"
       return if opts[:dryrun] == true
-      output_builder = create_output_builder(opts[:'output-format'], opts)
+
+      output_name = opts.delete(:'output-format')
+      output = build_output(output_name)
+
       coverage_filename = opts[:coverage]
       coverage_filehandle = nil
       unless coverage_filename.nil?
@@ -48,7 +68,8 @@ module Threatinator
         run_opts[:io] = File.open(filename, "r")
       end
 
-      feed_report = runner.run(provider, name, output_builder, run_opts)
+      feed_report = runner.run(provider, name, output, run_opts)
+
       if coverage_filehandle
         $stderr.puts "Coverage report generated." 
         coverage_filehandle.close
@@ -57,28 +78,6 @@ module Threatinator
       end
     ensure 
       run_opts[:io].close unless run_opts[:io].nil?
-    end
-
-    def self.create_output_builder(type, opts = {})
-      builder = Threatinator::OutputBuilder.new
-      case type
-      when 'csv'
-        require 'threatinator/outputs/csv'
-        # TODO allow folks to specify the output IO
-        builder.output_class Threatinator::Outputs::CSV
-        builder.output_io $stdout
-      when 'rubydebug'
-        require 'threatinator/outputs/rubydebug'
-        builder.output_class Threatinator::Outputs::Rubydebug
-        builder.output_io $stdout
-      when 'null'
-        require 'threatinator/outputs/null'
-        builder.output_class Threatinator::Outputs::Null
-        builder.output_io $stdout
-      else 
-        raise ArgumentError.new("Unknown output format: #{type}")
-      end
-      return builder
     end
 
     def self.process!(cli_args, runner)

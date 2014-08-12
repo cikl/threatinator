@@ -1,47 +1,46 @@
 require 'threatinator/exceptions'
 
 module Threatinator
-  # Holds a set of threatinator feeds
+  # Just a simple class that holds stuff. Yup, a glorified hash.
   class Registry
     include Threatinator::Exceptions
 
     def initialize()
-      @feeds = Hash.new
+      @data= Hash.new
     end
 
-    # @param [Threatinator::Feed]
-    # @raise [Threatinator::Exceptions::FeedAlreadyRegisteredError] if a feed
-    #  with the same name and provider is already registered.
-    def register(feed)
-      key = [feed.provider, feed.name]
-      if @feeds.has_key?(key)
-        raise FeedAlreadyRegisteredError.new(feed.provider, feed.name)
+    # @param [Object] key The object to use as the key for storing the object
+    # @param [Object] object The object to be stored
+    # @raise [Threatinator::Exceptions::dAlreadyRegisteredError] if an object
+    #  with the same key is already registered.
+    def register(key, object)
+      if @data.has_key?(key)
+        raise AlreadyRegisteredError.new(key)
       end
-      @feeds[key] = feed
+      @data[key] = object
     end
 
-    # @param [String] provider
-    # @param [String] name
-    # @return [Threatinator::Feed]
-    def get(provider, name)
-      @feeds[[provider, name]]
+    # @param [Object] key 
+    # @return [Object]
+    def get(key)
+      @data[key]
     end
 
-    # @return [Integer] the number of feeds in the registry
+    # @return [Integer] the number of objects in the registry
     def count
-      @feeds.count
+      @data.count
     end
 
-    # Enumerates through each feed in our registry
-    # @yield [feed]
-    # @yieldparam [Threatinator::Feed] feed A feed within the registry
+    # Enumerates through each object in our registry
+    # @yield [object]
+    # @yieldparam [Object] object An object within the registry
     def each(&block)
-      @feeds.each_value(&block)
+      @data.each_value(&block)
     end
 
-    # Removes all feeds from the registry
+    # Removes all objects from the registry
     def clear
-      @feeds.clear
+      @data.clear
     end
   end
 end

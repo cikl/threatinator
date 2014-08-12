@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'threatinator/runner'
+require 'threatinator/outputs/null'
 
 describe Threatinator::Runner do
   let(:default_feed_path) {File.expand_path("../../feeds", __FILE__)}
@@ -94,7 +95,7 @@ EOS
         generate_feedfile(File.join(@feed_path1, "feed2.feed"), "provider1", "feed1")
         expect {
           runner._load_feeds
-        }.to raise_error(Threatinator::Exceptions::FeedAlreadyRegisteredError)
+        }.to raise_error(Threatinator::Exceptions::AlreadyRegisteredError)
       end
 
     end
@@ -226,7 +227,43 @@ EOS
   end
 
   describe "#run" do
-    it "should call #load_feeds" do
+    before :each do
+      @feed_path = Dir.mktmpdir
+      generate_feedfile(File.join(@feed_path, "feed1.feed"), "provider1", "feed1")
+      runner.add_feed_path(@feed_path)
+      allow(Threatinator::FeedRunner).to receive(:run)
+    end
+
+    after :each do
+      FileUtils.remove_entry_secure @feed_path
+    end
+
+    let(:output) { Threatinator::Plugins.get_output_by_name(:null) } 
+
+    it "parses all the feeds" do
+      expect(runner).to receive(:_load_feeds).and_call_original
+      runner.run("provider1", "feed1", output)
+    end
+
+    context "when called with a provider and feed name that does not match a feed" do
+      it "raises Threatinator::Exceptions::UnknownFeed" do
+        expect {
+          runner.run("foobar", "bla", output)
+        }.to raise_error(Threatinator::Exceptions::UnknownFeed)
+      end
+    end
+
+    context "when called with a provider and feed name that matches a feed" do
+      it "loads the feed by the given provider and name" do
+        expect(runner.registry).to receive(:get).with("provider1", "feed1").and_call_original
+        runner.run("provider1", "feed1", output)
+      end
+
+      it "runs the feed" do
+        opts_hash = {foo: 123}
+        expect(Threatinator::FeedRunner).to receive(:run).with(kind_of(Threatinator::Feed), output, opts_hash)
+        runner.run("provider1", "feed1", output, opts_hash)
+      end
     end
   end
 

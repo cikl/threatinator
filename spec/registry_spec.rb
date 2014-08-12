@@ -3,89 +3,74 @@ require 'threatinator/registry'
 
 describe Threatinator::Registry do
   let(:registry) { described_class.new }
-  let(:ten_feeds) { 1.upto(10).map { |i| build(:feed, provider: "prov#{i}", name: "name#{i}") } }
+  let(:ten_things) { 10.times.map { Object.new  } }
 
   describe "#clear" do
     it "should remove all existing registrations" do
-      ten_feeds.each do |feed|
-        registry.register(feed)
-      end
-      expect(registry.count).to eq(10)
+      expect(registry.count).to eq(0)
+      registry.register(:foo, 123)
+      registry.register(:bar, 456)
+      expect(registry.count).to eq(2)
       registry.clear
       expect(registry.count).to eq(0)
-
-      expect {
-        ten_feeds.each do |feed|
-          registry.register(feed)
-        end
-      }.not_to raise_error
-      expect(registry.count).to eq(10)
     end
-
-
   end
 
   describe "#register" do
-    it "should register the provided feed" do
-      feed = build(:feed, provider: "my_provider", name: "my_name")
-      registry.register(feed)
-      expect(registry.get("my_provider", "my_name")).to be(feed)
-    end
-    it "should return the feed that was registered" do
-      feed = build(:feed, provider: "my_provider", name: "my_name")
-      expect(registry.register(feed)).to be(feed)
-    end
-    it "should raise a FeedAlreadyRegisteredError if a feed is already registered with the provider and name" do
-      feed1 = build(:feed, provider: "my_provider", name: "my_name")
-      feed2 = build(:feed, provider: "my_provider", name: "my_name")
-      registry.register(feed1)
-      expect { 
-        registry.register(feed2)
-      }.to raise_error(Threatinator::Exceptions::FeedAlreadyRegisteredError)
+    it "should register the provided object to the given key" do
+      obj = Object.new
+      registry.register(:foo, obj)
+      expect(registry.get(:foo)).to be(obj)
     end
 
-    it "should raise a FeedAlreadyRegisteredError if the same feed is registered twice" do
-      feed = build(:feed, provider: "my_provider", name: "my_name")
-      registry.register(feed)
+    it "should return the object that was registered" do
+      obj = Object.new
+      expect(registry.register(:foo, obj)).to be(obj)
+    end
+
+    it "should raise a AlreadyRegisteredError if something is already registered with the the given key" do
+      obj = Object.new
+      registry.register(:foo, obj)
       expect { 
-        registry.register(feed)
-      }.to raise_error(Threatinator::Exceptions::FeedAlreadyRegisteredError)
+        registry.register(:foo, obj)
+      }.to raise_error(Threatinator::Exceptions::AlreadyRegisteredError)
     end
   end
 
   describe "#each" do
-    it "should enumerate through each reigstered feed" do
-      ten_feeds.each do |feed|
-        registry.register(feed)
+    it "should enumerate through each reigstered object" do
+      ten_things.each_with_index do |thing, i|
+        registry.register(i, thing)
       end
-      found_feeds = []
-      registry.each do |feed|
-        found_feeds << feed
+      found_objects = []
+      registry.each do |obj|
+        found_objects << obj 
       end
-      expect(found_feeds).to match_array(ten_feeds)
+      expect(found_objects).to match_array(ten_things)
     end
   end
 
   describe "#count" do
-    it "should return the number of feeds contained within the registry" do
+    it "should return the number of objects contained within the registry" do
       expect(registry.count).to eq(0)
-      ten_feeds.each do |feed|
-        registry.register(feed)
+      ten_things.each_with_index do |thing, i|
+        registry.register(i, thing)
       end
       expect(registry.count).to eq(10)
     end
   end
 
   describe "#get" do
-    it "should return nil if the provider/name isn't registered" do
-      registry.register(build(:feed, provider: "my_provider", name: "my_name"))
-      expect(registry.get("asdf", "1234")).to be_nil
+    it "should return nil if key isn't registered" do
+      expect(registry.get(:foo)).to be_nil
     end
-    it "should return the correct feed for the given provider and name" do
-      ten_feeds.each { |feed| registry.register(feed) }
-      feed = build(:feed, provider: "my_provider", name: "my_name")
-      registry.register(feed)
-      expect(registry.get("my_provider", "my_name")).to be(feed)
+
+    it "should return the correct feed for the key" do
+      ten_things.each_with_index { |o, i| registry.register(i, o) }
+      obj = Object.new
+      registry.register(:foo, obj)
+      expect(registry.get(:foo)).to be(obj)
     end
   end
 end
+

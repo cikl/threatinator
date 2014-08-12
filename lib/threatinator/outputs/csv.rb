@@ -1,10 +1,11 @@
 require 'threatinator/output'
+require 'threatinator/plugins'
 require 'csv'
 module Threatinator
   module Outputs
-    class CSV < Threatinator::Output
-      def initialize(feed, output_io)
-        super(feed, output_io)
+    class CSV < Threatinator::FileBasedOutput
+      def initialize(config = {})
+        super(config)
         @csv = ::CSV.new(self.output_io, 
                          :write_headers => true,
                          :headers => [
@@ -24,8 +25,8 @@ module Threatinator
 
       def handle_event(event)
         @csv.add_row([
-          self.feed.provider,
-          self.feed.name,
+          event.feed_provider,
+          event.feed_name,
           event.type,
           event.ipv4s[0],
           event.ipv4s[1],
@@ -37,6 +38,8 @@ module Threatinator
           event.fqdns[3]
         ])
       end
+
+      Threatinator::Plugins.register_output(:csv, self)
     end
   end
 end

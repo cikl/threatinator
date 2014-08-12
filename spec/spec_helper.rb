@@ -13,6 +13,23 @@ require 'webmock/rspec'
 require 'simplecov'
 require 'rspec/its'
 
+formatters = [
+  SimpleCov::Formatter::HTMLFormatter
+]
+
+begin
+  require 'simplecov-vim/formatter'
+  formatters << SimpleCov::Formatter::VimFormatter
+rescue ::LoadError
+end
+
+begin
+  require 'simplecov-csv'
+  formatters << SimpleCov::Formatter::CSVFormatter
+rescue ::LoadError
+end
+
+SimpleCov.formatters = formatters
 SimpleCov.start do
   project_root = RSpec::Core::RubyProject.root
   add_filter PROJECT_ROOT.join('spec').to_s

@@ -3,7 +3,8 @@ require 'threatinator/event'
 module Threatinator
   class EventBuilder
     attr_reader :total
-    def initialize()
+    def initialize(feed)
+      @feed = feed
       @built_events = []
       @total = 0
     end
@@ -29,6 +30,8 @@ module Threatinator
 
     def create_event
       event = Threatinator::Event.new
+      event.feed_provider = @feed.provider
+      event.feed_name = @feed.name
       yield(event)
       @total += 1
       @built_events << event
