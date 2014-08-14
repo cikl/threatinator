@@ -1,5 +1,5 @@
 require 'threatinator/runner'
-require 'threatinator/plugins'
+require 'threatinator/plugin_loader'
 require 'slop'
 require 'pp'
 
@@ -27,20 +27,7 @@ module Threatinator
       end
     end
 
-    def self.build_output(name)
-      if name.nil?
-        raise Threatinator::Exceptions::UnknownPlugin.new("No output-format provided")
-      end
-
-      output_plugin_path = "threatinator/outputs/#{name}"
-      begin
-        require output_plugin_path
-      rescue ::LoadError
-        $stderr.puts "WARNING: failed to require '#{output_plugin_path}'"
-      end
-
-      klass = Threatinator::Plugins.get_output_by_name(name)
-      klass.new()
+    def self.build_output(output_class)
     end
 
     def self.do_run_command(runner, opts, args)
@@ -49,8 +36,11 @@ module Threatinator
       name = args.shift or raise "Missing name"
       return if opts[:dryrun] == true
 
-      output_name = opts.delete(:'output-format')
-      output = build_output(output_name)
+      unless output_class = opts[:output_class]
+        raise Threatinator::Exceptions::UnknownPlugin.new("No output-format provided")
+      end
+
+      output = output_class.new()
 
       coverage_filename = opts[:coverage]
       coverage_filehandle = nil
@@ -97,18 +87,22 @@ module Threatinator
         end
 
         command 'run' do
+          loader = Threatinator::PluginLoader.new
+          loader.load_plugins(:output)
+          formats = loader[:output].keys.map { |x| x.to_s }.sort.join(', ')
           GlobalOptions.add(self)
           description "processes a feed"
 
           on '-r=', '--read-data-from-file', "Read data from the specified file rather than fetching"
 
-          on '-f=', '--output-format', "Output format (csv, rubydebug, null)", as: String, default: 'csv'
+          on '-f=', '--output-format', "Output format (#{formats})", as: String, default: 'csv'
 
           on '--coverage=', "Write coverage analysis to the specified file (CSV format)", as: String
 
           run do |slop, args|
             opts = slop.to_hash
             GlobalOptions.process!(runner, opts, args)
+            opts[:output_class] = loader[:output][opts[:"output-format"].to_sym]
             Threatinator::CLI.do_run_command(runner, opts, args)
           end
         end # run

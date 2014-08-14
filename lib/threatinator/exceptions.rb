@@ -11,6 +11,9 @@ module Threatinator
     class ParseError < StandardError
     end
 
+    class PluginLoadError < StandardError
+    end
+
     class UnknownPlugin < StandardError
     end
     

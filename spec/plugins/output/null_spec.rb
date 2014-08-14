@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'threatinator/outputs/null'
+require 'threatinator/plugins/output/null'
 require 'stringio'
 
-describe Threatinator::Outputs::Null do
+describe Threatinator::Plugins::Output::Null do
   it_should_behave_like "an output plugin", :null do
     let(:output) { described_class.new() }
   end
