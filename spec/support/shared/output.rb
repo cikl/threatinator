@@ -1,11 +1,14 @@
 require 'spec_helper'
 require 'tempfile'
+require 'threatinator/plugin_loader'
 
 shared_examples_for "an output plugin" do |name|
   # expects :output
 
-  specify "calling Threatinator::Plugins.get_output_by_name(#{name.inspect}) should return the class" do
-    expect(Threatinator::Plugins.get_output_by_name(name)).to be(described_class)
+  specify "the plugin loader should find the class by (#{name.inspect})" do
+    loader = Threatinator::PluginLoader.new
+    loader.load_plugins(:output)
+    expect(loader[:output][name.to_sym]).to be(described_class)
   end
 
   describe "#finish" do

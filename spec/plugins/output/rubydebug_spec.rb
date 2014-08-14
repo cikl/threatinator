@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'threatinator/outputs/rubydebug'
+require 'threatinator/plugins/output/rubydebug'
 require 'stringio'
 
-describe Threatinator::Outputs::Rubydebug do
+describe Threatinator::Plugins::Output::Rubydebug do
   let(:io) { StringIO.new }
   let(:output) { described_class.new(io: io) }
   it_should_behave_like "an output plugin", :rubydebug

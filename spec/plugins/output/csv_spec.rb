@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'threatinator/outputs/csv'
+require 'threatinator/plugins/output/csv'
 require 'stringio'
 
-describe Threatinator::Outputs::CSV do
+describe Threatinator::Plugins::Output::Csv do
   it_should_behave_like "an output plugin", :csv do
     let(:io) { StringIO.new }
     let(:output) { described_class.new(io: io) }

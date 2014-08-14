@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'threatinator/runner'
-require 'threatinator/outputs/null'
 
 describe Threatinator::Runner do
   let(:default_feed_path) {File.expand_path("../../feeds", __FILE__)}
@@ -238,7 +237,13 @@ EOS
       FileUtils.remove_entry_secure @feed_path
     end
 
-    let(:output) { Threatinator::Plugins.get_output_by_name(:null) } 
+    let(:loader) { 
+      x = Threatinator::PluginLoader.new
+      x.load_plugins(:output)
+      x }
+
+
+    let(:output) { loader[:output][:null] } 
 
     it "parses all the feeds" do
       expect(runner).to receive(:_load_feeds).and_call_original
