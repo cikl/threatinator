@@ -10,12 +10,15 @@ matrix:
   allow_failures:
     - rvm: jruby-19mode
 
-services: rabbitmq
-
 env:
     global:
       - JRUBY_OPTS=--debug
 
-install: bundle install --without development
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq libxslt-dev libxml2-dev
+    - bundle config build.nokogiri --use-system-libraries
+
+bundler_args: --without development --jobs 7
 
 script: bundle exec rake spec
