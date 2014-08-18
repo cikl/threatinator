@@ -593,8 +593,8 @@ fetch_http("https://foobar/feed1.data")'
       }
     end
 
-    let(:feedfile) {File.expand_path("../support/feeds/provider1/feed1.feed", __FILE__)}
-    let(:missing_file) {File.expand_path("../support/feeds/provider1/non-existant.feed", __FILE__)}
+    let(:feedfile) {FEED_FIXTURES.join("provider1", "feed1.feed").to_s}
+    let(:missing_file) {FEED_FIXTURES.join("provider1","non-existant.feed").to_s}
 
     it "should return a builder after parsing the file" do
       builder = Threatinator::FeedBuilder.from_file(feedfile)

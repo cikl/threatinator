@@ -2,8 +2,6 @@ require 'spec_helper'
 require 'threatinator/runner'
 
 describe Threatinator::Runner do
-  let(:default_feed_path) {File.expand_path("../../feeds", __FILE__)}
-  let(:spec_feed_path) { File.expand_path("../support/feeds", __FILE__)}
   let(:runner) { Threatinator::Runner.new }
 
   def generate_feedfile(filename, provider, name, url = "https://foobar/#{provider}/#{name}.data")
@@ -101,7 +99,7 @@ EOS
   end
 
   describe "#_register_feed_from_file" do
-    let(:feedfile) {File.expand_path("../support/feeds/provider1/feed1.feed", __FILE__)}
+    let(:feedfile) {FEED_FIXTURES.join("provider1", "feed1.feed").to_s}
 
     it "should return the feed after parsing the file" do
       ret = runner._register_feed_from_file(feedfile)

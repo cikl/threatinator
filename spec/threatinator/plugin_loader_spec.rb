@@ -3,7 +3,7 @@ require 'threatinator/plugin_loader'
 
 shared_context "good test plugins" do
   before :all do
-    @good_plugin_path = (TEST_PLUGINS_ROOT + "good").to_s
+    @good_plugin_path = PLUGIN_FIXTURES.join("good").to_s
     $:.unshift @good_plugin_path
   end
 
@@ -14,7 +14,7 @@ end
 
 shared_context "bad test plugins" do
   before :all do
-    @bad_plugin_path = (TEST_PLUGINS_ROOT + "bad").to_s
+    @bad_plugin_path = PLUGIN_FIXTURES.join("bad").to_s
     $:.unshift @bad_plugin_path
   end
 

@@ -12,6 +12,15 @@ module Threatinator
     end
 
     class PluginLoadError < StandardError
+      attr_reader :cause
+      def initialize(message, cause = nil)
+        @cause = cause
+        unless cause.nil?
+          message = "#{message} : #{cause.class} : #{cause}"
+          self.set_backtrace cause.backtrace
+        end
+        super(message)
+      end
     end
 
     class UnknownPlugin < StandardError

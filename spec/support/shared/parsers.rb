@@ -42,7 +42,7 @@ end
 
 module ParserHelpers
   def parser_data(filename)
-    (PARSER_DATA_ROOT + filename).to_s
+    PARSER_FIXTURES.join(filename).to_s
   end
 end
 
