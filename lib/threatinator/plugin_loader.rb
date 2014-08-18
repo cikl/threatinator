@@ -30,8 +30,8 @@ module Threatinator
         plugin = type_obj.const_get(Threatinator::Util.underscore2cc(name))
         @plugins[type.to_sym] ||= {}
         @plugins[type.to_sym][name.to_sym] = plugin
-      rescue ::NameError
-        raise Threatinator::Exceptions::PluginLoadError.new("Failed to load plugin '#{plugin_name}'")
+      rescue ::NameError => e
+        raise Threatinator::Exceptions::PluginLoadError.new("Failed to load plugin '#{plugin_name}'", e)
       end
     end
 
@@ -43,6 +43,8 @@ module Threatinator
       file_names.each do |file_name|
         path, type, name = split_file_name(file_name)
         next if path.nil?
+        # Don't try to load unit tests as plugins :)
+        next if name.end_with?("_spec")
         begin 
           require path
         rescue ::LoadError

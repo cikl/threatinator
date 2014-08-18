@@ -2,6 +2,7 @@ Next
 ====
 
 * Your contribution here.
+* [#51](https://github.com/cikl/threatinator/pull/51): Clean up spec layout - [@justfalter](https://github.com/justfalter)
 * [#43](https://github.com/cikl/threatinator/issues/43): Make output modules pluggable - [@justfalter](https://github.com/justfalter)
 * [#46](https://github.com/cikl/threatinator/pull/46): Relocate all parsers related stuff to parser directory - [@justfalter](https://github.com/justfalter)
 * [#40](https://github.com/cikl/threatinator/pull/40): Add feed handler for Phishtank - [@justfalter](https://github.com/justfalter)
