@@ -2,21 +2,26 @@ require 'spec_helper'
 require 'threatinator/feed_builder'
 require 'threatinator/feed_runner'
 require 'threatinator/plugins/output/null'
-require 'threatinator/instrumentation/detailed_feed_report'
 require 'pathname'
 
 shared_context 'a parsed record' do
-  # Expects :record_report and :record
-  let(:status) { record_report.status }
-  let(:events) { record_report.events }
+  # Expects :observer
+  before :each do
+    @record, @status, @events = observer.first
+  end
+  let(:record) { @record }
+  let(:events) { @events }
+  let(:status) { @status }
 end
 
 shared_context 'a parsed feed' do 
-  # expects :feed_report
-  let(:record_reports) { feed_report.record_reports }
-  let(:num_records_filtered) { feed_report.num_records_filtered }
-  let(:num_records_parsed) { feed_report.num_records_parsed }
-  let(:num_records_missed) { feed_report.num_records_missed }
+  # expects :observer
+  let(:events) { observer.map { |status, record, events| events } }
+  let(:records) { observer.map { |status, record, events| record } }
+  let(:num_records) { observer.count }
+  let(:num_records_filtered) { observer.num_records_filtered }
+  let(:num_records_parsed) { observer.num_records_parsed }
+  let(:num_records_missed) { observer.num_records_missed }
 end
 
 shared_context 'for feeds', :feed => lambda { true } do
@@ -32,8 +37,8 @@ shared_context 'for feeds', :feed => lambda { true } do
   end
 
   let(:feed_path) { feed_path.to_s }
-  let(:output_formatter) { Threatinator::Plugins::Output::Null.new() }
-  let(:feed_runner) { Threatinator::FeedRunner.new(feed, output_formatter, :feed_report_class => Threatinator::Instrumentation::DetailedFeedReport) }
+  let(:output_formatter) { Threatinator::Plugins::Output::Null.new(Threatinator::Plugins::Output::Null::Config.new) }
+  let(:feed_runner) { Threatinator::FeedRunner.new(feed, output_formatter) }
   let(:feed) { @feed_builder.build() }
 end
 
@@ -106,61 +111,108 @@ shared_examples_for 'any feed', :feed do
 end
 
 module FeedHelpers
-  def it_fetches_url(url)
-    describe 'fetching' do
-      it "should fetch the url #{url}" do
-        stub_request(:get, url)
-        feed.fetcher_builder.call().fetch()
-        expect(a_request(:get, url)).to have_been_made
+  class FeedRunnerObserver
+    include Enumerable
+    attr_reader :records, :statuses, :events, :num_records_filtered, 
+      :num_records_missed, :num_records_parsed
+
+    def initialize
+      @records = []
+      @statuses = []
+      @events = []
+      @num_records_filtered = 0
+      @num_records_parsed = 0
+      @num_records_missed = 0
+    end
+
+    def each
+      @records.each_with_index do |record, i|
+        yield(record, @statuses[i], @events[i])
+      end
+    end
+
+    # Handles FeedRunner observations
+    def update(message, *args)
+      case message
+      when :record_missed
+        @records << args.shift
+        @statuses << :missed
+        @events << []
+        @num_records_missed += 1
+      when :record_filtered
+        @records << args.shift
+        @statuses << :filtered
+        @events << []
+        @num_records_filtered += 1
+      when :record_parsed
+        @records << args.shift
+        @statuses << :parsed
+        @events << args.shift
+        @num_records_parsed += 1
       end
     end
   end
 
-  def feed_data(filename)
-    (FEED_DATA_ROOT + filename).to_s
-  end
+  module FeedHelperMethods
+    def it_fetches_url(url)
+      describe 'fetching' do
+        it "should fetch the url #{url}" do
+          stub_request(:get, url)
+          feed.fetcher_builder.call().fetch()
+          expect(a_request(:get, url)).to have_been_made
+        end
+      end
+    end
 
-  def describe_parsing_a_record(data, &block)
-    context("parsing a record from '#{data}'", :caller => caller) do
-      before :each do
-        sio = StringIO.new(data)
-        @record = @record_report = nil
-        cb = lambda do |record, rr|
-          @record = record
-          @record_report = rr
+    def feed_data(filename)
+      (FEED_DATA_ROOT + filename).to_s
+    end
+
+    def describe_parsing_a_record(data, &block)
+      context("parsing a record from '#{data}'", :caller => caller) do
+        let(:observer) { FeedRunnerObserver.new }
+        before :each do
+          sio = StringIO.new(data)
+          feed_runner.add_observer(observer)
+          feed_runner.run(:io => sio)
+          @status, @record, @events = observer.first
         end
 
-        @feed_report = feed_runner.run(:io => sio, :record_callback => cb)
-      end
-      let(:feed_report) { @feed_report }
-      it "should have handled exactly 1 record" do
-        expect(feed_report.total).to eq(1)
-      end
+        after :each do
+          feed_runner.delete_observer(observer)
+        end
 
-      describe "the record" do
-        let(:record) { @record }
-        let(:record_report) { @record_report }
-        include_context 'a parsed record'
+        it "should have handled exactly 1 record" do
+          expect(observer.count).to eq(1)
+        end
+
+        describe "the record" do
+          include_context 'a parsed record'
+          instance_exec(&block)
+        end
+      end
+    end
+
+    def describe_parsing_the_file(filename, &block)
+      filepath = Pathname.new(filename)
+      relative_filename = filepath.relative_path_from(PROJECT_ROOT).to_s
+
+      context("parsing the file '#{relative_filename}'", :caller => caller) do
+        let(:observer) { FeedRunnerObserver.new }
+        before :each do
+          fio = File.open(filename, 'r')
+          feed_runner.add_observer(observer)
+          feed_runner.run(:io => fio)
+          fio.close unless fio.closed?
+        end
+
+        after :each do
+          feed_runner.delete_observer(observer)
+        end
+
+        include_context "a parsed feed"
         instance_exec(&block)
       end
     end
   end
-
-  def describe_parsing_the_file(filename, &block)
-    filepath = Pathname.new(filename)
-    relative_filename = filepath.relative_path_from(PROJECT_ROOT).to_s
-
-    context("parsing the file '#{relative_filename}'", :caller => caller) do
-      before :each do
-        fio = File.open(filename, 'r')
-        @feed_report = feed_runner.run(:io => fio)
-        fio.close unless fio.closed?
-      end
-      let(:feed_report) { @feed_report }
-      include_context "a parsed feed"
-      instance_exec(&block)
-    end
-  end
-
-
 end

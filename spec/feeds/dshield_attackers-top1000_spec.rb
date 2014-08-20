@@ -18,20 +18,18 @@ describe 'feeds/dshield_attackers-top1000.feed', :feed do
     end
 
     describe "the records" do
-      let(:record_reports) { feed_report.record_reports }
       it "should total 10" do
-        expect(record_reports.count).to eq(10)
+        expect(num_records).to eq(10)
       end
 
       it "each record should have generated exactly one event" do
-        counts = record_reports.map { |rr| rr.events.count }
+        counts = events.map { |event_array| event_array.count }
         expect(counts).to eq([1,1,1,1,1,1,1,1,1,1])
       end
 
       describe "the event for record 0" do
-        let(:record_report) { record_reports[0] }
-        let(:record) { record_report.record }
-        let(:event) { record_report.events.first }
+        let(:record) { records[0] }
+        let(:event) { events[0].first }
         subject { event } 
 
         its(:type) { is_expected.to be(:attacker) }

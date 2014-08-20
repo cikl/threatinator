@@ -26,6 +26,11 @@ module Threatinator
       @data[key]
     end
 
+    # @return [Array<Object>] an array of keys
+    def keys
+      @data.keys
+    end
+
     # @return [Integer] the number of objects in the registry
     def count
       @data.count
@@ -35,7 +40,8 @@ module Threatinator
     # @yield [object]
     # @yieldparam [Object] object An object within the registry
     def each(&block)
-      @data.each_value(&block)
+      return enum_for(:each) unless block_given?
+      @data.each_pair(&block)
     end
 
     # Removes all objects from the registry

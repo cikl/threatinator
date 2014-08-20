@@ -4,7 +4,10 @@ module Threatinator
   module Plugins
     module Output
       class Csv < Threatinator::FileBasedOutput
-        def initialize(config = {})
+        class Config < superclass::Config
+        end
+
+        def initialize(config)
           super(config)
           @csv = ::CSV.new(self.output_io, 
                            :write_headers => true,

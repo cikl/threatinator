@@ -49,7 +49,7 @@ Dir.glob(SUPPORT_ROOT.join('**','*.rb')).sort.each { |f| require f}
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include IOHelpers
-  config.extend FeedHelpers, :feed
+  config.extend FeedHelpers::FeedHelperMethods, :feed
 
   config.expect_with :rspec do |c|
     c.syntax = :expect

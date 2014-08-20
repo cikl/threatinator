@@ -29,37 +29,63 @@ describe Threatinator::PluginLoader do
   let(:loader) { described_class.new }
 
   describe "#load_all_plugins" do
+    it "returns itself" do
+      expect(loader.load_all_plugins).to be(loader)
+    end
+
     it "loads all plugins found in the $LOAD_PATH" do
       loader.load_all_plugins
-      expect(loader[:test_type1]).to eq({plugin_a: Threatinator::Plugins::TestType1::PluginA, plugin_b: Threatinator::Plugins::TestType1::PluginB})
-      expect(loader[:test_type2]).to eq({plugin_c: Threatinator::Plugins::TestType2::PluginC, plugin_d: Threatinator::Plugins::TestType2::PluginD})
-      expect(loader[:test_type3]).to eq({plugin_e: Threatinator::Plugins::TestType3::PluginE, plugin_f: Threatinator::Plugins::TestType3::PluginF})
+      expect(loader.each(:test_type1).map {|*args| args }).to contain_exactly(
+        [:test_type1, :plugin_a, Threatinator::Plugins::TestType1::PluginA], 
+        [:test_type1, :plugin_b, Threatinator::Plugins::TestType1::PluginB])
+      expect(loader.each(:test_type2).map {|*args| args }).to contain_exactly(
+        [:test_type2, :plugin_c, Threatinator::Plugins::TestType2::PluginC], 
+        [:test_type2, :plugin_d, Threatinator::Plugins::TestType2::PluginD])
+      expect(loader.each(:test_type3).map {|*args| args }).to contain_exactly(
+        [:test_type3, :plugin_e, Threatinator::Plugins::TestType3::PluginE], 
+        [:test_type3, :plugin_f, Threatinator::Plugins::TestType3::PluginF])
     end
   end
 
   describe "#load_plugins" do
+    it "returns itself" do
+      expect(loader.load_plugins(:test_type1)).to be(loader)
+    end
+
     it "loads all plugins found in the $LOAD_PATH that are of the specified type" do
-      expect(loader[:test_type1]).to eq({})
-      expect(loader[:test_type2]).to eq({})
-      expect(loader[:test_type3]).to eq({})
+      expect { |b| loader.each(:test_type1, &b) }.not_to yield_control
+      expect { |b| loader.each(:test_type2, &b) }.not_to yield_control
+      expect { |b| loader.each(:test_type3, &b) }.not_to yield_control
 
       loader.load_plugins(:test_type1)
-      expect(loader[:test_type1]).to eq({plugin_a: Threatinator::Plugins::TestType1::PluginA, plugin_b: Threatinator::Plugins::TestType1::PluginB})
-      expect(loader[:test_type2]).to eq({})
-      expect(loader[:test_type3]).to eq({})
+      expect(loader.each(:test_type1).map {|*args| args }).to contain_exactly(
+        [:test_type1, :plugin_a, Threatinator::Plugins::TestType1::PluginA], 
+        [:test_type1, :plugin_b, Threatinator::Plugins::TestType1::PluginB])
+
+      expect { |b| loader.each(:test_type2, &b) }.not_to yield_control
+      expect { |b| loader.each(:test_type3, &b) }.not_to yield_control
 
 
       loader.load_plugins(:test_type2)
-      expect(loader[:test_type1]).to eq({plugin_a: Threatinator::Plugins::TestType1::PluginA, plugin_b: Threatinator::Plugins::TestType1::PluginB})
-      expect(loader[:test_type2]).to eq({plugin_c: Threatinator::Plugins::TestType2::PluginC, plugin_d: Threatinator::Plugins::TestType2::PluginD})
-      expect(loader[:test_type3]).to eq({})
+      expect(loader.each(:test_type1).map {|*args| args }).to contain_exactly(
+        [:test_type1, :plugin_a, Threatinator::Plugins::TestType1::PluginA], 
+        [:test_type1, :plugin_b, Threatinator::Plugins::TestType1::PluginB])
+      expect(loader.each(:test_type2).map {|*args| args }).to contain_exactly(
+        [:test_type2, :plugin_c, Threatinator::Plugins::TestType2::PluginC], 
+        [:test_type2, :plugin_d, Threatinator::Plugins::TestType2::PluginD])
+      expect { |b| loader.each(:test_type3, &b) }.not_to yield_control
 
 
       loader.load_plugins(:test_type3)
-      expect(loader[:test_type1]).to eq({plugin_a: Threatinator::Plugins::TestType1::PluginA, plugin_b: Threatinator::Plugins::TestType1::PluginB})
-      expect(loader[:test_type2]).to eq({plugin_c: Threatinator::Plugins::TestType2::PluginC, plugin_d: Threatinator::Plugins::TestType2::PluginD})
-
-      expect(loader[:test_type3]).to eq({plugin_e: Threatinator::Plugins::TestType3::PluginE, plugin_f: Threatinator::Plugins::TestType3::PluginF})
+      expect(loader.each(:test_type1).map {|*args| args }).to contain_exactly(
+        [:test_type1, :plugin_a, Threatinator::Plugins::TestType1::PluginA], 
+        [:test_type1, :plugin_b, Threatinator::Plugins::TestType1::PluginB])
+      expect(loader.each(:test_type2).map {|*args| args }).to contain_exactly(
+        [:test_type2, :plugin_c, Threatinator::Plugins::TestType2::PluginC], 
+        [:test_type2, :plugin_d, Threatinator::Plugins::TestType2::PluginD])
+      expect(loader.each(:test_type3).map {|*args| args }).to contain_exactly(
+        [:test_type3, :plugin_e, Threatinator::Plugins::TestType3::PluginE], 
+        [:test_type3, :plugin_f, Threatinator::Plugins::TestType3::PluginF])
     end
 
     context "when loading a plugin raises an exception" do
@@ -84,17 +110,17 @@ describe Threatinator::PluginLoader do
   describe "#split_file_name" do
     it "returns nil if the file name is not formed like 'threatinator/plugins/<type>/<name>.rb'" do
 
-      expect(loader.split_file_name(File.join("foobar", "threatinator", "plugins", "type", "bla", "name.rb"))).to be_nil
-      expect(loader.split_file_name(File.join("plugins", "type", "name.rb"))).to be_nil
-      expect(loader.split_file_name(File.join("type", "name.rb"))).to be_nil
-      expect(loader.split_file_name("name.rb")).to be_nil
+      expect(loader.send(:split_file_name, File.join("foobar", "threatinator", "plugins", "type", "bla", "name.rb"))).to be_nil
+      expect(loader.send(:split_file_name, File.join("plugins", "type", "name.rb"))).to be_nil
+      expect(loader.send(:split_file_name, File.join("type", "name.rb"))).to be_nil
+      expect(loader.send(:split_file_name, "name.rb")).to be_nil
 
     end
 
     it "returns an array of the requirable path, plugin type, and plugin name" do
 
       file_name = File.join("foobar", "threatinator", "plugins", "type", "name.rb")
-      expect(loader.split_file_name(file_name)).to eq(['threatinator/plugins/type/name', 'type', 'name'])
+      expect(loader.send(:split_file_name, file_name)).to eq(['threatinator/plugins/type/name', 'type', 'name'])
     end
 
     FILE_NAME1 = File.join("threatinator", "plugins", "some_type", "some_name.rb")
@@ -104,12 +130,12 @@ describe Threatinator::PluginLoader do
       it { should eq([File.join("threatinator", "plugins", "some_type", "some_name"), "some_type", "some_name"]) }
     end
     describe "the return of split_file_name('#{FILE_NAME1}')" do
-      subject { loader.split_file_name(FILE_NAME1) }
+      subject { loader.send(:split_file_name, FILE_NAME1) }
       include_examples "simple split_file_name example" 
     end
 
     describe "the return of split_file_name('#{FILE_NAME2}')" do
-      subject { loader.split_file_name(FILE_NAME2) }
+      subject { loader.send(:split_file_name, FILE_NAME2) }
       include_examples "simple split_file_name example" 
     end
   end
@@ -131,17 +157,81 @@ describe Threatinator::PluginLoader do
     end
   end
 
-  describe "[]" do
+  describe "#get(type, name)" do
     context "when there are no plugins for the specified type" do
-      it "returns an empty hash" do
-        expect(loader[:foobar]).to eq({})
+      it "returns nil" do
+        expect(loader.get(:test_type1, :name)).to be_nil
       end
     end
 
     context "when there are plugins for the specified type" do
-      it "returns a hash containing the names and classes of plugins" do
+      context "when a plugin does not exist for the specified name" do
+        it "returns nil" do
+          loader.load_plugins(:test_type1)
+          expect(loader.get(:test_type1, :foobar)).to be_nil
+        end
+      end
+
+      context "when a plugin does exist for the specified name" do
+        it "returns the plugin" do
+          loader.load_plugins(:test_type1)
+          expect(loader.get(:test_type1, :plugin_a)).to eq(Threatinator::Plugins::TestType1::PluginA)
+        end
+      end
+    end
+  end
+
+  describe "#each" do
+    context "when there are no plugins loaded" do
+      it "doesn't yield anything" do
+        expect { |b|
+          loader.each(&b)
+        }.not_to yield_control
+      end
+    end
+
+    context "when there plugins loaded" do
+      it "yields the type, name, and plugin for all plugins" do
         loader.load_plugins(:test_type1)
-        expect(loader[:test_type1]).to eq({plugin_a: Threatinator::Plugins::TestType1::PluginA, plugin_b: Threatinator::Plugins::TestType1::PluginB})
+        loader.load_plugins(:test_type2)
+        loader.load_plugins(:test_type3)
+
+        data = []
+        loader.each do |type, name, plugin|
+          data << [type, name, plugin]
+        end
+        expect(data).to contain_exactly(
+          [:test_type1, :plugin_a, Threatinator::Plugins::TestType1::PluginA],
+          [:test_type1, :plugin_b, Threatinator::Plugins::TestType1::PluginB],
+          [:test_type2, :plugin_c, Threatinator::Plugins::TestType2::PluginC], 
+          [:test_type2, :plugin_d, Threatinator::Plugins::TestType2::PluginD],
+          [:test_type3, :plugin_e, Threatinator::Plugins::TestType3::PluginE], 
+          [:test_type3, :plugin_f, Threatinator::Plugins::TestType3::PluginF]
+        )
+      end
+    end
+  end
+
+  describe "#each(type)" do
+    context "when there are no plugins for the specified type" do
+      it "doesn't yield anything" do
+        expect { |b|
+          loader.each(:foobar, &b)
+        }.not_to yield_control
+      end
+    end
+
+    context "when there are plugins for the specified type" do
+      it "yields the type, name, and plugin for each plugin of the specified type" do
+        loader.load_plugins(:test_type1)
+        data = []
+        loader.each(:test_type1) do |type, name, plugin|
+          data << [type, name, plugin]
+        end
+        expect(data).to contain_exactly(
+          [ :test_type1, :plugin_a, Threatinator::Plugins::TestType1::PluginA],
+          [ :test_type1, :plugin_b, Threatinator::Plugins::TestType1::PluginB]
+        )
       end
     end
   end

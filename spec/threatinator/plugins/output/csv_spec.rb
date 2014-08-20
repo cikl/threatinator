@@ -3,18 +3,15 @@ require 'threatinator/plugins/output/csv'
 require 'stringio'
 
 describe Threatinator::Plugins::Output::Csv do
-  it_should_behave_like "an output plugin", :csv do
-    let(:io) { StringIO.new }
-    let(:output) { described_class.new(io: io) }
-  end
-
-  it_should_behave_like "a file-based output plugin"
+  let(:config) { Threatinator::Plugins::Output::Csv::Config.new }
+  it_should_behave_like "a file-based output plugin", :csv
 
   describe "the output" do
     let(:io) { StringIO.new }
-    let(:output) { described_class.new(io: io) }
+    let(:output) { described_class.new(config) }
 
     before :each do
+      config.io = io
       events.each do |e|
         output.handle_event(e)
       end

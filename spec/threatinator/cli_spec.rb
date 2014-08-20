@@ -1,145 +1,175 @@
 require 'spec_helper'
 require 'threatinator/cli'
-require 'threatinator/runner'
 require 'fileutils'
 
-shared_examples_for "a command parsing path options" do
-  describe "--help" do
-    it "should exit the process" do
-      args << '--help'
-      temp_stdout do 
-        expect {
-          Threatinator::CLI.process!(args, mock_runner)
-        }.to raise_error(SystemExit)
-      end
-    end
-  end
-  describe "default path handling" do
-    it "should add the default feed path by default" do
-      expect(mock_runner).to receive(:add_feed_path).with(Threatinator::CLI::DEFAULT_FEED_PATH)
-      Threatinator::CLI.process!(args, mock_runner)
-    end
-    ["-x", "--exclude-default-path"].each do |operator|
-      describe operator do
-        before :each do
-          args << operator
-        end
-        it "should not add the default feed path" do
-          expect(mock_runner).not_to receive(:add_feed_path)
-          Threatinator::CLI.process!(args, mock_runner)
-        end
-      end
-    end
+shared_context "threatinator commands" do
+  let(:action) { double('action') }
+  let(:builder) { double('builder') }
+
+  before :each do
+    allow(action_builder_class).to receive(:new).and_return(builder)
+    allow(builder).to receive(:build).and_return(action)
+    allow(action).to receive(:exec)
   end
 
-  describe "dry run" do
-    ["-n", "--dryrun"].each do |operator|
-      describe operator do
-        context "when specified" do
-          before :each do
-            args << operator
-          end
-          it "should not call the command" do
-            expect(mock_runner).not_to receive(command_method)
-            Threatinator::CLI.process!(args, mock_runner)
-          end
-        end
-        context "when not specified" do
-          it "should call the command" do
-            expect(mock_runner).to receive(command_method)
-            Threatinator::CLI.process!(args, mock_runner)
-          end
-        end
+end
+shared_examples_for "a threatinator command" do
+  context '--feed_search.path=foo/bar' do
+    before :each do
+      global_args << '--feed_search.path=foo/bar'
+      Threatinator::CLI.process!(args)
+    end
+
+    it "generates the proper config hash" do
+      expect(action_builder_class).to have_received(:new) do |opts, args, *extra| 
+        expect(opts).to match(
+          {
+            'feed_search' => {
+              'exclude_default' => false,
+              'path' => ['foo/bar']
+            }
+          }
+        )
+        expect(args).to eq([])
       end
     end
   end
 
-  describe "adding paths" do
-    ["-p", "--path"].each do |operator|
-      describe operator do
-        context "when specified once: #{operator} /some/path" do
-          before :each do
-            args.concat %W[#{operator} /some/path]
-            allow(mock_runner).to receive(:add_feed_path).with(Threatinator::CLI::DEFAULT_FEED_PATH)
-          end
+  context '--feed_search.path=foo/bar,woof/bark' do
+    before :each do
+      global_args << '--feed_search.path=foo/bar,woof/bark'
+      Threatinator::CLI.process!(args)
+    end
 
-          it "should add the path to the runner" do
-            expect(mock_runner).to receive(:add_feed_path).with('/some/path')
-            Threatinator::CLI.process!(args, mock_runner)
-          end
-        end
-
-        context "when specified multiple times: #{operator} /some/path1 #{operator} /some/path2 " do
-          before :each do
-            args.concat %W[#{operator} /some/path1 #{operator} /some/path2 ]
-            allow(mock_runner).to receive(:add_feed_path).with(Threatinator::CLI::DEFAULT_FEED_PATH)
-          end
-
-          it "should add each path to the runner" do
-            expect(mock_runner).to receive(:add_feed_path).with('/some/path1')
-            expect(mock_runner).to receive(:add_feed_path).with('/some/path2')
-            Threatinator::CLI.process!(args, mock_runner)
-          end
-        end
-
-        context "when specifying multiple paths, but comman separated: #{operator} /some/path1,/some/path2" do
-          before :each do
-            args.concat %W[#{operator} /some/path1,/some/path2]
-            allow(mock_runner).to receive(:add_feed_path).with(Threatinator::CLI::DEFAULT_FEED_PATH)
-          end
-
-          it "should add each path to the runner" do
-            expect(mock_runner).to receive(:add_feed_path).with('/some/path1')
-            expect(mock_runner).to receive(:add_feed_path).with('/some/path2')
-            Threatinator::CLI.process!(args, mock_runner)
-          end
-        end
-
+    it "generates the proper config hash" do
+      expect(action_builder_class).to have_received(:new) do |opts, args, *extra|
+        expect(opts).to match(
+          {
+            'feed_search' => {
+              'exclude_default' => false,
+              'path' => ['foo/bar', 'woof/bark']
+            }
+          }
+        )
+        expect(args).to eq([])
       end
     end
   end
 
+  context '--feed_search.exclude_default' do
+    before :each do
+      global_args << '--feed_search.exclude_default'
+      Threatinator::CLI.process!(args)
+    end
 
+    it "generates the proper config hash" do
+      expect(action_builder_class).to have_received(:new).with({
+        'feed_search' => {
+          'exclude_default' => true
+        }
+      }, [],
+      kind_of(Class)
+     )
+    end
+  end
+
+  context "--help" do
+    before :each do
+      global_args << '--help'
+      @exception = nil
+      @exit_code = nil
+
+      @captured_output = temp_stdout do
+        @exit_code = Threatinator::CLI.process!(args)
+      end
+    end
+
+    it "should have an exit code of 0" do
+      expect(@exit_code).to eq(0)
+    end
+
+    it "should print usage information" do
+      expect(@captured_output).to match(/^NAME/)
+    end
+
+    it "should not create an action builder" do
+      expect(action_builder_class).not_to have_received(:new)
+    end
+  end
 end
 
 describe Threatinator::CLI do
-  let(:args) { [] }
+  let(:global_args) { [] }
+  let(:command) { [] }
+  let(:command_args) { [] }
+  let(:args) { global_args + [ command ] + command_args }
+
   describe "list command" do
-    let(:mock_runner) { double("runner") }
-    let(:args) { %w[list] }
+    let(:command) { 'list' }
+    let(:action) { double('action') }
+    let(:builder) { double('builder') }
+
     before :each do
-      allow(mock_runner).to receive(:add_feed_path)
-      allow(mock_runner).to receive(:list)
+      allow(Threatinator::CLI::ListActionBuilder).to receive(:new).and_return(builder)
+      allow(builder).to receive(:build).and_return(action)
+      allow(action).to receive(:exec)
     end
 
-    it "should call runner.list" do
-      expect(mock_runner).to receive(:list)
-      Threatinator::CLI.process!(args, mock_runner)
+    it "should create a ListActionBuilder" do
+      Threatinator::CLI.process!(args)
+      expect(Threatinator::CLI::ListActionBuilder).to have_received(:new).with({"feed_search" => {"exclude_default" => false}}, [])
     end
 
-    it_should_behave_like "a command parsing path options" do
-      let(:command_method) { :list }
+    it "should build an action" do
+      Threatinator::CLI.process!(args)
+      expect(builder).to have_received(:build)
+    end
+
+    it "should execute a list action" do
+      Threatinator::CLI.process!(args)
+      expect(action).to have_received(:exec)
     end
   end
 
-  describe "run command" do
-    let(:mock_runner) { double("runner") }
-    let(:mock_feed_report) { double("mock_feed_report") }
-    let(:args) { %w[run myprovider myname] }
-    before :each do
-      allow(mock_runner).to receive(:add_feed_path)
-      allow(mock_runner).to receive(:run).and_return(mock_feed_report)
-      allow(mock_feed_report).to receive(:num_records_missed).and_return(0)
+  describe "run" do
+    let(:action_builder_class) { Threatinator::CLI::RunActionBuilder }
+    let(:command) { 'run' }
+    include_context "threatinator commands"
+
+    context "with no additional arguments" do
+      it "should create an action builder with no config or args" do
+        Threatinator::CLI.process!(args)
+        expect(action_builder_class).to have_received(:new).with(
+          {
+            "feed_search" => {
+              "exclude_default" => false
+            }
+          }, [], kind_of(Class))
+      end
     end
 
-    it "should call runner.run" do
-      expect(mock_runner).to receive(:run)
-      Threatinator::CLI.process!(args, mock_runner)
+    context "feed_provider feed_name" do
+      before :each do
+        command_args << 'feed_provider'
+        command_args << 'feed_name'
+      end
+      it "should create an action builder with args feed_provider feed_name" do
+        Threatinator::CLI.process!(args)
+        expect(action_builder_class).to have_received(:new).with(
+          {
+            "feed_search" => {
+              "exclude_default" => false
+            }, 
+            "run" => {
+              "feed_provider" => "feed_provider", 
+              "feed_name" => "feed_name"
+            }
+          }, [], kind_of(Class)
+        )
+      end
     end
 
-    it_should_behave_like "a command parsing path options" do
-      let(:command_method) { :run }
-    end
+    it_should_behave_like "a threatinator command"
   end
 end
 
