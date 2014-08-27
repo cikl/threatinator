@@ -3,15 +3,15 @@ require 'threatinator/plugins/output/rubydebug'
 require 'stringio'
 
 describe Threatinator::Plugins::Output::Rubydebug do
-  let(:io) { StringIO.new }
-  let(:output) { described_class.new(io: io) }
-  it_should_behave_like "an output plugin", :rubydebug
+  let(:config) { Threatinator::Plugins::Output::Rubydebug::Config.new }
 
-  it_should_behave_like "a file-based output plugin"
+  it_should_behave_like "a file-based output plugin", :rubydebug
 
   describe "the output" do
-
+    let(:output) { described_class.new(config) }
+    let(:io) { StringIO.new }
     before :each do
+      config.io = io
       events.each do |e|
         output.handle_event(e)
       end

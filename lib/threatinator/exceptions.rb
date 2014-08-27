@@ -25,6 +25,9 @@ module Threatinator
 
     class UnknownPlugin < StandardError
     end
+
+    class CouldNotFindOutputConfigError < StandardError
+    end
     
     class InvalidAttributeError < StandardError
       attr_reader :attribute, :got

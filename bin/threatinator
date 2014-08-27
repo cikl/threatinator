@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 $:.unshift File.expand_path("../../lib", __FILE__)
-require 'threatinator/runner'
 require 'threatinator/cli'
-Threatinator::CLI.process!(ARGV, Threatinator::Runner.new)
+ret = Threatinator::CLI.process!(ARGV)
+exit ret

@@ -3,7 +3,18 @@ require 'threatinator/registry'
 
 describe Threatinator::Registry do
   let(:registry) { described_class.new }
-  let(:ten_things) { 10.times.map { Object.new  } }
+  let(:ten_things) { {
+    a: Object.new,
+    b: Object.new,
+    c: Object.new,
+    d: Object.new,
+    e: Object.new,
+    f: Object.new,
+    g: Object.new,
+    h: Object.new,
+    i: Object.new,
+    j: Object.new
+  } }
 
   describe "#clear" do
     it "should remove all existing registrations" do
@@ -13,6 +24,16 @@ describe Threatinator::Registry do
       expect(registry.count).to eq(2)
       registry.clear
       expect(registry.count).to eq(0)
+    end
+  end
+
+  describe "#keys" do
+    it "returns an array containing all of the keys" do
+      expect(registry.keys).to eq([])
+      registry.register(:foo, Object.new)
+      registry.register(:bar, Object.new)
+      registry.register(:woof, Object.new)
+      expect(registry.keys).to contain_exactly(:foo, :bar, :woof)
     end
   end
 
@@ -38,22 +59,22 @@ describe Threatinator::Registry do
   end
 
   describe "#each" do
-    it "should enumerate through each reigstered object" do
-      ten_things.each_with_index do |thing, i|
+    it "should enumerate through each key and registered object" do
+      ten_things.each_pair do |i, thing|
         registry.register(i, thing)
       end
       found_objects = []
-      registry.each do |obj|
-        found_objects << obj 
+      registry.each do |key, obj|
+        found_objects << [ key, obj ]
       end
-      expect(found_objects).to match_array(ten_things)
+      expect(found_objects).to match_array(ten_things.to_a)
     end
   end
 
   describe "#count" do
     it "should return the number of objects contained within the registry" do
       expect(registry.count).to eq(0)
-      ten_things.each_with_index do |thing, i|
+      ten_things.each_pair do |i, thing|
         registry.register(i, thing)
       end
       expect(registry.count).to eq(10)
@@ -66,7 +87,7 @@ describe Threatinator::Registry do
     end
 
     it "should return the correct feed for the key" do
-      ten_things.each_with_index { |o, i| registry.register(i, o) }
+      ten_things.each_pair { |i, o| registry.register(i, o) }
       obj = Object.new
       registry.register(:foo, obj)
       expect(registry.get(:foo)).to be(obj)

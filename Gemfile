@@ -5,7 +5,9 @@ gem 'typhoeus'
 gem 'nokogiri'
 gem 'addressable'
 gem 'docile'
-gem 'slop'
+gem 'virtus'
+gem 'gli'
+
 platforms :mingw, :mswin, :ruby do
   gem 'oj', '~> 2.9'
 end
@@ -24,4 +26,5 @@ end
 
 group :development do
   gem 'jeweler'
+  gem 'pry'
 end
