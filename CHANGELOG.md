@@ -2,6 +2,10 @@ Next
 ====
 
 * Your contribution here.
+
+0.1.0
+====
+
 * [#56](https://github.com/cikl/threatinator/pull/56): Gemify threatinator - [@justfalter](https://github.com/justfalter)
 * [#55](https://github.com/cikl/threatinator/pull/55): Rewrote configuration handling - [@justfalter](https://github.com/justfalter)
 * [#51](https://github.com/cikl/threatinator/pull/51): Clean up spec layout - [@justfalter](https://github.com/justfalter)
