@@ -26,6 +26,7 @@ else
       ['bin/threatinator'] + 
       Dir.glob("lib/**/*.rb") + 
       Dir.glob("spec/**/*") + 
+      Dir.glob("feeds/**/*.feed") + 
       %w(CONTRIBUTING.md CHANGELOG.md LICENSE Gemfile README.md Rakefile VERSION)
 
   end
