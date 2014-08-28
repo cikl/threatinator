@@ -3,6 +3,11 @@ Next
 
 * Your contribution here.
 
+0.1.1
+====
+
+* Remember to rev the changelog. [@justfalter](https://github.com/justfalter)
+
 0.1.0
 ====
 
