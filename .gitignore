@@ -6,3 +6,5 @@
 /coverage/
 /coverage.vim
 Gemfile.lock
+pkg/
+*.gemspec
