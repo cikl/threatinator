@@ -29,12 +29,6 @@ begin
 rescue ::LoadError
 end
 
-begin
-  require 'simplecov-csv'
-  formatters << SimpleCov::Formatter::CSVFormatter
-rescue ::LoadError
-end
-
 SimpleCov.formatters = formatters
 SimpleCov.start do
   project_root = RSpec::Core::RubyProject.root

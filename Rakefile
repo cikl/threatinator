@@ -10,6 +10,29 @@ end
 require 'rake'
 
 begin
+  require 'jeweler'
+rescue LoadError
+else 
+  Jeweler::Tasks.new do |gem|
+    # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
+    gem.name = "threatinator"
+    gem.homepage = "http://github.com/cikl/threatinator"
+    gem.license = "LGLv3"
+    gem.summary = %Q{Threatinator is a library and tool for parsing threat data feeds.}
+    gem.description = gem.summary
+    gem.email = "falter@gmail.com"
+    gem.authors = ["Mike Ryan", "Pierre Lamy"]
+    gem.files  = 
+      ['bin/threatinator'] + 
+      Dir.glob("lib/**/*.rb") + 
+      Dir.glob("spec/**/*") + 
+      %w(CONTRIBUTING.md CHANGELOG.md LICENSE Gemfile README.md Rakefile VERSION)
+
+  end
+  Jeweler::RubygemsDotOrgTasks.new
+end
+
+begin
   require 'rspec/core'
   require 'rspec/core/rake_task'
 rescue LoadError
