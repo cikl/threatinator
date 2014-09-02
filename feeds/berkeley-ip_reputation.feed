@@ -1,0 +1,23 @@
+provider "berkeley"
+name "ip_reputation"
+fetch_http('https://security.berkeley.edu/aggressive_ips/ips')
+
+feed_re = /^HOSTILE_IP\: (?<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s*LAST_SEEN\: (?<last_seen>\d{10})/
+
+filter_whitespace
+filter_comments
+
+filter do |record|
+  !(record.data =~ /^HOSTILE_IP/)
+  end
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  m = feed_re.match(record.data)
+  next if m.nil?
+
+  event_generator.call() do |event|
+    event.type = :scanning
+    event.add_ipv4(m[:ip]) do |ipv4_event|
+    end
+  end
+end
