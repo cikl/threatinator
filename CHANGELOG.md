@@ -1,7 +1,7 @@
 Next
 ====
 
-* Your contribution here.
+* Added Danger bruteforce feed.
 
 0.1.2
 ====
