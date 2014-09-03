@@ -2,6 +2,7 @@ Next
 ====
 
 * Your contribution here.
+* Added Danger bruteforce feed. - [@pierre427](https://github.com/pierre427)
 
 0.1.2
 ====
