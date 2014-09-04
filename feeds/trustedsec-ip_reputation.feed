@@ -1,0 +1,17 @@
+provider "trustedsec"
+name "ip_reputation"
+fetch_http('https://www.trustedsec.com/banlist.txt')
+
+filter_whitespace
+filter_comments
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  next if record.nil?
+  ip = record.data.strip
+  
+  event_generator.call() do |event|
+    event.type = :scanning
+    event.add_ipv4(ip) do |ipv4_event|
+    end
+  end
+end
