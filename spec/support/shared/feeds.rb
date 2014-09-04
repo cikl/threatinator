@@ -174,7 +174,7 @@ module FeedHelpers
         before :each do
           sio = StringIO.new(data)
           feed_runner.add_observer(observer)
-          feed_runner.run(:io => sio)
+          feed_runner.run(:io => sio, :skip_decoding => true)
           @status, @record, @events = observer.first
         end
 

@@ -2,6 +2,7 @@ Next
 ====
 
 * Your contribution here.
+* Disable decoding when testing the parsing of a single record. [@justfalter](https://github.com/justfalter)
 * Added Danger bruteforce feed. - [@pierre427](https://github.com/pierre427)
 * Added trustedsec feed. - [@pierre427](https://github.com/pierre427)
 
