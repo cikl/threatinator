@@ -1,0 +1,24 @@
+# hosts-Partial.txt
+#
+# The following hosts were added to hpHosts AFTER the last full release.
+#
+#Last partial update: 9/5/2014 9:32:27 AM
+#Last FULL hpHosts update: 201481651036
+#DEBUG INFO:
+#	DB: 2014050993227
+#	File: 201416851036
+#	First: 1599283 (8/30/2014 5:52:43 PM)
+#	Last: 1546551
+127.0.0.1	0.cordelia8.waslittrefxwpc.eu
+127.0.0.1	0002.tonsciryqbty.eu
+127.0.0.1	0025.gaa08056.waslittrefxwpc.eu
+127.0.0.1	003a32c.rithertningiuao.eu
+127.0.0.1	004.bloglnewarciniabe.ru
+127.0.0.1	006e0ed5.bloglnewarcinialy.ru
+127.0.0.1	0071525d.bevedidnzbep.eu
+127.0.0.1	007c746.suburonounx.eu
+127.0.0.1	008845.bevedidnzbep.eu
+127.0.0.1	008845.tonsciryqbty.eu
+127.0.0.1	008f9e2.tonsciryqbty.eu
+127.0.0.1	009.blogfoxnewsators.ru
+127.0.0.1	009.bloglfoxnewsareb.ru
