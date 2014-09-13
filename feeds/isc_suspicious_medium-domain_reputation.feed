@@ -1,0 +1,25 @@
+provider "isc"
+name "suspicious_medium_domain_reputation"
+fetch_http('https://isc.sans.edu/feeds/suspiciousdomains_Medium.txt')
+
+feed_re = /^(?<domain>.*)/
+
+filter_whitespace
+filter_comments
+
+# Filter out IPv6 addresses
+filter do |record|
+  (record.data =~ /^Site/)
+  end
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  m = feed_re.match(record.data)
+  next if m.nil?
+
+  domain = m[:domain].strip
+  
+  event_generator.call() do |event|
+    event.type = :malware_host
+    event.add_fqdn(domain)
+  end
+end
