@@ -2,6 +2,7 @@ Next
 ====
 
 * Your contribution here.
+* Re-implement Event using virtus, get rid of PropertyDefiner [@justfalter](https://github.com/justfalter)
 * Disable decoding when testing the parsing of a single record. [@justfalter](https://github.com/justfalter)
 * Added Danger bruteforce feed. - [@pierre427](https://github.com/pierre427)
 * Added trustedsec feed. - [@pierre427](https://github.com/pierre427)

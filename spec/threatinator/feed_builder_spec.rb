@@ -466,7 +466,6 @@ parse_eachline(:separator => "\n") {}'
           feed_loader.call(feed_string).build
         end.to raise_error { |e| 
           expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
-          expect(e.attribute).to eq(:provider)
         }
       end
 
@@ -479,7 +478,6 @@ parse_eachline(:separator => "\n") {}'
           feed_loader.call(feed_string).build
         end.to raise_error { |e| 
           expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
-          expect(e.attribute).to eq(:name)
         }
       end
 
@@ -492,7 +490,6 @@ parse_eachline(:separator => "\n") {}'
           feed_loader.call(feed_string).build
         end.to raise_error { |e| 
           expect(e).to be_a(Threatinator::Exceptions::InvalidAttributeError)
-          expect(e.attribute).to eq(:fetcher_builder)
         }
       end
 

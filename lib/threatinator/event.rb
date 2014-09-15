@@ -1,20 +1,21 @@
-require 'threatinator/property_definer'
+require 'active_model'
+require 'active_model/validations'
+require 'virtus'
 
 module Threatinator
   class Event
-    include Threatinator::PropertyDefiner
+    include Virtus.model
+    include ActiveModel::Validations
 
     VALID_TYPES = Set.new([:c2, :attacker, :malware_host, :spamming, :scanning, :phishing])
 
-    def initialize(opts = {})
-      _parse_properties(opts)
-    end
+    attribute :feed_provider, String
+    attribute :feed_name, String
+    attribute :type, Symbol
+    attribute :ipv4s, Array[String], default: lambda {|o,i| []}
+    attribute :fqdns, Array[String], default: lambda {|o,i| []}
 
-    property :feed_provider, type: String
-    property :feed_name, type: String
-    property :type, type: Symbol, validate: lambda { |obj, val| VALID_TYPES.include?(val) }
-    property :ipv4s, type: Array, default: lambda { Array.new }
-    property :fqdns, type: Array, default: lambda { Array.new }
+    validates :type, inclusion: {in: VALID_TYPES}
 
     def add_ipv4(ipv4)
       self.ipv4s << ipv4
@@ -22,6 +23,12 @@ module Threatinator
 
     def add_fqdn(fqdn)
       self.fqdns << fqdn
+    end
+
+    def validate!
+      unless valid?
+        raise Threatinator::Exceptions::InvalidAttributeError, errors.full_messages.join("\n")
+      end
     end
   end
 end
