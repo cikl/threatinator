@@ -75,7 +75,7 @@ module Threatinator
 
     def validate_attribute!(name, val, &block)
       unless block.call(val) == true
-        raise Threatinator::Exceptions::InvalidAttributeError.new(name, val)
+        raise Threatinator::Exceptions::InvalidAttributeError.new("Invalid attribute (#{name}). Got: #{val.inspect}")
       end
     end
   end

@@ -6,6 +6,7 @@ gem 'nokogiri', '~> 1.6.0'
 gem 'docile', '~> 1.1.0'
 gem 'virtus', '~> 1.0.0'
 gem 'gli', '~> 2.12.0'
+gem 'activemodel', '~> 4.0'
 
 platforms :mingw, :mswin, :ruby do
   gem 'oj', '~> 2.9'
