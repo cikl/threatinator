@@ -2,32 +2,81 @@ require 'spec_helper'
 require 'threatinator/event_builder'
 
 describe Threatinator::EventBuilder do
-  let(:feed) { build(:feed, provider: "my_provider", name: "my_feed" ) }
-  let(:event_builder) { described_class.new(feed) }
-  describe "#create_event" do
-    it "should yield an event" do
-      expect { |b| event_builder.create_event(&b) }.to yield_with_args(kind_of(Threatinator::Event))
+  let(:feed_provider) { 'my_provider' }
+  let(:feed_name) { 'my_feed' }
+  let(:event_builder) { described_class.new(feed_provider, feed_name) }
+
+  describe "#reset" do
+    it "resets 'type'" do
+      event_builder.type = :c2
+      event_builder.reset
+      event1 = event_builder.build
+      expect(event1.type).to be_nil
     end
 
-    it "should increment the count each time it has been called" do
-      expect(event_builder.count).to eq(0)
-      event_builder.create_event { |e| }
-      expect(event_builder.count).to eq(1)
-      10.times do
-        event_builder.create_event { |e| }
-      end
-      expect(event_builder.count).to eq(11)
+    it "resets the fqdns" do
+      event_builder.add_fqdn('foo.com')
+      event_builder.reset
+      event1 = event_builder.build
+      expect(event1.fqdns).to be_empty
     end
 
-    describe "the yielded event" do
-      let(:event) { e = nil; event_builder.create_event { |x| e = x }; e }
-      specify "#feed_name is set to the feed's provider" do
-        expect(event.feed_name).to eq('my_feed')
-      end
-      specify "#feed_provider is set to the feed's provider" do
-        expect(event.feed_provider).to eq('my_provider')
-      end
+    it "resets the ipv4s" do
+      event_builder.add_ipv4('1.2.3.4')
+      event_builder.reset
+      event1 = event_builder.build
+      expect(event1.ipv4s).to be_empty
     end
+
+    it "does not reset feed_provider or feed_name" do
+      event_builder.reset
+      event1 = event_builder.build
+      expect(event1.feed_provider).to eq('my_provider')
+      expect(event1.feed_name).to eq('my_feed')
+    end
+  end
+
+  describe "#type=(type)" do
+    it "sets the 'type' for built events" do
+      event_builder.type = :c2
+      event1 = event_builder.build
+      expect(event1.type).to eq(:c2)
+    end
+  end
+  describe "#add_ipv4(ipv4)" do
+    it "adds the provided ipv4s to built events" do
+      event_builder.add_ipv4('1.2.3.4')
+      event_builder.add_ipv4('8.8.8.8')
+      event1 = event_builder.build
+      expect(event1.ipv4s).to eq(['1.2.3.4', '8.8.8.8'])
+    end
+  end
+  describe "#add_fqdn(fqdn)" do
+    it "adds the provided fqdns to built events" do
+      event_builder.add_ipv4('google.com')
+      event_builder.add_ipv4('yahoo.com')
+      event1 = event_builder.build
+      expect(event1.ipv4s).to eq(['google.com', 'yahoo.com'])
+    end
+  end
+
+  describe "#build" do
+    it "generates a new event with each call" do
+      event1 = event_builder.build
+      event2 = event_builder.build
+      expect(event1).not_to be(event2)
+    end
+
+    specify "successively built events will == each other if the builder has not been changed" do
+      event_builder.type = :c2
+      event_builder.add_ipv4('1.2.3.4')
+      event_builder.add_fqdn('foo.com')
+      event1 = event_builder.build
+      event2 = event_builder.build
+      expect(event1).to be == event2
+    end
+
+
   end
 end
 
