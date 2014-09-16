@@ -40,11 +40,15 @@ module Threatinator
     def initialize(feed, output_formatter, opts = {})
       @feed = feed
       @output_formatter = output_formatter
-      @event_builder = Threatinator::EventBuilder.new(@feed)
       @feed_filters = @feed.filter_builders.map { |x| x.call } 
       @decoders = @feed.decoder_builders.map { |x| x.call } 
       @parser_block = @feed.parser_block
-      @create_event_proc = @event_builder.create_event_proc()
+      @create_event_proc = self.method(:create_event).to_proc
+
+      @event_builder = Threatinator::EventBuilder.new(@feed.provider, @feed.name)
+
+      @total_events_built = 0
+      @built_events = []
     end
 
     # @param [Hash] opts The options hash
@@ -81,8 +85,16 @@ module Threatinator
       nil
     end
 
+    def create_event
+      @event_builder.reset
+      yield(@event_builder)
+      event = @event_builder.build
+      @total_events_built += 1
+      @built_events << event
+    end
+
     def parse_record(record)
-      @event_builder.clear
+      @built_events.clear
       events = []
       changed(true); notify_observers(:start_parse_record, record)
 
@@ -91,11 +103,11 @@ module Threatinator
         return
       end
       @parser_block.call(@create_event_proc, record)
-      if @event_builder.count == 0
+      if @built_events.count == 0
         changed(true); notify_observers(:record_missed, record)
         # Keep track of the fact that this line did not generate any events?
       else 
-        @event_builder.each_built_event do |event|
+        @built_events.each do |event|
           events << event
           @output_formatter.handle_event(event)
         end
