@@ -8,6 +8,7 @@ FactoryGirl.define do
     type :scanning
     ipv4s { [ ] }
     fqdns { [ ] }
+    urls  { [ ] }
 
     initialize_with { 
       builder = Threatinator::EventBuilder.new(feed_provider, feed_name)
@@ -18,6 +19,9 @@ FactoryGirl.define do
       end
       fqdns.each do |fqdn|
         builder.add_fqdn(fqdn)
+      end
+      urls.each do |url|
+        builder.add_url(url)
       end
       builder.build
     }

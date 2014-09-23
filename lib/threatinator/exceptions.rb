@@ -32,6 +32,9 @@ module Threatinator
     class InvalidAttributeError < StandardError
     end
 
+    class EventBuildError < StandardError
+    end
+
     class AlreadyRegisteredError < StandardError
     end
 
