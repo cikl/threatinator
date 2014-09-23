@@ -27,18 +27,20 @@ module Threatinator
         end
 
         def handle_event(event)
+          ipv4s = event.ipv4s.to_a[0..3]
+          fqdns = event.fqdns.to_a[0..3]
           @csv.add_row([
             event.feed_provider,
             event.feed_name,
             event.type,
-            event.ipv4s[0],
-            event.ipv4s[1],
-            event.ipv4s[2],
-            event.ipv4s[3],
-            event.fqdns[0],
-            event.fqdns[1],
-            event.fqdns[2],
-            event.fqdns[3]
+            ipv4s[0],
+            ipv4s[1],
+            ipv4s[2],
+            ipv4s[3],
+            fqdns[0],
+            fqdns[1],
+            fqdns[2],
+            fqdns[3]
           ])
         end
       end
