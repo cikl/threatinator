@@ -185,4 +185,54 @@ describe Threatinator::Event do
     end
   end
 
+  describe ":urls" do
+    context "when nil" do
+      it "is valid" do
+        event_opts[:urls] = nil
+        expect {
+          described_class.new(event_opts)
+        }.not_to raise_error
+      end
+      describe "#urls" do
+        it "returns an an empty array" do
+          event_opts[:urls] = nil
+          expect(described_class.new(event_opts).urls).to be_empty
+        end
+      end
+    end
+    context "when set to an empty array" do
+      it "is valid" do
+        event_opts[:urls] = nil
+        expect {
+          described_class.new(event_opts)
+        }.not_to raise_error
+      end
+      describe "#urls" do
+        it "returns an an empty array" do
+          event_opts[:urls] = []
+          expect(described_class.new(event_opts).urls).to be_empty
+        end
+      end
+    end
+    context "with :urls set to an array of url strings" do
+      let(:urls) { 
+        [
+          Addressable::URI.parse('http://yahoo.com'),
+          Addressable::URI.parse('http://google.com'),
+        ]
+      }
+      it "is valid" do
+        event_opts[:urls] = urls
+        expect {
+          described_class.new(event_opts)
+        }.not_to raise_error
+      end
+      describe "#urls" do
+        it "returns a collection containing the provided urls" do
+          event_opts[:urls] = urls
+          expect(described_class.new(event_opts).urls).to match_array(urls)
+        end
+      end
+    end
+  end
 end

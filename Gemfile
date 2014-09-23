@@ -8,6 +8,7 @@ gem 'virtus', '~> 1.0.0'
 gem 'gli', '~> 2.12.0'
 gem 'activemodel', '~> 4.0'
 gem 'equalizer', '> 0.0.0'
+gem 'addressable', '~> 2.3.0'
 
 platforms :mingw, :mswin, :ruby do
   gem 'oj', '~> 2.9'
