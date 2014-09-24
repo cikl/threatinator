@@ -7,7 +7,6 @@ filter_comments
 
 parse_eachline(:separator => "\n") do |event_generator, record|
   fields = record.data.split(/\t/)
-  next if record.nil?
   
   # localhost = fields[0]
   remote_domain = fields[1].strip
