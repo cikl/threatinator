@@ -1,0 +1,20 @@
+provider "multiproxy"
+name "ip_reputation"
+fetch_http('http://multiproxy.org/txt_all/proxy.txt')
+
+filter_whitespace
+filter_comments
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  fields = record.data.split(/\:/)
+  next if record.nil?
+  
+  ip = fields[0]
+  # port = fields[1].strip
+  
+  event_generator.call() do |event|
+    event.type = :scanning
+    event.add_ipv4(ip) do |ipv4_event|
+    end
+  end
+end
