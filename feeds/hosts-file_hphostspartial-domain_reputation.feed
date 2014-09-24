@@ -1,0 +1,18 @@
+provider "hosts-file"
+name "hphostspartial_domain_reputation"
+fetch_http('http://hosts-file.net/hphosts-partial.txt')
+
+filter_whitespace
+filter_comments
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  fields = record.data.split(/\t/)
+  
+  # localhost = fields[0]
+  remote_domain = fields[1].strip
+  
+  event_generator.call() do |event|
+    event.type = :malware_host
+    event.add_fqdn(remote_domain)
+    end
+end
