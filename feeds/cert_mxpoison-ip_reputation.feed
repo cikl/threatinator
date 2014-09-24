@@ -1,0 +1,21 @@
+# https://www.cert.org/blogs/certcc/post.cfm?EntryID=206
+
+provider "cert"
+name "mxpoison_ip_reputation"
+fetch_http('http://www.cert.org/downloads/mxlist.ips.txt')
+
+feed_re = /(?<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
+
+filter_whitespace
+filter_comments
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  m = feed_re.match(record.data)
+  next if m.nil?
+
+  event_generator.call() do |event|
+    event.type = :malware_host
+    event.add_ipv4(m[:ip]) do |ipv4_event|
+    end
+  end
+end
