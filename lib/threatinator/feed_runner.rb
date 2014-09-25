@@ -1,4 +1,5 @@
 require 'threatinator/event_builder'
+require 'threatinator/logging'
 require 'observer'
 
 module Threatinator
@@ -34,6 +35,7 @@ module Threatinator
   #
   class FeedRunner
     include Observable
+    include Logging
 
     # @param [Threatinator::Feed] feed The feed that we want to run.
     # @param [Threatinator::Output] output_formatter
@@ -57,6 +59,8 @@ module Threatinator
     # @option opts [Boolean] :skip_decoding (false) Skip all decoding if set 
     #  to true. Useful for testing.
     def run(opts = {})
+      logger.debug("#run starting #{@feed.provider}:#{@feed.name}") if logger.debug?
+      start = Time.now
       changed(true); notify_observers(:start)
       skip_decoding = !!opts.delete(:skip_decoding)
 
@@ -65,6 +69,8 @@ module Threatinator
         changed(true); notify_observers(:start_fetch)
         io = fetcher.fetch()
         changed(true); notify_observers(:end_fetch)
+      else
+        logger.debug('#run Skipping fetch. IO object was provided')
       end
 
       unless skip_decoding == true
@@ -82,6 +88,8 @@ module Threatinator
       end
 
       changed(true); notify_observers(:end)
+      
+      logger.debug("#run finished #{@feed.provider}:#{@feed.name} in #{Time.now - start} seconds") if logger.debug?
       nil
     end
 

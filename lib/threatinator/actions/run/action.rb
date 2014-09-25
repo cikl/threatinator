@@ -1,12 +1,16 @@
 require 'threatinator/action'
 require 'threatinator/exceptions'
 require 'threatinator/feed_runner'
+require 'threatinator/logging'
+require 'threatinator/actions/run/status_observer'
 require 'csv'
 
 module Threatinator
   module Actions
     module Run
       class Action < Threatinator::Action
+        include Logging
+
         def initialize(registry, config)
           super(registry)
           @config = config
@@ -21,12 +25,15 @@ module Threatinator
 
           feed = registry.get(@config.feed_provider, @config.feed_name)
           if feed.nil?
+            logger.error("Unknown feed: provider = #{@config.feed_provider}, name = #{@config.feed_name}")
             raise Threatinator::Exceptions::UnknownFeed.new(@config.feed_provider, @config.feed_name)
           end
 
           output = build_output
 
           feed_runner = Threatinator::FeedRunner.new(feed, output)
+          status = StatusObserver.new
+          feed_runner.add_observer(status)
 
           @config.observers.each do |observer|
             feed_runner.add_observer(observer)
@@ -34,10 +41,11 @@ module Threatinator
 
           feed_runner.run
 
-#          if feed_report.num_records_missed != 0
-#            $stderr.puts "WARNING: #{feed_report.num_records_missed} lines/records were MISSED (neither filtered nor parsed). You may need to update your feed specification! Rerun with --coverage to see which records are parsed/filtered/missed" 
-#          end
+          if status.missed?
+            logger.error "#{status.missed} records were MISSED (neither parsed nor filtered). You may need to update your feed specification! Re-run with run.coverage_output='output.csv' to see which records were parsed/filtered/missed."
+          end
 
+          logger.info "#{status.total} records processed. #{status.parsed} parsed, #{status.filtered} filtered, #{status.missed} missed"
         end
       end
     end

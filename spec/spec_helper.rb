@@ -50,3 +50,5 @@ RSpec.configure do |config|
   end
 end
 
+require 'threatinator/logger'
+Threatinator::Logger.level = Threatinator::Logger::Levels::OFF
