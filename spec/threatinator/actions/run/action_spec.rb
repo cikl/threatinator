@@ -31,35 +31,39 @@ describe Threatinator::Actions::Run::Action do
     end
 
     describe "#exec" do
-      before :each do
-        @ret = action.exec
-      end
 
       it "queries the feed registry for the provider and name" do
+        action.exec
         expect(feed_registry).to have_received(:get).with("my_provider", "my_name")
       end
 
       it "builds the output using config.output.build_output" do
+        action.exec
         expect(config.output).to have_received(:build_output)
       end
 
       it "runs the feed" do
+        action.exec
         expect(feed_runner).to have_received(:run)
       end
-    end
 
-    context "when no observer is configured" do
-      before :each do
-        config.observers = [ ]
-      end
-      it "does not add any observers to the feed runner" do
-        expect(feed_runner).not_to receive(:add_observer)
-        action.exec
+      context "when a record was missed" do
+        let(:status_observer) { Threatinator::Actions::Run::StatusObserver.new }
+        before :each do
+          allow(Threatinator::Actions::Run::StatusObserver).to receive(:new).and_return(status_observer)
+          allow(status_observer).to receive(:missed?).and_return(true)
+        end
+
+        it "logs an error message" do
+          expect(action.logger).to receive(:error).with(/records were MISSED/)
+          action.exec
+        end
       end
     end
 
     context "when configured with an observer" do
       before :each do
+        allow(feed_runner).to receive(:add_observer)
         config.observers = [ observer ]
       end
 
