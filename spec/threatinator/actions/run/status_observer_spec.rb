@@ -5,6 +5,8 @@ describe Threatinator::Actions::Run::StatusObserver do
   let(:observer) { described_class.new() }
   let(:record) { build(:record, line_number: 23, pos_start: 99, pos_end: 105, data: "foobar\r\n") }
 
+  it_should_behave_like "a FeedRunner observer"
+
   describe "#filtered" do
     it "returns the number of records that have been filtered" do
       expect(observer.filtered).to eq(0)

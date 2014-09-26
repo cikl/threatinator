@@ -14,6 +14,8 @@ describe Threatinator::Actions::Run::CoverageObserver do
   let(:filename) { File.join(@tmpdir, "coverage.csv") }
   let(:observer) { described_class.new(filename) }
 
+  it_should_behave_like "a FeedRunner observer"
+
   context "#update(:start)" do
     it "creates the file specified by filename" do
       expect(File.exist?(filename)).to eq(false)
