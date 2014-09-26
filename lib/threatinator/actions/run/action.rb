@@ -42,10 +42,14 @@ module Threatinator
           feed_runner.run
 
           if status.missed?
-            logger.error "#{status.missed} records were MISSED (neither parsed nor filtered). You may need to update your feed specification! Re-run with run.coverage_output='output.csv' to see which records were parsed/filtered/missed."
+            logger.error "#{status.missed} records were MISSED (neither parsed nor filtered). You may need to update your feed specification! Try increasing the logging level to DEBUG, or re-run with run.coverage_output='output.csv' to see which records were parsed/filtered/missed."
           end
 
-          logger.info "#{status.total} records processed. #{status.parsed} parsed, #{status.filtered} filtered, #{status.missed} missed"
+          if status.errors?
+            logger.error "#{status.errors} records had errors! You may have a bug in your feed specification! Try increasing the logging level to DEBUG, or re-run with run.coverage_output='output.csv' to see which records had errors."
+          end
+
+          logger.info "#{status.total} records processed. #{status.parsed} parsed, #{status.filtered} filtered, #{status.missed} missed, #{status.errors} errors"
         end
       end
     end

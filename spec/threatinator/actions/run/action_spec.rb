@@ -59,6 +59,19 @@ describe Threatinator::Actions::Run::Action do
           action.exec
         end
       end
+
+      context "when a record had an error" do
+        let(:status_observer) { Threatinator::Actions::Run::StatusObserver.new }
+        before :each do
+          allow(Threatinator::Actions::Run::StatusObserver).to receive(:new).and_return(status_observer)
+          allow(status_observer).to receive(:errors?).and_return(true)
+        end
+
+        it "logs an error message" do
+          expect(action.logger).to receive(:error).with(/records had errors/)
+          action.exec
+        end
+      end
     end
 
     context "when configured with an observer" do
