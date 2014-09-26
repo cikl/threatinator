@@ -1,0 +1,25 @@
+provider "sigmaproject"
+name "atma_ip_reputation"
+
+fetch_http('https://blocklist.sigmaprojects.org/api.cfc?method=getList&lists=atma')
+
+# Filter out ip's
+filter do |record|
+  (record.data =~ /\32/)
+  end
+
+extract_gzip
+parse_eachline() do |event_generator, record|
+
+   # We're tossing anything that's not a /32
+
+   ip = record.data
+   ip.gsub!(/\/32/, '')
+   ip.strip!
+   
+   event_generator.call() do |event|
+      event.type = :scanning
+      event.add_ipv4(ip) do |ipv4_event|
+	  end
+   end
+end
