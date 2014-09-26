@@ -55,13 +55,31 @@ describe Threatinator::Actions::Run::StatusObserver do
     end
   end
 
+  describe "#errors" do
+    it "returns the number of records that had errors" do
+      expect(observer.errors).to eq(0)
+      observer.update(:record_error, record)
+      expect(observer.errors).to eq(1)
+    end
+  end
+
+  describe "#errors?" do
+    it "returns true if any records had errors, false otherwise" do
+      expect(observer.errors?).to eq(false)
+      observer.update(:record_error, record)
+      expect(observer.errors?).to eq(true)
+    end
+  end
+
+
   describe "#total" do
-    it "returns the total number of records that were parsed, missed, and filtered" do
+    it "returns the total number of records that were parsed, missed, filtered, and errored" do
       expect(observer.total).to eq(0)
       10.times { observer.update(:record_parsed, record) }
       10.times { observer.update(:record_missed, record) }
       10.times { observer.update(:record_filtered, record) }
-      expect(observer.total).to eq(30)
+      10.times { observer.update(:record_error, record) }
+      expect(observer.total).to eq(40)
     end
   end
 end
