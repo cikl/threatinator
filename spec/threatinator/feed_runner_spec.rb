@@ -2,21 +2,72 @@ require 'spec_helper'
 require 'threatinator/feed_runner'
 
 describe Threatinator::FeedRunner do
-  let(:output_formatter ) { double("formatter") }
-  let(:fetcher) { double("fetcher") }
-  let(:fetcher_builder) { lambda { fetcher } }
+  class DummyParser < Threatinator::Parser
+    def initialize(records, opts = {})
+      @records = records
+    end
 
+    def run(io)
+      @records.each do |record|
+        yield(record)
+      end
+    end
+  end
+
+  class DummyFetcher < Threatinator::Fetcher
+    def initialize(io, opts = {})
+      @io = io
+    end
+
+    def fetch
+      return @io
+    end
+  end
+
+  class DummyDecoder < Threatinator::Decoder
+    def initialize(io)
+      @io = io
+    end
+
+    def decode(arg_io)
+      return @io
+    end
+  end
+
+  class TestObserver
+    attr_reader :updates
+    def initialize
+      @updates = []
+    end
+
+    def update(*args)
+      @updates << args
+    end
+  end
+
+  class DummyOutput < Threatinator::Output
+    def handle_event(event); end
+    def finish; end
+  end
+
+  let(:output_formatter ) { DummyOutput.new(nil) }
   let(:io) { double("io") }
-  let(:parser) { double("parser") }
-  let(:parser_builder) { lambda { parser} }
+  let(:fetcher) { DummyFetcher.new(io) }
 
-  let(:filter_builders) { [] }
-  let(:decoder_builders) { [] }
+  let(:record1) { Threatinator::Record.new('a1') }
+  let(:record2) { Threatinator::Record.new('a2') }
+  let(:record3) { Threatinator::Record.new('a3') }
+  let(:records) { [ record1, record2, record3 ] }
+  let(:parser) { DummyParser.new(records) }
+  let(:parser_block) { lambda { |*args| } }
+
+  let(:filters) { [] }
+  let(:decoders) { [] }
 
   let(:feed) {
-    build(:feed, fetcher_builder: fetcher_builder, 
-          parser_builder: parser_builder, filter_builders: filter_builders,
-          decoder_builders: decoder_builders
+    build(:feed, fetcher: fetcher, 
+          parser: parser, filters: filters,
+          decoders: decoders, parser_block: parser_block
          )
   }
 
@@ -61,93 +112,213 @@ describe Threatinator::FeedRunner do
 
   context "an instance" do
     let(:feed_runner) { described_class.new(feed, output_formatter) }
+    let(:observer) { TestObserver.new }
+
+    before :each do
+      feed_runner.add_observer(observer)
+      allow(observer).to receive(:update).and_call_original
+    end
 
     describe "#run" do
-      context "fetching data" do
-        before :each do
-          allow(parser).to receive(:run).with(io)
+      it "notifies the observer with :start before anything else" do
+        expect(observer.updates.first).to be_nil
+        feed_runner.run()
+        expect(observer.updates.first).to eq([:start])
+      end
+
+      it "fetches, decodes, and then parses records" do
+        expect(observer).to receive(:update).with(:start).ordered
+        expect(observer).to receive(:update).with(:start_fetch).ordered
+        expect(observer).to receive(:update).with(:end_fetch).ordered
+        expect(observer).to receive(:update).with(:start_decode).ordered
+        expect(observer).to receive(:update).with(:end_decode).ordered
+        expect(observer).to receive(:update).with(:start_parse_record, record1).ordered
+        expect(observer).to receive(:update).with(:end_parse_record, record1).ordered
+        expect(observer).to receive(:update).with(:start_parse_record, record2).ordered
+        expect(observer).to receive(:update).with(:end_parse_record, record2).ordered
+        expect(observer).to receive(:update).with(:start_parse_record, record3).ordered
+        expect(observer).to receive(:update).with(:end_parse_record, record3).ordered
+        expect(observer).to receive(:update).with(:end).ordered
+        feed_runner.run()
+      end
+
+      it "notifies the observer with :end last" do
+        feed_runner.run()
+        expect(observer.updates.last).to eq([:end])
+      end
+
+      context "with :io => io" do
+        it "does not build or run the fetcher" do
+          expect(feed.fetcher_builder).not_to receive(:call)
+          feed_runner.run(:io => io)
         end
 
-        context "when providing the :io argument" do
-          it "should not call fetcher_builder, but initialize the parser with the thing we provided to :io"  do
-            expect(fetcher_builder).not_to receive(:call)
-            expect(fetcher).not_to receive(:fetch)
-            feed_runner.run(:io => io)
+        it "does not notify the observer with :start_fetch or :end_fetch" do
+          expect(observer).not_to receive(:update).with(:start_fetch)
+          expect(observer).not_to receive(:update).with(:end_fetch)
+          feed_runner.run(:io => io)
+        end
+      end
+
+      context "without :io" do
+        it "should generate a new fetcher via fetcher_builder.call, and then fetch" do
+          expect(feed.fetcher_builder).to receive(:call).and_call_original
+          expect(fetcher).to receive(:fetch).and_call_original
+          feed_runner.run
+        end
+
+        it "notifies the observer with :start_fetch, then fetches, then notifies observer with :end_fetch" do
+          expect(observer).to receive(:update).with(:start_fetch).ordered
+          expect(fetcher).to receive(:fetch).and_call_original.ordered
+          expect(observer).to receive(:update).with(:end_fetch).ordered
+          feed_runner.run()
+        end
+      end
+
+      it "calls the feed.parser_block for each for each message data parsed" do
+        expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record1).ordered
+        expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record2).ordered
+        expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record3).ordered
+        feed_runner.run()
+      end
+
+
+      context "when handling record" do
+        let(:records) { [ record1 ] }
+
+        it "notifies observer with :start_parse_record, and the record prior to handling" do
+          expect(observer).to receive(:update).with(:start_parse_record, record1).ordered
+          expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record1).ordered
+          feed_runner.run()
+        end
+
+        it "notifies observer with :end_parse_record, and the record after handling" do
+          expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record1).ordered
+          expect(observer).to receive(:update).with(:end_parse_record, record1).ordered
+          feed_runner.run()
+        end
+
+        context "when the record is parsed into one or more events" do
+          let(:parser_block) { 
+            lambda do |cep, record| 
+              cep.call do |eb|
+                eb.type = :c2
+                eb.add_ipv4('1.1.1.1')
+              end
+              cep.call do |eb|
+                eb.type = :c2
+                eb.add_ipv4('2.2.2.2')
+              end
+            end
+          }
+
+          it "notifies the observer with (:record_parsed, record, events) for each event" do
+            expect(observer).to receive(:update).with(
+              :record_parsed, record1, satisfy { |events| 
+                expect(events[0].ipv4s).to contain_exactly('1.1.1.1')
+                expect(events[1].ipv4s).to contain_exactly('2.2.2.2')
+              }) 
+
+            feed_runner.run()
           end
         end
 
-        it "should generate a new fetcher via fetcher_builder.call, and then fetch" do
-          expect(fetcher_builder).to receive(:call).and_call_original
-          expect(fetcher).to receive(:fetch).and_return(io)
-          feed_runner.run
+        context "when no events have been parsed from the record" do
+          let(:parser_block) { 
+            lambda do |cep, record| 
+            end
+          }
+
+          it "notifies the observer with (:record_missed, record) for each event" do
+            expect(observer).to receive(:update).with(:record_missed, record1)
+            feed_runner.run()
+          end
         end
+
+        context "when a record has been filtered" do
+          let(:filters) { [ lambda { |record| true } ] }
+          it "notifies the observer with (:record_filtered, record)" do
+            expect(observer).to receive(:update).with(:record_filtered, record1)
+            feed_runner.run()
+          end
+        end
+
+        context "when a record has an event that fails to build" do
+          let(:parser_block) { 
+            lambda do |cep, record| 
+              cep.call do |eb|
+                eb.type = :c2
+              end
+              cep.call do |eb|
+                eb.type = :asdf
+              end
+            end
+          }
+
+          it "notifies the observer with (:record_error, record, array_of_errors)" do
+            expect(observer).to receive(:update).with(:record_error, record1, a_collection_containing_exactly(
+              kind_of(Threatinator::Exceptions::EventBuildError)
+            ))
+            feed_runner.run()
+          end
+
+          it "does not notify the observer of any events that may have NOT have errors" do
+            expect(observer).not_to receive(:update).with(:record_parsed, record1, kind_of(Object))
+            feed_runner.run()
+          end
+        end
+
       end
 
-      context "parsing" do
-        before :each do
-          allow(fetcher).to receive(:fetch).and_return(io)
-        end
-
-        it "should call the parser_block for each for each message data parsed" do
-          record1 = Threatinator::Record.new('a1')
-          record2 = Threatinator::Record.new('a2')
-          record3 = Threatinator::Record.new('a3')
-          expect(parser).to receive(:run).with(io).and_yield(record1).and_yield(record2).and_yield(record3)
-          expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record1).ordered
-          expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record2).ordered
-          expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record3).ordered
-          feed_runner.run
-        end
-      end
       context "filtering" do
+        let(:filters) { [ lambda { |record| record.data == "a2" } ] }
+
         before :each do
-          allow(parser).to receive(:run).with(io)
           allow(fetcher).to receive(:fetch).and_return(io)
         end
-        let(:filter) { double("filter") }
-        let(:filter_builders) { [ lambda {filter} ] }
-        it "should not call the parser_block if the data was filtered" do
-          allow(filter).to receive(:filter?)
-          allow(feed_runner).to receive(:_fetch).and_return(io)
-          record1 = Threatinator::Record.new('a1')
-          record2 = Threatinator::Record.new('a2')
-          record3 = Threatinator::Record.new('a3')
 
-          expect(parser).to receive(:run).with(io).and_yield(record1).and_yield(record2).and_yield(record3)
-          expect(filter).to receive(:filter?).with(record1).ordered.and_return(false)
+        it "only calls the parser_block for data that was not filtered" do
           expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record1).ordered
-
-          expect(filter).to receive(:filter?).with(record2).ordered.and_return(true)
-          expect(filter).to receive(:filter?).with(record3).ordered.and_return(false)
           expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record3).ordered
-
-          feed_runner.run
+          feed_runner.run()
         end
       end
 
       context "decoding" do
-        before :each do
-          allow(fetcher).to receive(:fetch).and_return(io)
-        end
-        let(:decoder1) { double("decoder") }
-        let(:decoder2) { double("decoder") }
-        let(:decoder3) { double("decoder") }
-        let(:decoder_builders) { [ lambda {decoder1}, lambda {decoder2}, lambda {decoder3} ] }
-        it "should run through each decoder in the order it was added to the feed" do
-          decoded_io1 = double("decoded_io1")
-          decoded_io2 = double("decoded_io2")
-          decoded_io3 = double("decoded_io3")
+        let(:decoded_io1) { double('decoded_io1') }
+        let(:decoded_io2) { double('decoded_io2') }
+        let(:decoded_io3) { double('decoded_io3') }
+        let(:decoder1) { DummyDecoder.new(decoded_io1) }
+        let(:decoder2) { DummyDecoder.new(decoded_io2) }
+        let(:decoder3) { DummyDecoder.new(decoded_io3) }
+        let(:decoders) { [ decoder1, decoder2, decoder3 ] }
 
-          expect(decoder1).to receive(:decode).with(io).and_return(decoded_io1)
-          expect(decoder2).to receive(:decode).with(decoded_io1).and_return(decoded_io2)
-          expect(decoder3).to receive(:decode).with(decoded_io2).and_return(decoded_io3)
-          expect(parser).to receive(:run).with(decoded_io3)
-          feed_runner.run
+        context "without :skip_decoding" do
+          it "notifies the observer with :start_decode, decodes, and then notifies the observer with :end_decode" do
+            expect(observer).to receive(:update).with(:start_decode).ordered
+            expect(decoder1).to receive(:decode).with(io).and_call_original.ordered
+            expect(decoder2).to receive(:decode).with(decoded_io1).and_call_original.ordered
+            expect(decoder3).to receive(:decode).with(decoded_io2).and_call_original.ordered
+            expect(observer).to receive(:update).with(:end_decode).ordered
+            feed_runner.run
+          end
+
+          it "should run through each decoder in the order it was added to the feed" do
+            expect(decoder1).to receive(:decode).with(io).and_call_original
+            expect(decoder2).to receive(:decode).with(decoded_io1).and_call_original
+            expect(decoder3).to receive(:decode).with(decoded_io2).and_call_original
+            expect(parser).to receive(:run).with(decoded_io3)
+            feed_runner.run
+          end
         end
 
-        it "should skip decoding if the :skip_decoding was set to true" do
-          expect(parser).to receive(:run).with(io)
-          feed_runner.run(skip_decoding: true)
+        context "with :skip_decoding => true" do
+          it "does not decode" do
+            expect(observer).not_to receive(:update).with(:start_decode)
+            expect(observer).not_to receive(:update).with(:end_decode)
+            expect(parser).to receive(:run).with(io)
+            feed_runner.run(skip_decoding: true)
+          end
         end
       end
     end

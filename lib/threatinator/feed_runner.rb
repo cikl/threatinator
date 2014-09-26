@@ -28,6 +28,10 @@ module Threatinator
   #       - events                - The events that were parsed out of the 
   #                                 record
   #
+  #    :record_error         - Indicates that the record WAS parsed
+  #       - record                - The record
+  #       - errors           - An array of exceptions that caused the error
+  #
   #    :end_parse_record      - when a record has been parsed
   #       - record                - The record
   #
@@ -50,6 +54,7 @@ module Threatinator
       @event_builder = Threatinator::EventBuilder.new(@feed.provider, @feed.name)
 
       @total_events_built = 0
+      @event_errors = []
       @built_events = []
     end
 
@@ -95,10 +100,15 @@ module Threatinator
 
     def create_event
       @event_builder.reset
+      @event_errors.clear
       yield(@event_builder)
-      event = @event_builder.build
-      @total_events_built += 1
-      @built_events << event
+      begin
+        event = @event_builder.build
+        @total_events_built += 1
+        @built_events << event
+      rescue Threatinator::Exceptions::EventBuildError => e
+        @event_errors << e
+      end
     end
 
     def parse_record(record)
@@ -110,10 +120,18 @@ module Threatinator
         changed(true); notify_observers(:record_filtered, record)
         return
       end
+
       @parser_block.call(@create_event_proc, record)
-      if @built_events.count == 0
+
+      if @event_errors.count > 0
+        changed(true); notify_observers(:record_error, record, @event_errors)
+        position = "line: #{record.line_number}, start: #{record.pos_start}, end: #{record.pos_end}"
+        messages = @event_errors.map { |e| e.to_s }.join(', ')
+        logger.debug("Error generating event from record (#{position}): #{messages}")
+      elsif @built_events.count == 0
         changed(true); notify_observers(:record_missed, record)
-        # Keep track of the fact that this line did not generate any events?
+        position = "line: #{record.line_number}, start: #{record.pos_start}, end: #{record.pos_end}"
+        logger.debug("Expected event to be generated, but got none from record (#{position})")
       else 
         @built_events.each do |event|
           events << event

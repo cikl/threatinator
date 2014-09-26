@@ -16,18 +16,23 @@ module Threatinator
         end
 
         def open
-          @csv = ::CSV.open(@filename, "wb", :headers => [:status, :event_count, :line_number, :pos_start, :pos_end, :data], :write_headers => true)
+          @csv = ::CSV.open(@filename, "wb", :headers => [:status, :event_count, :line_number, :pos_start, :pos_end, :data, :message], :write_headers => true)
         end
 
         # Handles FeedRunner observations
         def update(message, *args)
           case message
           when :record_missed
-            log_record(:missed, args.shift, [])
+            log_record(:missed, args.shift, 0)
           when :record_filtered
-            log_record(:filtered, args.shift, [])
+            log_record(:filtered, args.shift, 0)
           when :record_parsed
-            log_record(:parsed, args.shift, args.shift)
+            log_record(:parsed, args.shift, args.shift.count)
+          when :record_error
+            record = args.shift
+            errors = args.shift
+            message = errors.map { |e| e.message }.join(', ')
+            log_record(:error, record, 0, message)
           when :end
             close
           when :start
@@ -38,11 +43,11 @@ module Threatinator
         # @param [Symbol] status :parsed, :missed, :filtered
         # @param [Threatinator::Record] record
         # @param [Array<Threatinator::Event>] events
-        def log_record(status, record, events = [])
+        def log_record(status, record, event_count, message = '')
           return if closed?
           @csv.add_row(  [
-            status, events.count, record.line_number, 
-            record.pos_start, record.pos_end, record.data.inspect])
+            status, event_count, record.line_number, 
+            record.pos_start, record.pos_end, record.data.inspect, message])
         end
 
         def close

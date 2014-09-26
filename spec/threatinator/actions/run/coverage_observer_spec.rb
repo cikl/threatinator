@@ -14,6 +14,8 @@ describe Threatinator::Actions::Run::CoverageObserver do
   let(:filename) { File.join(@tmpdir, "coverage.csv") }
   let(:observer) { described_class.new(filename) }
 
+  it_should_behave_like "a FeedRunner observer"
+
   context "#update(:start)" do
     it "creates the file specified by filename" do
       expect(File.exist?(filename)).to eq(false)
@@ -35,7 +37,7 @@ describe Threatinator::Actions::Run::CoverageObserver do
 
       specify "the first line is the header" do
         data = File.read(filename)
-        expect(data.lines.to_a.first).to eq("status,event_count,line_number,pos_start,pos_end,data\n")
+        expect(data.lines.to_a.first).to eq("status,event_count,line_number,pos_start,pos_end,data,message\n")
       end
 
       it "closes the file so that no more records will be written" do
@@ -65,7 +67,8 @@ describe Threatinator::Actions::Run::CoverageObserver do
         line_number: "23",
         pos_start: "99",
         pos_end: "105",
-        data: '"foobar\r\n"'
+        data: '"foobar\r\n"',
+        message: ''
       )
     end
   end
@@ -86,7 +89,8 @@ describe Threatinator::Actions::Run::CoverageObserver do
         line_number: "22",
         pos_start: "98",
         pos_end: "104",
-        data: '"blabla\r\n"'
+        data: '"blabla\r\n"',
+        message: ''
       )
     end
   end
@@ -109,7 +113,38 @@ describe Threatinator::Actions::Run::CoverageObserver do
         line_number: "1",
         pos_start: "0",
         pos_end: "10",
-        data: '"woofwoof\r\n"'
+        data: '"woofwoof\r\n"',
+        message: ''
+      )
+    end
+  end
+
+  context "#update(:record_error, record, errors)" do
+    before :each do
+      observer.update(:start)
+    end
+
+    let(:record) { build(:record, line_number: 1, pos_start: 0, pos_end: 10, data: "woofwoof\r\n") }
+    let(:errors) { 
+      [
+        Threatinator::Exceptions::EventBuildError.new("error 1"),
+        Threatinator::Exceptions::EventBuildError.new("error 2"),
+        Threatinator::Exceptions::EventBuildError.new("error 3")
+      ]
+    }
+
+    it "writes a csv entry to the file indicating it encountered an error, with the error messages" do
+      observer.update(:record_error, record, errors)
+      observer.update(:end)
+      csv = CSV.read(filename, headers: true, header_converters: :symbol)
+      expect(csv[-1].to_hash).to eq(
+        status: "error",
+        event_count: "0",
+        line_number: "1",
+        pos_start: "0",
+        pos_end: "10",
+        data: '"woofwoof\r\n"',
+        message: 'error 1, error 2, error 3'
       )
     end
   end
