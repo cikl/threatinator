@@ -13,9 +13,6 @@ describe 'feeds/t-arend-de_ssh-ip_reputation.feed', :feed do
     it "should have filtered 3 records" do
       expect(num_records_filtered).to eq(3)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record 'sshd: 121.15.167.243' do

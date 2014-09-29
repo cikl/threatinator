@@ -13,9 +13,6 @@ describe 'feeds/ciarmy-ip_reputation.feed', :feed do
     it "should have filtered 0 records" do
       expect(num_records_filtered).to eq(0)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '5.79.68.161' do

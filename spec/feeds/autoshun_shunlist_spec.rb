@@ -13,9 +13,6 @@ describe 'feeds/autoshun_shunlist.feed', :feed do
     it "should have filtered 1 records" do
       expect(num_records_filtered).to eq(1)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '1.93.34.230,2014-07-16 08:01:23,SSH Brute Force' do

@@ -13,9 +13,6 @@ describe 'feeds/danger_bruteforce-ip_reputation.feed', :feed do
     it "should have filtered 1 records" do
       expect(num_records_filtered).to eq(1)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '192.168.0.66            # 2014-07-02 16:01:22           148     532953' do

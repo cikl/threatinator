@@ -13,9 +13,6 @@ describe 'feeds/dshield_attackers-top1000.feed', :feed do
     it "should have filtered 0 records" do
       expect(num_records_filtered).to eq(0)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
 
     describe "the records" do
       it "should total 10" do

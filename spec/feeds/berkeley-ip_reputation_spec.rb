@@ -13,9 +13,6 @@ describe 'feeds/berkeley-ip_reputation.feed', :feed do
     it "should have filtered 13 records" do
       expect(num_records_filtered).to eq(13)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record 'HOSTILE_IP: 116.10.191.182      LAST_SEEN: 1403615662' do

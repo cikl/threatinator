@@ -13,9 +13,6 @@ describe 'feeds/trustedsec-ip_reputation.feed', :feed do
     it "should have filtered 1 records" do
       expect(num_records_filtered).to eq(1)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '100.42.74.90' do

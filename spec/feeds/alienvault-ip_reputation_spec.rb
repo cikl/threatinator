@@ -13,9 +13,6 @@ describe 'feeds/alienvault-ip_reputation.feed', :feed do
     it "should have filtered 8 records" do
       expect(num_records_filtered).to eq(8)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '37.205.198.162 # Scanning Host IT,,42.8333015442,12.8332996368' do

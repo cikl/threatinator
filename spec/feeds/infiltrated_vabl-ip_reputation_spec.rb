@@ -13,9 +13,6 @@ describe 'feeds/infiltrated_vabl-ip_reputation.feed', :feed do
     it "should have filtered 12 records" do
       expect(num_records_filtered).to eq(12)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '108.59.1.205 | BRU | VABL | 20110609 | e22b6e201b3533a0dd1ac8bb47426169 | 30633 | 108.59.0.0/20 | LEASEWEB-US | US | - | LEASEWEB USA INC' do

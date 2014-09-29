@@ -28,10 +28,9 @@ shared_context 'a parsed feed' do
     expect(num_records_errored).to eq(0)
   end
 
-  # TODO: ensure that no feeds are missing records
-#  it "should have 0 missed records" do
-#    expect(num_records_missed).to eq(0)
-#  end
+  it "should have missed 0 records" do
+    expect(num_records_missed).to eq(0)
+  end
 end
 
 shared_context 'for feeds', :feed => lambda { true } do

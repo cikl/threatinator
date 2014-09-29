@@ -13,9 +13,6 @@ describe 'feeds/spyeye-ip_reputation.feed', :feed do
     it "should have filtered 7 records" do
       expect(num_records_filtered).to eq(7)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '188.190.126.173' do

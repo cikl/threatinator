@@ -13,9 +13,6 @@ describe 'feeds/infiltrated-ip_reputation.feed', :feed do
     it "should have filtered 2 records" do
       expect(num_records_filtered).to eq(2)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '95.221.71.219' do

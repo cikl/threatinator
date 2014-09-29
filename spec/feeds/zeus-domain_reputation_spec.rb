@@ -13,9 +13,6 @@ describe 'feeds/zeus-domain_reputation.feed', :feed do
     it "should have filtered 6 records" do
       expect(num_records_filtered).to eq(6)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record 'aconfideeeeeracia200.com' do
