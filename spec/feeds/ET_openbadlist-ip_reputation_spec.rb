@@ -10,14 +10,20 @@ describe 'feeds/ET_openbadlist-ip_reputation.feed', :feed do
     it "should have parsed 44 records" do
       expect(num_records_parsed).to eq(44)
     end
-    it "should have filtered 12 records" do
-      expect(num_records_filtered).to eq(12)
-    end
-    it "should have missed 6 records" do
-      expect(num_records_missed).to eq(6)
+    it "should have filtered 18 records" do
+      expect(num_records_filtered).to eq(18)
     end
   end
 
+
+  describe_parsing_a_record 'Feb 18 2014; 89.45.14.0/24; Infinity/Redkit2/Goon EK landing or EK gate.' do
+    it "should have been filtered" do
+      expect(status).to eq(:filtered)
+    end
+    it "should have parsed 0 events" do
+      expect(events.count).to eq(0)
+    end
+  end
   describe_parsing_a_record 'Jan 24 2014; 212.83.160.187/32; Neutrino EK' do
     it "should have parsed" do
       expect(status).to eq(:parsed)
