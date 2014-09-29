@@ -1,0 +1,44 @@
+# Disclaimer - You may not use this list without acceptance of the below:
+#
+# The following IP addresses have made HTTP/HTTPS requests to files that are either non-existent or denied by configuration to 
+# unique and new URLs over the past 30 days.
+#
+# No assertion is made, nor implied, that any of the below listed IP addresses are accurate, malicious, hostile, or engaged in nefarious acts.
+# Use this list at your own risk.  By using this list in any capacity or capability you release all claims of damages and shall not hold or perceive any
+# liability against the publisher for:  damage, unexpected events or results, decision, or reputation damage, even those resulting from wilful
+# or intentional neglect.
+#
+# No claims made against this data shall be honored; no assertions have been made about the quality, accuracy, usability, actionability,
+# reputation, merit, or hostility of the below findings.
+#
+# If you feel that an IP address is inaccurately listed below please contact me at any RFC822 6.3, RFC1123 5.2.7, or RFC2821 4.5.1
+# address associated with this domain.
+#
+# This list may not be included in any 'for-sale' component and may not be included in pay-wall subscription-based services except
+# for organizations that I have explicitly given permission to by E-Mail which has been GPG signed using Key ID 0x37085D70.
+#
+# Changelog:
+#	Thu Sep 04 2014 - Initial Development
+#
+# This file contains these \x09 (TAB) separated fields:
+#	date_time               string                  Time the request was received (standard english format)
+#	remote_ip               string                  Remote IP-address
+#	server_name             string                  The server name according to the UseCanonicalName setting
+#	status                  string                  Status. For requests that got internally redirected, this is the status of the original request
+#	request                 string                  The first line of the request
+#	http_referer            string                  HTTP Referer
+#	user_agent              string                  HTTP User-Agent
+#	day                     string                  Day in YYYY-MM-DD format
+#
+#
+# This list was last updated on Thu Sep  4 10:16:10 CDT 2014
+#
+[03/Sep/2014:13:11:47 -0500]	192.99.152.38	206.82.85.197	403	GET /cc/process.php HTTP/1.1	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0	2014-09-03
+[03/Sep/2014:10:06:47 -0500]	110.45.241.238	206.82.85.197	403	POST /cfg HTTP/1.1	-	-	2014-09-03
+[03/Sep/2014:13:11:47 -0500]	192.99.152.38	206.82.85.197	403	GET /process.php HTTP/1.1	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0	2014-09-03
+[03/Sep/2014:09:48:18 -0500]	62.210.167.201	206.82.85.197	403	GET /mad/inc/config.php HTTP/1.1	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0	2014-09-03
+[03/Sep/2014:05:39:48 -0500]	192.99.166.102	206.82.85.197	403	GET /Panel/bins.php HTTP/1.1	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0	2014-09-03
+[03/Sep/2014:05:39:48 -0500]	192.99.166.102	206.82.85.197	403	GET /jackposprivate12/bins.php HTTP/1.1	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0	2014-09-03
+[03/Sep/2014:05:39:48 -0500]	192.99.166.102	206.82.85.197	403	GET /jack/bins.php HTTP/1.1	-	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0	2014-09-03
+[03/Sep/2014:18:06:59 -0500]	69.28.85.204	www.hackbraten.tk	403	HEAD /Hackbraten.zip HTTP/1.1	-	curl/7.32.0	2014-09-03
+
