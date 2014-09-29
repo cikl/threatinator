@@ -16,8 +16,8 @@ end
 
 shared_context 'a parsed feed' do 
   # expects :observer
-  let(:events) { observer.map { |status, record, events| events } }
-  let(:records) { observer.map { |status, record, events| record } }
+  let(:events) { observer.events }
+  let(:records) { observer.records }
   let(:num_records) { observer.count }
   let(:num_records_filtered) { observer.num_records_filtered }
   let(:num_records_parsed) { observer.num_records_parsed }
