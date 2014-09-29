@@ -1,0 +1,62 @@
+# Disclaimer - You may not use this list without acceptance of the below:
+#
+# No assertion is made, nor implied, that any of the below listed IP addresses are accurate, malicious, hostile, or engaged in nefarious acts inclusive
+# of any descriptions in the context field.  Use this list at your own risk.  By using this list in any capacity or capability you release all claims of
+# damages and shall not hold or perceive any liablity against the publisher for:  damage, unexpected events or results, decision, or reputation damage, 
+# even those resulting from willful or intentional neglect.
+#
+# No claims made against this data shall be honored; no assertions have been made about the quality, accuracy, useability, actionability,
+# reputation, merit, or hostility of the below findings, inclusive of context and nomenclature used to describe the findings.
+#
+Jan 03 2014; 64.202.116.125/32; Fiesta EK
+Jan 03 2014; 67.159.16.250/32; Fiesta EK Gate
+Jan 03 2014; 69.64.52.64/32; Fiesta EK
+Jan 03 2014; 212.83.189.84/32; Neutrino EK
+Jan 03 2014; 193.169.245.76/32; Magnitude EK
+Jan 06 2014; 193.169.244.179/32; Magnitude EK
+Jan 06 2014; 81.169.145.162/32; ASPROX/Kuluoz
+Jan 06 2014; 212.83.191.176/32; Neutrino EK
+Jan 06 2014; 188.116.34.246/32; Styx Exploit Kit
+Jan 06 2014; 193.169.244.224/32; Magnitude EK
+Jan 07 2014; 65.111.171.183/32; Styx/Magnitude EK
+Jan 07 2014; 178.218.218.21/32; Asprox
+Jan 07 2014; 194.28.172.163/32; Asprox
+Jan 07 2014; 60.249.109.45/32; Asprox
+Jan 08 2014; 212.83.188.39/32; Neutrino EK
+Jan 09 2014; 193.169.244.228/32; Magnitude EK
+Jan 09 2014; 46.20.227.195/32; FakeAV/SEO
+Jan 13 2014; 212.83.186.134/32; Neutrino EK
+Jan 13 2014; 103.31.186.40/32; Dotka Chef EK
+Jan 14 2014; 212.83.137.192/32; Neutrino EK
+Jan 16 2014; 192.95.10.211/32; Nuclear EK
+Jan 16 2014; 192.95.10.212/32; Nuclear EK
+Jan 16 2014; 192.95.10.209/32; Nuclear EK
+Jan 17 2014; 212.83.142.197/32; Neutrino EK
+Jan 22 2014; 148.251.21.48/32; Zusy C&C
+Jan 24 2014; 212.83.160.187/32; Neutrino EK
+Jan 24 2014; 192.95.6.121/32; Nuclear EK
+Jan 27 2014; 71.18.27.55/32; Goon EK 
+Jan 27 2014; 176.31.24.102/32; Goon EK
+Jan 27 2014; 46.4.149.201/32; Goon EK
+Jan 27 2014; 95.211.169.162/32; TDLv4+ Alphaeffects.net see https://lists.emergingthreats.net/pipermail/emerging-sigs/2012-September/020431.html
+Jan 28 2014; 149.154.64.180/32; [a-z]{3,6}\.pp\.ua DGA cesspool
+Jan 29 2014; 212.83.162.125/32; Neutrino EK
+Jan 29 2014; 67.205.117.121/32; Darkleech -- it's back
+Jan 31 2014; 50.7.248.170/32; Zusy C&C
+Feb 18 2014; 67.228.43.248/32; Goon EK jhls.com.br
+Feb 18 2014; 212.83.165.96/32; Neutrino EK
+Feb 18 2014; 212.83.166.174/32; Neutrino EK
+Feb 18 2014; 89.45.14.0/24; Infinity/Redkit2/Goon EK landing or EK gate.
+Feb 20 2014; 209.239.113.39/32; Phoenix EK
+Feb 20 2014; 31.41.221.130/32; Nuclear EK
+Feb 25 2014; 64.120.137.0/27; TDS EK redirect /27 WHOIS allocated on Hostnoc
+Feb 27 2014; 64.202.116.124/32; counter.php?id= gate
+Feb 27 2014; 216.155.145.105/32; Phoenix EK
+Feb 27 2014; 216.155.145.96/28; Magnitude EK
+Mar 03 2014; 85.17.23.216/32; Fake Flash/8x8 byte gate possible Andromeda gang
+Mar 05 2014; 190.123.47.198/32; Unknown 16-byte JavaScript EK initial landing
+Mar 11 2014; 23.229.34.64/26; yellowtailmedia/rfpmedia TDLv4+ malvertising and payload
+Jun 30 2014; 83.166.234.0/24; Hostile cesspool network with repeated hosting the WxH Sweet Orange redirector
+Aug 06 2014; 70.186.131.0/24; Win32/BrowseFox.H C&Cs
+
+
