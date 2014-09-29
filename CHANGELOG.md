@@ -2,6 +2,8 @@ Next
 ====
 
 * Your contribution here.
+* BREAKING CHANGE: Event#ipv4s -> now an Ipv4ObservableCollection that consists on Ipv4Observable objects. 
+* Normalize and validate ipv4 addresses.
 * Add URL support [@justfalter](https://github.com/justfalter)
 * Re-implement Event model, get rid of PropertyDefiner [@justfalter](https://github.com/justfalter)
 * Disable decoding when testing the parsing of a single record. [@justfalter](https://github.com/justfalter)
