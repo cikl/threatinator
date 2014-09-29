@@ -6,8 +6,9 @@ extract_gzip
 
 # Filter out ip's
 filter do |record|
-  (record.data =~ /\32/)
-  end
+  # TODO handle subnets
+  !(record.data =~ /\/32/)
+end
 
 parse_eachline() do |event_generator, record|
 
