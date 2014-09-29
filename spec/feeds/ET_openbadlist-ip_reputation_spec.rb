@@ -28,7 +28,7 @@ describe 'feeds/ET_openbadlist-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:c2) }
-      its(:ipv4s) { is_expected.to match_array(['212.83.160.187']) }
+      its(:ipv4s) { is_expected.to eq(build(:ipv4s, values: ['212.83.160.187'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/ET_openbadlist-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:c2) }
-      its(:ipv4s) { is_expected.to match_array(['149.154.64.180']) }
+      its(:ipv4s) { is_expected.to eq(build(:ipv4s, values: ['149.154.64.180'])) }
     end
   end
 end

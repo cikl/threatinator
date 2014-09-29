@@ -28,7 +28,7 @@ describe 'feeds/cert_mxpoison-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:malware_host) }
-      its(:ipv4s) { is_expected.to match_array(['74.125.196.27']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['74.125.196.27'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/cert_mxpoison-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:malware_host) }
-      its(:ipv4s) { is_expected.to match_array(['74.53.119.26']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['74.53.119.26'])) }
     end
   end
 end

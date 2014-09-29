@@ -28,7 +28,7 @@ describe 'feeds/blocklist_de_proftpd-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['111.192.148.129']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['111.192.148.129'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/blocklist_de_proftpd-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['112.90.37.220']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['112.90.37.220'])) }
     end
   end
 end

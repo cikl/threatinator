@@ -33,7 +33,7 @@ describe 'feeds/sigmaproject_atma.feed', :feed do
         subject { event } 
 
         its(:type) { is_expected.to be(:scanning) }
-        its(:ipv4s) { is_expected.to match_array(['106.187.97.158']) }
+        its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['106.187.97.158'])) }
       end
     end
   end
@@ -48,7 +48,7 @@ describe 'feeds/sigmaproject_atma.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['117.194.6.38']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['117.194.6.38'])) }
     end
   end
 

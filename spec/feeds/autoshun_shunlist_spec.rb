@@ -28,7 +28,7 @@ describe 'feeds/autoshun_shunlist.feed', :feed do
     describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['1.93.34.230']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['1.93.34.230'])) }
     end
   end
 

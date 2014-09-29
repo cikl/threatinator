@@ -28,7 +28,7 @@ describe 'feeds/spyeye-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:c2) }
-      its(:ipv4s) { is_expected.to match_array(['188.190.126.173']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['188.190.126.173'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/spyeye-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:c2) }
-      its(:ipv4s) { is_expected.to match_array(['91.220.62.190']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['91.220.62.190'])) }
     end
   end
 end

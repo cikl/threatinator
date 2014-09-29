@@ -28,7 +28,7 @@ describe 'feeds/danger_bruteforce-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['192.168.0.66']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['192.168.0.66'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/danger_bruteforce-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['125.65.245.146']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['125.65.245.146'])) }
     end
   end
 end

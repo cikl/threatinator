@@ -28,7 +28,7 @@ describe 'feeds/packetmail_perimeterbad-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['192.99.152.38']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['192.99.152.38'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/packetmail_perimeterbad-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['69.28.85.204']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['69.28.85.204'])) }
     end
   end
 end

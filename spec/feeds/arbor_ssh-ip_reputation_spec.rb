@@ -28,7 +28,7 @@ describe 'feeds/arbor_ssh-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['190.255.48.99']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['190.255.48.99'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/arbor_ssh-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['184.172.196.132']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['184.172.196.132'])) }
     end
   end
 end

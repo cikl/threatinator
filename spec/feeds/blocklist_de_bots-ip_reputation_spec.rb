@@ -28,7 +28,7 @@ describe 'feeds/blocklist_de_bots-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['101.71.196.164']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['101.71.196.164'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/blocklist_de_bots-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['200.93.43.157']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['200.93.43.157'])) }
     end
   end
 end

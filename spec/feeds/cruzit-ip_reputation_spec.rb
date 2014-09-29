@@ -28,7 +28,7 @@ describe 'feeds/cruzit-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['107.170.248.56']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['107.170.248.56'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/cruzit-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['80.82.64.114']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['80.82.64.114'])) }
     end
   end
 end

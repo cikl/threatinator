@@ -33,7 +33,7 @@ describe 'feeds/phishtank.feed', :feed do
         subject { event } 
 
         its(:type) { is_expected.to be(:phishing) }
-        its(:ipv4s) { is_expected.to match_array(['31.14.23.213']) }
+        its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['31.14.23.213'])) }
         its(:urls) { pending "Waiting on URL support"; is_expected.to match_array(['http://poste.it-postepay4.phpblack.com/']) }
       end
     end

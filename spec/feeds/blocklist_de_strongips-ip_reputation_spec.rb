@@ -28,7 +28,7 @@ describe 'feeds/blocklist_de_strongips-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['188.143.232.211']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['188.143.232.211'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/blocklist_de_strongips-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['142.54.173.130']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['142.54.173.130'])) }
     end
   end
 end

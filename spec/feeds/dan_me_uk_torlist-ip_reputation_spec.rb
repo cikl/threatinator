@@ -28,7 +28,7 @@ describe 'feeds/dan_me_uk_torlist-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['100.34.32.230']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['100.34.32.230'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/dan_me_uk_torlist-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['101.55.12.75']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['101.55.12.75'])) }
     end
   end
 end

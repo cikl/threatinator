@@ -28,7 +28,7 @@ describe 'feeds/trustedsec-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['100.42.74.90']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['100.42.74.90'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/trustedsec-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['101.108.127.106']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['101.108.127.106'])) }
     end
   end
 end

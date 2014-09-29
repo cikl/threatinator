@@ -28,7 +28,7 @@ describe 'feeds/the_haleys_ssh-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['1.30.20.146']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['1.30.20.146'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/the_haleys_ssh-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['1.93.25.234']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['1.93.25.234'])) }
     end
   end
 end

@@ -28,7 +28,7 @@ describe 'feeds/infiltrated-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['95.221.71.219']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['95.221.71.219'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/infiltrated-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['94.41.71.52']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['94.41.71.52'])) }
     end
   end
 end

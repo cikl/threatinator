@@ -28,7 +28,7 @@ describe 'feeds/blocklist_de_pop3-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['1.175.64.9']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['1.175.64.9'])) }
     end
   end
 
@@ -42,7 +42,7 @@ describe 'feeds/blocklist_de_pop3-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['1.53.0.215']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['1.53.0.215'])) }
     end
   end
 end
