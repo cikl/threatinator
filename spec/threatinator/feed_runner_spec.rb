@@ -215,8 +215,8 @@ describe Threatinator::FeedRunner do
           it "notifies the observer with (:record_parsed, record, events) for each event" do
             expect(observer).to receive(:update).with(
               :record_parsed, record1, satisfy { |events| 
-                expect(events[0].ipv4s).to contain_exactly('1.1.1.1')
-                expect(events[1].ipv4s).to contain_exactly('2.2.2.2')
+                expect(events[0].ipv4s).to contain_exactly(build(:ipv4, ipv4: '1.1.1.1'))
+                expect(events[1].ipv4s).to contain_exactly(build(:ipv4, ipv4: '2.2.2.2'))
               }) 
 
             feed_runner.run()

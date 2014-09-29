@@ -15,16 +15,16 @@ describe Threatinator::Event do
 
   describe "#==(other)" do
     it "returns true when compared to an identically configured event" do
-      event_opts.merge!(ipv4s: ['1.2.3.4'], fqdns: ['foo.com'])
+      event_opts.merge!(ipv4s: build(:ipv4s, values: ['1.2.3.4']), fqdns: ['foo.com'])
       event1 = described_class.new(event_opts)
       event2 = described_class.new(event_opts)
       expect(event1).to be == event2
     end
 
     it "returns true when compared to an identically configured event" do
-      event_opts.merge!(ipv4s: ['1.2.3.4'], fqdns: ['foo.com'])
+      event_opts.merge!(ipv4s: build(:ipv4s, values: ['1.2.3.4']), fqdns: ['foo.com'])
       event1 = described_class.new(event_opts)
-      event_opts.merge!(ipv4s: ['8.8.8.8'], fqdns: ['foo.com'])
+      event_opts.merge!(ipv4s: build(:ipv4s, values: ['8.8.8.8']), fqdns: ['foo.com'])
       event2 = described_class.new(event_opts)
       expect(event1).not_to be == event2
     end
@@ -149,7 +149,7 @@ describe Threatinator::Event do
         }.not_to raise_error
       end
       describe "#ipv4s" do
-        it "returns an an empty array" do
+        it "returns an an empty collection" do
           event_opts[:ipv4s] = nil
           expect(described_class.new(event_opts).ipv4s).to be_empty
         end
@@ -163,23 +163,39 @@ describe Threatinator::Event do
         }.not_to raise_error
       end
       describe "#ipv4s" do
-        it "returns an an empty array" do
+        it "returns an an empty collection" do
           event_opts[:ipv4s] = []
           expect(described_class.new(event_opts).ipv4s).to be_empty
         end
       end
     end
-    context "with :ipv4s set to an array of ipv4 strings" do
+    context "with :ipv4s set to an empty Ipv4Collection" do
       it "is valid" do
-        event_opts[:ipv4s] = ['1.2.3.4', '8.8.8.8']
+        event_opts[:ipv4s] = build(:ipv4s)
         expect {
           described_class.new(event_opts)
         }.not_to raise_error
       end
       describe "#ipv4s" do
-        it "returns a collection containing the provided ipv4s" do
-          event_opts[:ipv4s] = ['1.2.3.4', '8.8.8.8']
-          expect(described_class.new(event_opts).ipv4s).to contain_exactly('1.2.3.4', '8.8.8.8')
+        it "returns an an empty collection" do
+          event_opts[:ipv4s] = []
+          expect(described_class.new(event_opts).ipv4s).to be_empty
+        end
+      end
+    end
+    context "with :ipv4s set to an array of Ipv4 observables" do
+      it "is valid" do
+        event_opts[:ipv4s] = [build(:ipv4, ipv4: '1.2.3.4'), build(:ipv4, ipv4: '8.8.8.8')]
+        expect {
+          described_class.new(event_opts)
+        }.not_to raise_error
+      end
+      describe "#ipv4s" do
+        it "returns a collection containing the provided Ipv4 observables" do
+          o1 = build(:ipv4, ipv4: '1.2.3.4')
+          o2 = build(:ipv4, ipv4: '8.8.8.8')
+          event_opts[:ipv4s] = [o1, o2]
+          expect(described_class.new(event_opts).ipv4s).to contain_exactly(o1, o2)
         end
       end
     end

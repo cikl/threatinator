@@ -57,16 +57,16 @@ describe Threatinator::EventBuilder do
       event_builder.add_ipv4('1.2.3.4')
       event_builder.add_ipv4('8.8.8.8')
       event1 = event_builder.build
-      expect(event1.ipv4s).to contain_exactly('1.2.3.4', '8.8.8.8')
+      expect(event1.ipv4s).to contain_exactly(build(:ipv4, ipv4:'1.2.3.4'), build(:ipv4, ipv4: '8.8.8.8'))
     end
   end
 
   describe "#add_fqdn(fqdn)" do
     it "adds the provided fqdns to built events" do
-      event_builder.add_ipv4('google.com')
-      event_builder.add_ipv4('yahoo.com')
+      event_builder.add_fqdn('google.com')
+      event_builder.add_fqdn('yahoo.com')
       event1 = event_builder.build
-      expect(event1.ipv4s).to contain_exactly('google.com', 'yahoo.com')
+      expect(event1.fqdns).to contain_exactly('google.com', 'yahoo.com')
     end
   end
 
