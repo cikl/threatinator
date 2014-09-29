@@ -5,8 +5,8 @@ fetch_http('https://blocklist.sigmaprojects.org/api.cfc?method=getList&lists=atm
 
 # Filter out ip's
 filter do |record|
-  (record.data =~ /\32/)
-  end
+  !(record.data =~ /\/32/)
+end
 
 extract_gzip
 parse_eachline() do |event_generator, record|

@@ -10,18 +10,18 @@ describe 'feeds/sigmaproject_atma.feed', :feed do
     it "should have parsed 10 records" do
       expect(num_records_parsed).to eq(10)
     end
-    it "should have filtered 0 records" do
-      expect(num_records_filtered).to eq(0)
+    it "should have filtered 1 records" do
+      expect(num_records_filtered).to eq(1)
     end
 
     describe "the records" do
-      it "should total 10" do
-        expect(num_records).to eq(10)
+      it "should total 11" do
+        expect(num_records).to eq(11)
       end
 
       it "each record should have generated exactly one event" do
         counts = events.map { |event_array| event_array.count }
-        expect(counts).to eq([1,1,1,1,1,1,1,1,1,1])
+        expect(counts).to eq([1,1,1,1,1,1,1,1,1,1,0])
       end
 
       describe "the event for record 0" do
@@ -49,6 +49,14 @@ describe 'feeds/sigmaproject_atma.feed', :feed do
     end
   end
 
+  describe_parsing_a_record '144.76.42.128/25' do
+    it "should have been filtered" do
+      expect(status).to eq(:filtered)
+    end
+    it "should have parsed 0 event" do
+      expect(events.count).to eq(0)
+    end
+  end
 end
 
 
