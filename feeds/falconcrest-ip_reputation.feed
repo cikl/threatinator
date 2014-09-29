@@ -1,0 +1,18 @@
+provider "falconcrest"
+name "ip_reputation"
+fetch_http('http://www.falconcrest.eu/IPBL.aspx')
+
+parse_xml("//td/span") do |event_generator, record|
+  node = record.node
+  ip = node.text
+  next if ip.nil?
+  next if ip.empty?
+
+  ip.gsub!(/\(/, '')
+
+  event_generator.call() do |event|
+    event.type = :spamming
+    event.add_ipv4(ip) do |ipv4_event|
+    end
+  end
+end
