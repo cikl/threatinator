@@ -22,6 +22,16 @@ shared_context 'a parsed feed' do
   let(:num_records_filtered) { observer.num_records_filtered }
   let(:num_records_parsed) { observer.num_records_parsed }
   let(:num_records_missed) { observer.num_records_missed }
+  let(:num_records_errored) { observer.num_records_errored }
+
+  it "should have 0 error records" do
+    expect(num_records_errored).to eq(0)
+  end
+
+  # TODO: ensure that no feeds are missing records
+#  it "should have 0 missed records" do
+#    expect(num_records_missed).to eq(0)
+#  end
 end
 
 shared_context 'for feeds', :feed => lambda { true } do
@@ -114,7 +124,7 @@ module FeedHelpers
   class FeedRunnerObserver
     include Enumerable
     attr_reader :records, :statuses, :events, :num_records_filtered, 
-      :num_records_missed, :num_records_parsed
+      :num_records_missed, :num_records_parsed, :num_records_errored
 
     def initialize
       @records = []
@@ -123,6 +133,7 @@ module FeedHelpers
       @num_records_filtered = 0
       @num_records_parsed = 0
       @num_records_missed = 0
+      @num_records_errored = 0
     end
 
     def each
@@ -149,6 +160,11 @@ module FeedHelpers
         @statuses << :parsed
         @events << args.shift
         @num_records_parsed += 1
+      when :record_error
+        @records << args.shift
+        @statuses << :error
+        @events << []
+        @num_records_errored += 1
       end
     end
   end
