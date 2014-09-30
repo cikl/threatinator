@@ -10,21 +10,18 @@ describe 'feeds/sigmaproject_atma.feed', :feed do
     it "should have parsed 10 records" do
       expect(num_records_parsed).to eq(10)
     end
-    it "should have filtered 0 records" do
-      expect(num_records_filtered).to eq(0)
-    end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
+    it "should have filtered 1 records" do
+      expect(num_records_filtered).to eq(1)
     end
 
     describe "the records" do
-      it "should total 10" do
-        expect(num_records).to eq(10)
+      it "should total 11" do
+        expect(num_records).to eq(11)
       end
 
       it "each record should have generated exactly one event" do
         counts = events.map { |event_array| event_array.count }
-        expect(counts).to eq([1,1,1,1,1,1,1,1,1,1])
+        expect(counts).to eq([1,1,1,1,1,1,1,1,1,1,0])
       end
 
       describe "the event for record 0" do
@@ -33,7 +30,7 @@ describe 'feeds/sigmaproject_atma.feed', :feed do
         subject { event } 
 
         its(:type) { is_expected.to be(:scanning) }
-        its(:ipv4s) { is_expected.to match_array(['106.187.97.158']) }
+        its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['106.187.97.158'])) }
       end
     end
   end
@@ -48,10 +45,18 @@ describe 'feeds/sigmaproject_atma.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['117.194.6.38']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['117.194.6.38'])) }
     end
   end
 
+  describe_parsing_a_record '144.76.42.128/25' do
+    it "should have been filtered" do
+      expect(status).to eq(:filtered)
+    end
+    it "should have parsed 0 event" do
+      expect(events.count).to eq(0)
+    end
+  end
 end
 
 

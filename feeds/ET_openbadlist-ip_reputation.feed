@@ -5,6 +5,12 @@ fetch_http('https://raw.githubusercontent.com/EmergingThreats/et-open-bad-ip-lis
 filter_whitespace
 filter_comments
 
+# Filter out ip's
+filter do |record|
+  # TODO Add handling for CIDR's once supported
+  !(record.data =~ /\/32/)
+end
+
 parse_eachline(:separator => "\n") do |event_generator, record|
   fields = record.data.split(/; /)
   next if record.nil?
@@ -17,6 +23,7 @@ parse_eachline(:separator => "\n") do |event_generator, record|
   ip.gsub!(/\/32/, '')
   ip.strip!
   if ip =~ /\//
+    puts ip
     next
   end
   

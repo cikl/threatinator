@@ -13,9 +13,6 @@ describe 'feeds/yourcmc_ssh-ip_reputation.feed', :feed do
     it "should have filtered 11 records" do
       expect(num_records_filtered).to eq(11)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '109.120.157.63' do
@@ -28,7 +25,7 @@ describe 'feeds/yourcmc_ssh-ip_reputation.feed', :feed do
     describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['109.120.157.63']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['109.120.157.63'])) }
     end
   end
 
@@ -42,7 +39,7 @@ describe 'feeds/yourcmc_ssh-ip_reputation.feed', :feed do
     describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['109.165.15.113']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['109.165.15.113'])) }
     end
   end
 end

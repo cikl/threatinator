@@ -1,5 +1,7 @@
 require 'threatinator/event'
 require 'threatinator/exceptions'
+require 'threatinator/model/observables/ipv4'
+require 'ip'
 
 module Threatinator
   class EventBuilder
@@ -27,10 +29,13 @@ module Threatinator
 
       ret = Threatinator::Event.new(opts)
 
-      # TODO Add error handling for when validation fails on any values added 
-      # here 
-      @ipv4s.each do |ipv4|
-        ret.ipv4s << ipv4
+      @ipv4s.each do |ipv4, opts|
+        opts = opts.dup
+        if ipv4.is_a?(::String)
+          ipv4 = ::IP::V4.parse(ipv4)
+        end
+        opts[:ipv4] = ipv4
+        ret.ipv4s << Threatinator::Model::Observables::Ipv4.new(opts)
       end
       @fqdns.each do |fqdn|
         ret.fqdns << fqdn
@@ -52,8 +57,8 @@ module Threatinator
       @fqdns << fqdn
     end
 
-    def add_ipv4(ipv4)
-      @ipv4s << ipv4
+    def add_ipv4(ipv4, opts = {})
+      @ipv4s << [ipv4, opts]
     end
 
     def add_url(url)

@@ -10,6 +10,7 @@ gem 'activemodel', '~> 4.0'
 gem 'equalizer', '> 0.0.0'
 gem 'addressable', '~> 2.3.0'
 gem 'log4r', '~> 1.1.10'
+gem 'ruby-ip', '~> 0.9.3'
 
 platforms :mingw, :mswin, :ruby do
   gem 'oj', '~> 2.9'

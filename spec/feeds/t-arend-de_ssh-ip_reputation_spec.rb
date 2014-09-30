@@ -13,9 +13,6 @@ describe 'feeds/t-arend-de_ssh-ip_reputation.feed', :feed do
     it "should have filtered 3 records" do
       expect(num_records_filtered).to eq(3)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record 'sshd: 121.15.167.243' do
@@ -28,7 +25,7 @@ describe 'feeds/t-arend-de_ssh-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:c2) }
-      its(:ipv4s) { is_expected.to match_array(['121.15.167.243']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['121.15.167.243'])) }
     end
   end
 
@@ -42,7 +39,7 @@ describe 'feeds/t-arend-de_ssh-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:c2) }
-      its(:ipv4s) { is_expected.to match_array(['122.224.128.222']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['122.224.128.222'])) }
     end
   end
 end

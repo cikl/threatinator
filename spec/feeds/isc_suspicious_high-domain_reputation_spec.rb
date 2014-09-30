@@ -13,9 +13,6 @@ describe 'feeds/isc_suspicious_high-domain_reputation.feed', :feed do
     it "should have filtered 17 records" do
       expect(num_records_filtered).to eq(17)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '1-verygoods.ru' do

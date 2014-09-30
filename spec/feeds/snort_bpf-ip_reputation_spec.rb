@@ -13,9 +13,6 @@ describe 'feeds/snort_bpf-ip_reputation.feed', :feed do
     it "should have filtered 0 records" do
       expect(num_records_filtered).to eq(0)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '193.106.31.12' do
@@ -28,7 +25,7 @@ describe 'feeds/snort_bpf-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['193.106.31.12']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['193.106.31.12'])) }
     end
   end
 
@@ -42,7 +39,7 @@ describe 'feeds/snort_bpf-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['76.74.184.23']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['76.74.184.23'])) }
     end
   end
 end

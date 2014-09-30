@@ -13,9 +13,6 @@ describe 'feeds/falconcrest-ip_reputation.feed', :feed do
     it "should have filtered 0 records" do
       expect(num_records_filtered).to eq(0)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
 
     describe "the records" do
       it "should total 10" do
@@ -33,7 +30,7 @@ describe 'feeds/falconcrest-ip_reputation.feed', :feed do
         subject { event } 
 
         its(:type) { is_expected.to be(:spamming) }
-        its(:ipv4s) { is_expected.to match_array(['175.44.5.227']) }
+        its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['175.44.5.227'])) }
       end
     end
   end

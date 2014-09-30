@@ -13,9 +13,6 @@ describe 'feeds/dshield_attackers-top1000.feed', :feed do
     it "should have filtered 0 records" do
       expect(num_records_filtered).to eq(0)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
 
     describe "the records" do
       it "should total 10" do
@@ -33,7 +30,7 @@ describe 'feeds/dshield_attackers-top1000.feed', :feed do
         subject { event } 
 
         its(:type) { is_expected.to be(:attacker) }
-        its(:ipv4s) { is_expected.to match_array(['150.164.82.10']) }
+        its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['150.164.82.10'])) }
       end
     end
   end

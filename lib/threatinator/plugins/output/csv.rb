@@ -31,7 +31,7 @@ module Threatinator
         end
 
         def handle_event(event)
-          ipv4s = event.ipv4s.to_a[0..3]
+          ipv4s = event.ipv4s.to_a[0..3].map { |o| o.nil? ? nil : o.ipv4.to_addr }
           fqdns = event.fqdns.to_a[0..3]
           urls  = event.urls.to_a[0..3].map {|x| x.to_s }
           @csv.add_row([

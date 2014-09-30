@@ -13,9 +13,6 @@ describe 'feeds/feodo-ip_reputation.feed', :feed do
     it "should have filtered 6 records" do
       expect(num_records_filtered).to eq(6)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '103.25.59.120' do
@@ -28,7 +25,7 @@ describe 'feeds/feodo-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:c2) }
-      its(:ipv4s) { is_expected.to match_array(['103.25.59.120']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['103.25.59.120'])) }
     end
   end
 
@@ -42,7 +39,7 @@ describe 'feeds/feodo-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:c2) }
-      its(:ipv4s) { is_expected.to match_array(['173.236.86.214']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['173.236.86.214'])) }
     end
   end
 end

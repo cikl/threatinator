@@ -13,9 +13,6 @@ describe 'feeds/multiproxy-ip_reputation.feed', :feed do
     it "should have filtered 0 records" do
       expect(num_records_filtered).to eq(0)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '190.53.89.103:6588' do
@@ -28,7 +25,7 @@ describe 'feeds/multiproxy-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['190.53.89.103']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['190.53.89.103'])) }
     end
   end
 
@@ -42,7 +39,7 @@ describe 'feeds/multiproxy-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['211.140.151.214']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['211.140.151.214'])) }
     end
   end
 end

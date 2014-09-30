@@ -13,9 +13,6 @@ describe 'feeds/berkeley-ip_reputation.feed', :feed do
     it "should have filtered 13 records" do
       expect(num_records_filtered).to eq(13)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record 'HOSTILE_IP: 116.10.191.182      LAST_SEEN: 1403615662' do
@@ -28,7 +25,7 @@ describe 'feeds/berkeley-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['116.10.191.182']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['116.10.191.182'])) }
     end
   end
 
@@ -42,7 +39,7 @@ describe 'feeds/berkeley-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['144.0.0.22']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['144.0.0.22'])) }
     end
   end
 end

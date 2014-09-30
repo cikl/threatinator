@@ -13,9 +13,6 @@ describe 'feeds/virbl-ip_reputation.feed', :feed do
     it "should have filtered 1 records" do
       expect(num_records_filtered).to eq(1)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '193.20.147.167' do
@@ -28,7 +25,7 @@ describe 'feeds/virbl-ip_reputation.feed', :feed do
     describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:malware_host) }
-      its(:ipv4s) { is_expected.to match_array(['193.20.147.167']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['193.20.147.167'])) }
     end
   end
 
@@ -42,7 +39,7 @@ describe 'feeds/virbl-ip_reputation.feed', :feed do
     describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:malware_host) }
-      its(:ipv4s) { is_expected.to match_array(['37.84.148.198']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['37.84.148.198'])) }
     end
   end
 end

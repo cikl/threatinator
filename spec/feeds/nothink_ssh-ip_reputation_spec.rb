@@ -13,9 +13,6 @@ describe 'feeds/nothink_ssh-ip_reputation.feed', :feed do
     it "should have filtered 3 records" do
       expect(num_records_filtered).to eq(3)
     end
-    it "should have missed 0 records" do
-      expect(num_records_missed).to eq(0)
-    end
   end
 
   describe_parsing_a_record '36.39.246.121' do
@@ -28,7 +25,7 @@ describe 'feeds/nothink_ssh-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['36.39.246.121']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['36.39.246.121'])) }
     end
   end
 
@@ -42,7 +39,7 @@ describe 'feeds/nothink_ssh-ip_reputation.feed', :feed do
 	describe 'event 0' do
       subject { events[0] }
       its(:type) { is_expected.to be(:scanning) }
-      its(:ipv4s) { is_expected.to match_array(['94.32.71.168']) }
+      its(:ipv4s) { is_expected.to  eq(build(:ipv4s, values: ['94.32.71.168'])) }
     end
   end
 end
