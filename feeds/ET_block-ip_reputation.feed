@@ -1,0 +1,26 @@
+provider "emergingthreats"
+name "block_ip_reputation"
+fetch_http('http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt')
+
+filter_whitespace
+filter_comments
+
+# 3 categories of IP listed here;
+# Shadowserver C2 IPs, which we want
+# Spamhaus drop nets, which are covered in another feed
+# Dshield top attackers which are also covered in another feed
+# The ones we don't want are all CIDR
+filter do |record|
+  (record.data =~ /\//)
+  end
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  ip = record.data.strip()
+  next if ip.nil?
+
+  event_generator.call() do |event|
+    event.type = :c2
+    event.add_ipv4(ip) do |ipv4_event|
+    end
+  end
+end
