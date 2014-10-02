@@ -1,0 +1,7 @@
+# Bitcash auto-blacklisting by carlos@bitcash.cz
+# IPs banned for serious abusing of our services (scanning, sniffing, harvesting, dos attacks)
+107.22.93.75 #    ec2-107-22-93-75.compute-1.amazonaws.com       last access 2014-07-30 01:45:02
+195.98.179.106 #  broadband-195-98-179-106.2com.net              last access 2014-09-02 17:01:01
+89.223.47.197 #   89.223.47.197                                  last access 2014-09-21 13:47:02
+
+
