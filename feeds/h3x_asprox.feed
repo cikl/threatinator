@@ -1,0 +1,17 @@
+provider "h3x"
+name "asprox"
+
+fetch_http('http://atrack.h3x.eu/api/asprox_all.php')
+
+parse_eachline() do |event_generator, record|
+
+  fields = record.data.split(/\:/)
+  ip = fields[0]
+  # port = fields[1]
+
+  event_generator.call() do |event|
+    event.type = :c2
+    event.add_ipv4(ip) do |ipv4_event|
+    end
+  end
+end
