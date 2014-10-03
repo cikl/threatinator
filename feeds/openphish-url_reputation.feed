@@ -1,0 +1,22 @@
+provider "openphish"
+name "url_reputation"
+fetch_http('http://openphish.com/feed.txt')
+
+filter_whitespace
+filter_comments
+
+# The last record I see is http://www. so filter that out
+filter do |record|
+  (record.data =~ /\/\/www\.$/)
+  end
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  url = record.data.strip()
+  next if url.nil?
+
+  event_generator.call() do |event|
+    event.type = :malware_host
+    event.add_url(url) do |url_event|
+    end
+  end
+end
