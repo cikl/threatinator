@@ -1,0 +1,13 @@
+# 2104 Block List (IPV4 IP addresses to avoid contact with) - Jeron Steeman - http://jeroen.steeman.org
+# Created: 10/3/2014 4:00:24 PM
+1.0.253.17
+1.1.153.136
+1.10.220.118
+1.10.221.14
+1.10.221.78
+1.10.253.13
+1.161.123.10
+1.162.217.96
+1.168.163.133
+1.168.242.142
+1.169.45.13
