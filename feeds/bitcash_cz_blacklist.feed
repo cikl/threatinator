@@ -1,0 +1,20 @@
+provider "bitcash_cz"
+name "blacklist"
+
+fetch_http('http://bitcash.cz/misc/log/blacklist')
+
+filter_whitespace
+filter_comments
+
+parse_eachline() do |event_generator, record|
+
+  fields = record.data.split(/\s/)
+  next if fields[0].nil?
+  ip = fields[0].strip()
+  
+  event_generator.call() do |event|
+    event.type = :scanning
+    event.add_ipv4(ip) do |ipv4_event|
+    end
+  end
+end
