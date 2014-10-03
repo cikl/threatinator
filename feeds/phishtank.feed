@@ -6,9 +6,9 @@ fetch_http('http://data.phishtank.com/data/online-valid.json.gz')
 extract_gzip
 parse_json() do |event_generator, record|
   event_generator.call do |event|
-    # TODO: parse URL
     # TODO: parse dates
     
+    event.add_url(record.data["url"])
     event.type = :phishing
     record.data["details"].each do |detail|
       if ip = detail["ip_address"]
