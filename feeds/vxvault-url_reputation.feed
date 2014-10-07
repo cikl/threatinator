@@ -1,0 +1,22 @@
+provider "vxvault"
+name "url_reputation"
+fetch_http('http://vxvault.siri-urz.net/URL_List.php')
+
+filter_whitespace
+filter_comments
+
+# Filter out any lines that don't start with a URL
+filter do |record|
+  !(record.data =~ /^http/)
+end
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  url = record.data.strip
+  next if url.nil?
+
+  event_generator.call() do |event|
+    event.type = :malware_host
+    event.add_url(url) do |url_event|
+	end
+  end
+end
