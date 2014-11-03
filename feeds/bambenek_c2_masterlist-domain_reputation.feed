@@ -1,0 +1,15 @@
+provider "bambenek"
+name "c2_masterlist"
+fetch_http('http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt')
+
+filter do |record|
+  record.data[:domain].start_with?("#")
+end
+
+parse_csv(:headers => [:domain, :description, :moreinfo]) do |event_generator, record|
+  event_generator.call do |event|
+    event.type = :c2
+    event.add_fqdn(record.data[:domain]) do |fqdn_event|
+    end
+  end
+end
