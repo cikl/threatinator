@@ -1,4 +1,5 @@
 require 'threatinator/property_definer'
+require 'set'
 
 module Threatinator
   class Event
