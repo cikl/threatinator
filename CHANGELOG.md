@@ -3,7 +3,7 @@ Next
 
 * Your contribution here.
 
-0.1.3
+0.1.4
 =====
 * [#115](https://github.com/cikl/threatinator/issues/115): Add missing require for 'set'. - [@justfalter](https://github.com/justfalter)
 
