@@ -3,6 +3,10 @@ Next
 
 * Your contribution here.
 
+0.1.5
+====
+
+* Add missing requrie for set. Fixes #115. - [@justfalter](https://github.com/justfalter)
 0.1.2
 ====
 
