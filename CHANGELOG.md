@@ -3,6 +3,11 @@ Next
 
 * Your contribution here.
 
+0.1.6
+====
+
+* Add JSON support: 'threatinator list --list.format=json'  - [@justfalter](https://github.com/justfalter)
+
 0.1.5
 ====
 
