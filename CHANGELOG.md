@@ -2,6 +2,7 @@ Next
 ====
 
 * Your contribution here.
+* [#121](https://github.com/cikl/threatinator/issues/121) Add threatinator list 'json' output format. [@justfalter](https://github.com/justfalter)
 * BREAKING CHANGE: Event#ipv4s -> now an Ipv4ObservableCollection that consists on Ipv4Observable objects. 
 * Normalize and validate ipv4 addresses.
 * Add URL support [@justfalter](https://github.com/justfalter)
