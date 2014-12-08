@@ -1,0 +1,27 @@
+#############################################################
+## Master Feed of known, active and non-sinkholed C&Cs IP 
+## addresses
+## 
+## Feed generated at: 2014-11-03 16:46 
+##
+## Feed Provided By: John Bambenek of Bambenek Consulting
+## jcb@bambenekconsulting.com // http://bambenekconsulting.com
+## Use of this feed is governed by the license here: 
+## http://osint.bambenekconsulting.com/license.txt 
+##
+## For more information on this feed go to: 
+## http://osint.bambenekconsulting.com/manual/c2-ipmasterlist.txt
+## 
+## All times are in UTC
+#############################################################
+103.241.144.184,IP used by GOZ C&C,2014-11-03 16:43,http://osint.bambenekconsulting.com/manual/goz-iplist.txt
+122.166.11.34,IP used by GOZ C&C,2014-11-03 16:43,http://osint.bambenekconsulting.com/manual/goz-iplist.txt
+156.56.179.160,IP used by GOZ C&C,2014-11-03 16:43,http://osint.bambenekconsulting.com/manual/goz-iplist.txt
+70.32.74.243,IP used by matsnu C&C,2014-11-03 16:40,http://osint.bambenekconsulting.com/manual/matsnu-iplist.txt
+186.194.174.101,IP used by matsnu C&C,2014-11-03 16:40,http://osint.bambenekconsulting.com/manual/matsnu-iplist.txt
+192.64.147.150,IP used by matsnu C&C,2014-11-03 16:40,http://osint.bambenekconsulting.com/manual/matsnu-iplist.txt
+200.41.119.92,IP used by matsnu C&C,2014-11-03 16:40,http://osint.bambenekconsulting.com/manual/matsnu-iplist.txt
+212.175.66.70,IP used by matsnu C&C,2014-11-03 16:40,http://osint.bambenekconsulting.com/manual/matsnu-iplist.txt
+141.8.224.169,IP used by pushdo C&C,2014-11-03 16:40,http://osint.bambenekconsulting.com/manual/pushdo-iplist.txt
+46.254.17.36,IP used by tinba C&C,2014-11-03 16:40,http://osint.bambenekconsulting.com/manual/tinba-iplist.txt
+82.165.37.127,IP used by tinba C&C,2014-11-03 16:40,http://osint.bambenekconsulting.com/manual/tinba-iplist.txt
