@@ -2,6 +2,7 @@ Next
 ====
 
 * Your contribution here.
+[#115](https://github.com/cikl/threatinator/issues/56): Add missing require for 'set' - [@justfalter](https://github.com/justfalter)
 * [#121](https://github.com/cikl/threatinator/issues/121) Add threatinator list 'json' output format. [@justfalter](https://github.com/justfalter)
 * BREAKING CHANGE: Event#ipv4s -> now an Ipv4ObservableCollection that consists on Ipv4Observable objects. 
 * Normalize and validate ipv4 addresses.

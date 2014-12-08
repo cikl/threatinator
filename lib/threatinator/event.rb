@@ -3,6 +3,7 @@ require 'threatinator/model/observables/ipv4_collection'
 require 'threatinator/model/observables/fqdn_collection'
 require 'threatinator/model/observables/url_collection'
 require 'equalizer'
+require 'set'
 
 module Threatinator
   class Event < Threatinator::Model::Base
