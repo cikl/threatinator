@@ -50,8 +50,15 @@ describe Threatinator::FeedRunner do
     def finish; end
   end
 
+  def create_mock_io(name = "io")
+    ret = double(name) 
+    allow(ret).to receive(:close)
+    allow(ret).to receive(:closed?).and_return(false)
+    ret
+  end
+
   let(:output_formatter ) { DummyOutput.new(nil) }
-  let(:io) { double("io") }
+  let(:io) { create_mock_io("io") }
   let(:fetcher) { DummyFetcher.new(io) }
 
   let(:record1) { Threatinator::Record.new('a1') }
@@ -124,6 +131,12 @@ describe Threatinator::FeedRunner do
         expect(observer.updates.first).to be_nil
         feed_runner.run()
         expect(observer.updates.first).to eq([:start])
+      end
+
+      it "closes the last IO instance" do
+        allow(fetcher).to receive(:fetch).and_return(io)
+        expect(io).to receive(:close)
+        feed_runner.run()
       end
 
       it "fetches, decodes, and then parses records" do
@@ -285,9 +298,9 @@ describe Threatinator::FeedRunner do
       end
 
       context "decoding" do
-        let(:decoded_io1) { double('decoded_io1') }
-        let(:decoded_io2) { double('decoded_io2') }
-        let(:decoded_io3) { double('decoded_io3') }
+        let(:decoded_io1) { create_mock_io('decoded_io1') }
+        let(:decoded_io2) { create_mock_io('decoded_io2') }
+        let(:decoded_io3) { create_mock_io('decoded_io3') }
         let(:decoder1) { DummyDecoder.new(decoded_io1) }
         let(:decoder2) { DummyDecoder.new(decoded_io2) }
         let(:decoder3) { DummyDecoder.new(decoded_io3) }
