@@ -1,0 +1,36 @@
+provider "chaosreigns"
+name "ip_reputation"
+fetch_http('http://www.chaosreigns.com/iprep/iprep.txt')
+
+filter_whitespace
+filter_comments
+
+# Until we support listing arbitrary fields, strip out 100% ham scored items
+filter do |record|
+  (record.data =~ /\s100\s/)
+  end
+  
+# Until we support v6, strip them out
+filter do |record|
+  (record.data =~ /\:/)
+  end
+  
+# Last line is a NULL, strip it out
+filter do |record|
+  (record.data =~ /^\s*0\s*0$/)
+  end
+
+parse_eachline(:separator => "\n") do |event_generator, record|
+  fields = record.data.strip.split(/\s/)
+  next if record.nil?
+  
+  ip = fields[0].strip
+  # whitelist = fields[1].strip # ...the actual percentage of email from each IP which is ham...
+  # total_count_logo = fields[2].strip #...a count of the total emails from that IP (as a logarithm). 
+  
+  event_generator.call() do |event|
+    event.type = :scanning
+    event.add_ipv4(ip) do |ipv4_event|
+    end
+  end
+end
