@@ -64,10 +64,12 @@ module Threatinator
     # @option opts [Boolean] :skip_decoding (false) Skip all decoding if set 
     #  to true. Useful for testing.
     def run(opts = {})
+      ios = [ ]
       logger.debug("#run starting #{@feed.provider}:#{@feed.name}") if logger.debug?
       start = Time.now
       changed(true); notify_observers(:start)
       skip_decoding = !!opts.delete(:skip_decoding)
+
 
       unless io = opts.delete(:io)
         fetcher = @feed.fetcher_builder.call()
@@ -78,10 +80,14 @@ module Threatinator
         logger.debug('#run Skipping fetch. IO object was provided')
       end
 
+      ios << io
+
       unless skip_decoding == true
         changed(true); notify_observers(:start_decode)
         @decoders.each do |decoder|
-          io = decoder.decode(io)
+          new_io = decoder.decode(io)
+          ios << new_io
+          io = new_io
         end
         changed(true); notify_observers(:end_decode)
       end
@@ -96,6 +102,18 @@ module Threatinator
       
       logger.debug("#run finished #{@feed.provider}:#{@feed.name} in #{Time.now - start} seconds") if logger.debug?
       nil
+    ensure
+      # Close all IO objects that we've seen. 
+      while some_io = ios.pop
+        unless some_io.closed?
+          begin
+            some_io.close
+          rescue => e
+            logger.warn("Failed to close IO: #{e} #{e.message}")
+          end
+        end
+      end
+
     end
 
     def create_event
