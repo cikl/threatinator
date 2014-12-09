@@ -2,6 +2,9 @@ Next
 ====
 
 * Your contribution here.
+
+0.2.1
+====
 * Ensure that FeedRunner calls output formatters #finish method (allows for 
   closing of any file handles) - [@justfalter](https://github.com/justfalter)
 * Ensure that HTTP fetcher does not reuse sockets (and thus leave them open) - [@justfalter](https://github.com/justfalter)
