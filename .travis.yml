@@ -20,4 +20,3 @@ cache: bundler
 bundler_args: --without development --jobs 7
 
 script: bundle exec rake spec
-
