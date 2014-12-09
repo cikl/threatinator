@@ -24,7 +24,10 @@ module Threatinator
       # @raise [Threatinator::Exceptions::FetchFailed] if the fetch fails
       def fetch
         tempfile = Tempfile.new("threatinator_http")
-        request = Typhoeus::Request.new(@url, ssl_verifypeer: false)
+        request = Typhoeus::Request.new(@url, 
+                                        ssl_verifypeer: false, 
+                                        forbid_reuse: true
+                                       )
         request.on_headers do |response|
           if response.response_code != 200
 

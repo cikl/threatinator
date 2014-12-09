@@ -109,11 +109,14 @@ module Threatinator
           begin
             some_io.close
           rescue => e
+            #:nocov:
             logger.warn("Failed to close IO: #{e} #{e.message}")
+            #:nocov:
           end
         end
       end
 
+      @output_formatter.finish
     end
 
     def create_event

@@ -133,12 +133,6 @@ describe Threatinator::FeedRunner do
         expect(observer.updates.first).to eq([:start])
       end
 
-      it "closes the last IO instance" do
-        allow(fetcher).to receive(:fetch).and_return(io)
-        expect(io).to receive(:close)
-        feed_runner.run()
-      end
-
       it "fetches, decodes, and then parses records" do
         expect(observer).to receive(:update).with(:start).ordered
         expect(observer).to receive(:update).with(:start_fetch).ordered
@@ -294,6 +288,45 @@ describe Threatinator::FeedRunner do
           expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record1).ordered
           expect(feed.parser_block).to receive(:call).with(kind_of(Proc), record3).ordered
           feed_runner.run()
+        end
+      end
+
+      context "cleanup" do
+        it "closes the IO provided via :io" do
+          expect(io).to receive(:closed?).and_return(false)
+          expect(io).to receive(:close)
+          feed_runner.run(:io => io)
+        end
+
+        it "closes the IO returned by the fetcher" do
+          allow(fetcher).to receive(:fetch).and_return(io)
+          expect(io).to receive(:closed?).and_return(false)
+          expect(io).to receive(:close)
+          feed_runner.run
+        end
+
+        it "calls output_formatter.finish" do
+          expect(output_formatter).to receive(:finish)
+          feed_runner.run
+        end
+
+        context "when handling a chain of IOs created by decoders" do
+          let(:decoded_io1) { create_mock_io('decoded_io1') }
+          let(:decoded_io2) { create_mock_io('decoded_io2') }
+          let(:decoded_io3) { create_mock_io('decoded_io3') }
+          let(:decoder1) { DummyDecoder.new(decoded_io1) }
+          let(:decoder2) { DummyDecoder.new(decoded_io2) }
+          let(:decoder3) { DummyDecoder.new(decoded_io3) }
+          let(:decoders) { [ decoder1, decoder2, decoder3 ] }
+          it "closes each decoded IO at the end" do
+            expect(decoded_io1).to receive(:closed?).and_return(false)
+            expect(decoded_io1).to receive(:close)
+            expect(decoded_io2).to receive(:closed?).and_return(false)
+            expect(decoded_io2).to receive(:close)
+            expect(decoded_io3).to receive(:closed?).and_return(false)
+            expect(decoded_io3).to receive(:close)
+            feed_runner.run
+          end
         end
       end
 
