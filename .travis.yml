@@ -1,22 +1,20 @@
 sudo: false
 language: ruby
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1.0
-  - jruby-19mode
-# - jruby-20mode  # So slow
-
+- 1.9.3
+- 2.0.0
+- 2.1.0
+- jruby-19mode
 matrix:
   allow_failures:
-    - rvm: jruby-19mode
-
+  - rvm: jruby-19mode
 env:
-    global:
-      - JRUBY_OPTS=--debug
-
+  global:
+  - JRUBY_OPTS=--debug
 cache: bundler
-
-bundler_args: --without development --jobs 7
-
+bundler_args: "--without development --jobs 7"
 script: bundle exec rake spec
+notifications:
+  hipchat:
+    rooms:
+      secure: e8/Lff70fiEOvt1FXRaDvc1AOk1T3bZmnUkHZaci9P+ACl/lAJCYG+j2/NPiIalAciOS+nothjkOxMKmNMib8cDEEWO43q/kF6biCS8I8sR5d9QC5egAjFMSPelG885SZLcuHHMefDpF7Nk/H4IF1mb1P1xqpto4nYE+HVPEBRA=
